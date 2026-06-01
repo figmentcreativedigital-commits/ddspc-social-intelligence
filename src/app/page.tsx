@@ -173,7 +173,7 @@ export default function Dashboard() {
   const isIgEmbed = (url: string) => /instagram\.com\/(p|reel)\//i.test(url);
 
   const linkData7d = {
-    period: "May 25 – June 1, 2026", totalClicks: 141,
+    period: "May 25 – June 1, 2026", totalClicks: 48,
     topLinks: [{ path: "Homepage", clicks: 32 }, { path: "DDS-PC UES", clicks: 8 }, { path: "DDS-PC Midtown", clicks: 8 }],
     trafficSources: [{ source: "Direct / Untagged", clicks: 102 }, { source: "Tagged (UTM)", clicks: 39 }],
     topCountries: [{ country: "United States", clicks: 22 }, { country: "Canada", clicks: 1 }, { country: "Vietnam", clicks: 1 }, { country: "Other", clicks: 2 }],
@@ -181,8 +181,8 @@ export default function Dashboard() {
     devices: [{ os: "Windows", clicks: 105 }, { os: "iOS", clicks: 21 }, { os: "Mac OS X", clicks: 10 }, { os: "Android", clicks: 4 }],
   };
   const linkData30d = {
-    period: "May 2 – June 1, 2026", totalClicks: 860,
-    topLinks: [{ path: "Homepage", clicks: 85 }, { path: "DDS-PC UES", clicks: 20 }, { path: "DDS-PC Midtown", clicks: 17 }, { path: "YouTube", clicks: 2 }],
+    period: "May 2 – June 1, 2026", totalClicks: 125,
+    topLinks: [{ path: "Homepage", clicks: 85 }, { path: "DDS-PC UES", clicks: 21 }, { path: "DDS-PC Midtown", clicks: 17 }, { path: "YouTube", clicks: 2 }],
     trafficSources: [{ source: "Direct / Untagged", clicks: 581 }, { source: "Tagged (UTM)", clicks: 279 }],
     topCountries: [{ country: "United States", clicks: 238 }, { country: "Canada", clicks: 7 }, { country: "Russia", clicks: 6 }, { country: "Spain", clicks: 4 }, { country: "Belgium", clicks: 4 }],
     topCities: [{ city: "Dallas", clicks: 10 }, { city: "New York City", clicks: 9 }, { city: "Toronto", clicks: 7 }, { city: "Brooklyn", clicks: 6 }, { city: "Fort Lee", clicks: 5 }, { city: "Columbus", clicks: 3 }],
@@ -617,7 +617,7 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="card">
-              <InsightCard title={"Link Attribution · " + linkData.period} body={timeRange === "7d" ? "5 attributed human clicks over 7 days across named destinations. Homepage drew 4, DDS-PC UES 1. Booking links remain heavily underutilized given the volume of upstream traffic — the gap between content reach and click-through is the conversion lever to focus on." : "95 attributed human clicks across named destinations over 30 days. Homepage 71, DDS-PC UES 12, DDS-PC Midtown 10, YouTube 2. Booking links remain underutilized given total upstream volume. US 224 clicks; Dallas leads cities at 10. Catch-all/untagged traffic excluded from this view to keep the picture focused on named, actionable destinations."} severity="info" />
+              <InsightCard title={"Link Attribution · " + linkData.period} body={timeRange === "7d" ? "48 attributed human clicks over 7 days across named destinations. Homepage drew 32, DDS-PC UES 8, DDS-PC Midtown 8. Booking links remain underutilized given the volume of upstream traffic — the gap between content reach and click-through is the conversion lever to focus on." : "125 attributed human clicks across named destinations over 30 days. Homepage 85, DDS-PC UES 21, DDS-PC Midtown 17, YouTube 2. Booking links remain underutilized given total upstream volume. Catch-all/untagged and bot traffic excluded to keep the picture focused on named, actionable destinations."} severity="info" />
             </div>
           </>
         )}
