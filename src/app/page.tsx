@@ -3,28 +3,29 @@ import { useState, useEffect } from "react";
 
 // Fallback data — used while loading or if Sheets API fails
 const FALLBACK_DATA = {
-  client: { name: "EEC", fullName: "Edgard El Chaar, DDS, PC", period: "June 1 – June 8, 2026" },
+  client: { name: "EEC", fullName: "Edgard El Chaar, DDS, PC", period: "June 8 – June 15, 2026" },
   kpi: {
-    followers: { value: 3141, change: 5, label: "Followers" },
-    reach: { value: 1698, label: "Reach" },
-    views: { value: 5012, label: "Total Views" },
-    engagementRate: { value: 12.5, label: "Engagement Rate", suffix: "%" },
-    engagements: { value: 212, label: "Engagements" },
+    followers: { value: 3142, change: 2, label: "Followers" },
+    reach: { value: 621, label: "Reach" },
+    views: { value: 2714, label: "Total Views" },
+    engagementRate: { value: 15.3, label: "Engagement Rate", suffix: "%" },
+    engagements: { value: 95, label: "Engagements" },
     watchTime: { value: "—", label: "Watch Time" },
   },
   posts: [
-    { id: 1, title: "Why Authenticity Matters · Collab w/ NYC Dental Smiles", type: "Reel", views: 2137, reach: 1211, likes: 83, comments: 25, saves: 3, shares: 11, isTop: true, igPostUrl: "https://www.instagram.com/reel/DZK-h6ZAO_d/" },
-    { id: 2, title: "Is Dentistry Losing Its Soul? · Collab w/ NYC Dental Smiles", type: "Reel", views: 498, reach: 362, likes: 11, comments: 0, saves: 0, shares: 2, isTop: false, igPostUrl: "https://www.instagram.com/reel/DZOF7qTBswB/" },
+    { id: 1, title: "Dr. El Chaar Co-Authors Long-Term Study · New Publication", type: "Post", views: 922, reach: 321, likes: 23, comments: 2, saves: 1, shares: 0, isTop: true, igPostUrl: "https://www.instagram.com/p/DZYJANtGV5f/" },
+    { id: 2, title: "Technology Spotlight — Advanced Technology, Precision Care", type: "Post", views: 394, reach: 160, likes: 6, comments: 0, saves: 0, shares: 1, isTop: false, igPostUrl: "https://www.instagram.com/p/DZdOGizgA3G/" },
+    { id: 3, title: "Go Knicks — If You Survived Monday's Game", type: "Story", views: 133, reach: 92, likes: 4, comments: 4, saves: 0, shares: 5, isTop: false, igPostUrl: "" },
   ] as any[],
-  contentMix: { posts: 19, reels: 62, stories: 19 },
+  contentMix: { posts: 60, reels: 19, stories: 21 },
   audience: {
     gender: { male: 52, female: 48 },
     age: [
-      { range: "18-24", pct: 2 }, { range: "25-34", pct: 22 }, { range: "35-44", pct: 37 },
-      { range: "45-54", pct: 21 }, { range: "55-64", pct: 13 }, { range: "65+", pct: 6 },
+      { range: "18-24", pct: 2 }, { range: "25-34", pct: 21 }, { range: "35-44", pct: 37 },
+      { range: "45-54", pct: 21 }, { range: "55-64", pct: 13 }, { range: "65+", pct: 7 },
     ],
   },
-  viewerSplit: { followers: 47, nonFollowers: 53 },
+  viewerSplit: { followers: 76, nonFollowers: 24 },
 };
 
 type ReportData = typeof FALLBACK_DATA;
@@ -35,24 +36,16 @@ function generateInsights(data: ReportData) {
   const recommendations: { text: string; priority: string }[] = [];
   const alerts: typeof insights = [];
 
-  // Period-specific reach recovery insight
-  if (data.kpi.reach.value < 800) {
-    alerts.push({
-      title: "Reach Below Baseline",
-      body: `Reach was ${data.kpi.reach.value} accounts this window. New Reel publishing is the most reliable lever to lift reach back above the 1,000+ range.`,
-      severity: "warning"
-    });
-  } else {
-    opportunities.push({
-      title: "Reach Rebounded +208.7% — Strongest Week in Months",
-      body: `Reach climbed to ${data.kpi.reach.value.toLocaleString()} accounts, up 208.7% week-over-week. The driver was unambiguous: two new collaboration Reels with NYC Dental Smiles — the Jun 4 "Authenticity in Dentistry" episode promo reached 1,211 accounts on its own. This is exactly the Reel-publishing lever prior weeks flagged as missing, now validated in the data.`,
-      severity: "success"
-    });
-  }
+  // Reach normalized off the collab spike — owned authority content carried the week
+  opportunities.push({
+    title: "Authority Content Carried the Week",
+    body: `Reach normalized to ${data.kpi.reach.value} accounts (−63.4% off last week's collaboration-Reel spike of 1,698) — but instead of a quiet week, an owned credential post did the lifting. "Dr. El Chaar Co-Authors Long-Term Study" (the Pinhole Surgical Technique 14.5-year case series) drew 922 IG views and 321 reach, extended further by its Facebook crosspost (1,249 combined). Posts led ${data.contentMix.posts}% of views with no new Reels published. Authority and publication content is EEC's organic engine — it converts the existing audience without paid or partner amplification.`,
+    severity: "success"
+  });
 
   const er = data.kpi.engagementRate.value;
-  if (er < 5) {
-    insights.push({ title: "Engagement Below Benchmark", body: `At ${er}%, engagement rate sits below the 5%+ benchmark for healthcare accounts under 10K followers. With ${data.kpi.reach.value.toLocaleString()} reach, discovery is working — content hooks need strengthening to convert viewers into engagers.`, severity: "warning" });
+  if (er >= 8) {
+    insights.push({ title: `Engagement Rate Strong at ${er}%`, body: `${data.kpi.engagements.value} interactions against ${data.kpi.reach.value} accounts reached = ${er}% — well above the 5% healthcare benchmark. The publication post and the "Go Knicks" story carried it (the Knicks graphic alone drew 13 interactions — 4 likes, 4 replies, 5 shares). The catch: 79.5% of interactions came from existing followers. Reach is tight but the owned audience is highly engaged.`, severity: "success" });
   }
 
   // Adaptive content-mix language (sorts to find leader)
@@ -62,53 +55,51 @@ function generateInsights(data: ReportData) {
     { name: "Stories", val: data.contentMix.stories },
   ].sort((a, b) => b.val - a.val);
   insights.push({
-    title: "Content Format Distribution",
-    body: `${sortedMix[0].name} lead at ${sortedMix[0].val}% of views, followed by ${sortedMix[1].name} (${sortedMix[1].val}%) and ${sortedMix[2].name} (${sortedMix[2].val}%). After several quiet weeks, new Reels returned this window and immediately drove the majority of views — confirming Reels as the account's primary discovery engine.`,
+    title: "Posts Led the Format Mix",
+    body: `${sortedMix[0].name} led at ${sortedMix[0].val}% of views, followed by ${sortedMix[1].name} (${sortedMix[1].val}%) and ${sortedMix[2].name} (${sortedMix[2].val}%). No new Reels were published this window — the ${data.contentMix.reels}% still attributed to Reels is residual from the Jun 4–5 collaboration episodes carrying over. Carousels and the publication post did the work this week; the 30-day view is still anchored by the "Why Authenticity Matters" collab Reel (2,251 views).`,
     severity: "info"
   });
 
   const totalSaves = data.posts.reduce((s, p) => s + p.saves, 0);
-  if (totalSaves === 0) {
-    alerts.push({ title: "Zero Saves Across All Posts", body: "No saves this week. Saves are the #1 algorithmic signal that content has lasting value. Save-worthy formats (lists, comparisons, before/after) are the single biggest lever to improve.", severity: "danger" });
-  } else if (totalSaves < 3) {
-    alerts.push({ title: "Low Save Volume", body: `Only ${totalSaves} save${totalSaves === 1 ? "" : "s"} this week. Saves are the #1 algorithmic signal of content value. Bookmark-worthy carousels (5 Signs, Myths, Step-by-Step guides) are the lever to pull.`, severity: "warning" });
+  if (totalSaves < 3) {
+    alerts.push({ title: "Saves Remain Thin", body: `Only ${totalSaves} save${totalSaves === 1 ? "" : "s"} on owned content this week. Saves are the #1 algorithmic signal of lasting value — and the natural fit for EEC's authority positioning. Turn the clinical credibility into bookmark-worthy carousels ('5 Signs of a Failed Graft', 'What to Expect After a Sinus Lift') with a 'Save this before your consult' CTA.`, severity: "warning" });
   }
 
-  // Reel publishing gap insight (when reels < 30%)
-  if (data.contentMix.reels < 30) {
-    insights.push({
-      title: "Reel Publishing Gap",
-      body: `Reels account for only ${data.contentMix.reels}% of views this window — mostly carryover from older Reel content. Posts (${data.contentMix.posts}%) lead by default in the absence of new video. Scheduling 2–3 new Reels per week is the single biggest lever for reach growth, since Reels carry algorithmic distribution advantages carousels and stories cannot match.`,
-      severity: "warning"
-    });
-  } else {
-    insights.push({ title: "Watch Time & Retention", body: "Reels are the primary discovery format. Average view duration matters most in the first 3 seconds — opening hooks (provocative questions, surprising stats) drive completion and save behavior.", severity: "warning" });
-  }
+  // Reel publishing gap
+  insights.push({
+    title: "Reel Publishing Gap",
+    body: `Zero new Reels published this window. The 30-day picture leans almost entirely on two carryover collaboration Reels (Jun 4–5) — once those age out, reach has nothing to replace them. Authority posts engage the existing audience well, but Reels are the only format that reliably reaches *new* accounts. A 2–3 Reel/week cadence is the lever to widen the funnel that the publication content is currently filling from the top.`,
+    severity: "warning"
+  });
 
-  // Viewer split — flipped to follower-dominant means compressed discovery
+  // Viewer split
   if (data.viewerSplit.nonFollowers > 50) {
-    opportunities.push({ title: "Strong Discovery Signal", body: `${data.viewerSplit.nonFollowers}% of viewers are non-followers — the algorithm is distributing your content to new audiences. Optimize CTAs to convert these discoverers into followers and patients.`, severity: "success" });
+    opportunities.push({ title: "Strong Discovery Signal", body: `${data.viewerSplit.nonFollowers}% of viewers are non-followers — the algorithm is distributing content to new audiences.`, severity: "success" });
   } else {
     insights.push({
       title: "Discovery Compression",
-      body: `Views skew ${data.viewerSplit.followers}% toward existing followers this window, leaving discovery to new audiences compressed. Publishing Reels — especially collaboration Reels — is the most effective reset; carousels and stories tend to circulate primarily within the existing follower graph.`,
+      body: `Views skewed ${data.viewerSplit.followers}% toward existing followers this window — discovery to new audiences is compressed without new Reels. Posts and stories circulate mostly within the follower graph; collaboration Reels are the proven reset (last week's pushed non-follower reach far wider). The owned audience is engaged — the next lever is widening it.`,
       severity: "warning"
     });
   }
 
-  insights.push({ title: "Audience Alignment", body: `Primary audience is 35–44 (${data.audience.age[2].pct}%), ${data.audience.gender.male > 50 ? "predominantly male" : "predominantly female"} (${data.audience.gender.male > 50 ? data.audience.gender.male : data.audience.gender.female}%). The 35–54 range represents ${data.audience.age[2].pct + data.audience.age[3].pct}% of the audience — the highest-value patient demographic for elective and cosmetic dental procedures.`, severity: "success" });
+  insights.push({ title: "Brand-Search Dependency on Google", body: `Search Console (7-day): 61 clicks, 1,021 impressions, ~6% CTR. Every top query is a Dr. El Chaar name variant — the homepage alone took 49 clicks at 11.84% CTR. The clinical long-tail (accidentally-blew-nose, sinus-lift-recovery, is-gum-grafting-painful) earns impressions but ranks too low (pos 8–57) to convert. Those pages are the non-brand SEO upside — they need internal links and on-page work to climb.`, severity: "info" });
 
-  if (data.kpi.followers.change && data.kpi.followers.change < 15) {
-    opportunities.push({ title: "Follower Velocity", body: `+${data.kpi.followers.change} net followers this week (7 follows / 2 unfollows) from ${data.kpi.reach.value.toLocaleString()} reach.`, severity: "warning" });
+  insights.push({ title: "Mobile Outranks Desktop on Google", body: "GSC: Mobile ranks at position 5.1 vs Desktop at 16.5 — a ~3× ranking gap on the same content. Desktop still takes more clicks (39 vs 22) on higher impressions, but mobile is the stronger-ranking surface. Audit mobile Core Web Vitals and keep booking CTAs thumb-reachable.", severity: "info" });
+
+  insights.push({ title: "Audience Alignment", body: `Primary audience is 35–44 (${data.audience.age[2].pct}%), ${data.audience.gender.male > 50 ? "slightly male" : "slightly female"} (${data.audience.gender.male > 50 ? data.audience.gender.male : data.audience.gender.female}%). The 35–54 range represents ${data.audience.age[2].pct + data.audience.age[3].pct}% of the audience — the highest-value patient demographic for implants, perio, and elective procedures, and a strong match for EEC's authority/credential content.`, severity: "success" });
+
+  if (data.kpi.followers.change != null && data.kpi.followers.change < 15) {
+    opportunities.push({ title: "Follower Velocity", body: `+${data.kpi.followers.change} net followers this week (6 follows / 4 unfollows) from ${data.kpi.reach.value} reach. Modest, but in line with a no-Reel week — discovery, not engagement, is the constraint on growth.`, severity: "warning" });
   }
 
   recommendations.push(
-    { text: "Sustain the 2–3 Reels/week cadence that just drove the +208.7% reach rebound — consistency is what compounds, not one-off spikes", priority: "high" },
-    { text: "Lean into the NYC Dental Smiles collaboration-Reel format — the Jun 4 co-posted episode promo was the single highest-reach piece of the period (1,211 accounts)", priority: "high" },
-    { text: "Tighten Reel openings: skip rates ran 62–72% on the new Reels. A sharper first-2-second hook converts the reach into watch time", priority: "high" },
-    { text: "Create save-worthy carousels ('5 Signs You Need Implants', 'Periodontal Myths Debunked') — saves stayed thin at 3 in 7d despite the reach surge", priority: "medium" },
-    { text: "Add CTAs in every caption: 'Save this for your next visit' / 'Share with someone who needs this'", priority: "medium" },
-    { text: "Convert the discovery momentum: 53% of views were non-followers this week — strong follow CTAs turn that reach into audience growth", priority: "low" },
+    { text: "Build on the authority play — the Co-Authors publication post was the week's anchor (922 IG views, +FB crosspost). Turn the practice's research and credentials into a recurring 'Publication / Case Study' content lane", priority: "high" },
+    { text: "Rebuild Reel cadence — zero Reels shipped this week, and the 30-day reach leans entirely on two carryover collab Reels. Aim for 2–3/week so discovery doesn't collapse when they age out", priority: "high" },
+    { text: "Line up the next NYC Dental Smiles collaboration Reel — the Jun 4 co-post (2,251 views / 1,267 reach) still anchors the 30-day window; the format is the proven reach lever", priority: "high" },
+    { text: "Convert clinical SEO impressions to clicks — pages like accidentally-blew-nose and sinus-lift-recovery rank pos 8–57 with strong impressions. Internal links + title/meta work to push them onto page one", priority: "medium" },
+    { text: "Create save-worthy authority carousels ('5 Signs of a Failed Graft', 'Sinus Lift Recovery, Day by Day') with a 'Save before your consult' CTA — saves stayed at 1 this week", priority: "medium" },
+    { text: "Audit the website 404s — the 404 page is the #2 page by views (274 in 30d), pointing to broken internal links or stale redirects worth a crawl", priority: "low" },
   );
   return { insights, opportunities, recommendations, alerts };
 }
@@ -179,131 +170,133 @@ export default function Dashboard() {
   const isIgEmbed = (url: string) => /instagram\.com\/(p|reel)\//i.test(url);
 
   const linkData7d = {
-    period: "June 1 – June 9, 2026", totalClicks: 60,
-    topLinks: [{ path: "Homepage", clicks: 48 }, { path: "DDS-PC UES", clicks: 4 }, { path: "DDS-PC Midtown", clicks: 4 }, { path: "YouTube", clicks: 4 }],
-    trafficSources: [{ source: "Direct / Untagged", clicks: 429 }, { source: "Tagged (UTM)", clicks: 53 }],
-    topCountries: [{ country: "United States", clicks: 29 }, { country: "South Korea", clicks: 3 }, { country: "Vietnam", clicks: 2 }, { country: "Brazil", clicks: 1 }],
-    topCities: [{ city: "Brooklyn", clicks: 5 }, { city: "Ho Chi Minh City", clicks: 2 }, { city: "Amsterdam", clicks: 1 }, { city: "São Paulo", clicks: 1 }],
-    devices: [{ os: "Mac OS X", clicks: 289 }, { os: "iOS", clicks: 33 }, { os: "Windows", clicks: 19 }, { os: "Android", clicks: 2 }],
+    period: "June 8 – June 16, 2026", totalClicks: 64,
+    topLinks: [{ path: "Homepage", clicks: 50 }, { path: "DDS-PC Midtown", clicks: 8 }, { path: "DDS-PC UES", clicks: 6 }],
+    trafficSources: [{ source: "Direct / Untagged", clicks: 447 }, { source: "Tagged (UTM)", clicks: 185 }],
+    topCountries: [{ country: "United States", clicks: 25 }, { country: "Finland", clicks: 2 }, { country: "Canada", clicks: 1 }],
+    topCities: [{ city: "New York City", clicks: 9 }, { city: "Dallas", clicks: 5 }, { city: "Long Branch", clicks: 3 }, { city: "Tampa", clicks: 3 }],
+    devices: [{ os: "Android", clicks: 146 }, { os: "Windows", clicks: 83 }, { os: "iOS", clicks: 80 }, { os: "Mac OS X", clicks: 50 }],
   };
   const linkData30d = {
-    period: "May 9 – June 9, 2026", totalClicks: 159,
-    topLinks: [{ path: "Homepage", clicks: 112 }, { path: "DDS-PC UES", clicks: 21 }, { path: "DDS-PC Midtown", clicks: 20 }, { path: "YouTube", clicks: 6 }],
-    trafficSources: [{ source: "Direct / Untagged", clicks: 1441 }, { source: "Tagged (UTM)", clicks: 312 }],
-    topCountries: [{ country: "United States", clicks: 251 }, { country: "Canada", clicks: 6 }, { country: "Belgium", clicks: 4 }, { country: "Spain", clicks: 4 }, { country: "Vietnam", clicks: 3 }],
-    topCities: [{ city: "Brooklyn", clicks: 10 }, { city: "New York City", clicks: 7 }, { city: "Toronto", clicks: 6 }, { city: "Fort Lee", clicks: 5 }, { city: "Brussels", clicks: 4 }],
-    devices: [{ os: "Mac OS X", clicks: 485 }, { os: "Windows", clicks: 432 }, { os: "iOS", clicks: 66 }, { os: "Android", clicks: 19 }],
+    period: "May 16 – June 16, 2026", totalClicks: 211,
+    topLinks: [{ path: "Homepage", clicks: 153 }, { path: "DDS-PC Midtown", clicks: 28 }, { path: "DDS-PC UES", clicks: 25 }, { path: "YouTube", clicks: 5 }],
+    trafficSources: [{ source: "Direct / Untagged", clicks: 1429 }, { source: "Tagged (UTM)", clicks: 478 }],
+    topCountries: [{ country: "United States", clicks: 65 }, { country: "Vietnam", clicks: 3 }, { country: "Canada", clicks: 2 }, { country: "Finland", clicks: 2 }],
+    topCities: [{ city: "New York City", clicks: 16 }, { city: "Brooklyn", clicks: 10 }, { city: "Dallas", clicks: 7 }],
+    devices: [{ os: "Mac OS X", clicks: 528 }, { os: "Windows", clicks: 505 }, { os: "Android", clicks: 159 }, { os: "iOS", clicks: 142 }],
   };
   const linkData = timeRange === "7d" ? linkData7d : linkData30d;
 
   const websiteData7d = {
-    period: "June 1 – June 7, 2026",
-    sessions: 339,
+    period: "June 8 – June 14, 2026",
+    sessions: 250,
     topPages: [
-      { page: "/", label: "Home", views: 293 },
-      { page: "/accidentally-blew-nose", label: "Accidentally Blew Nose", views: 23 },
-      { page: "/our-doctors", label: "Our Doctors", views: 21 },
-      { page: "/periodontist-nyc-dr-edgard", label: "Periodontist NYC (Dr. Edgard)", views: 15 },
-      { page: "/about", label: "About", views: 8 },
-      { page: "/how-painful-is-a-sinus-lift", label: "How Painful Is a Sinus Lift", views: 8 },
-      { page: "/signs-of-failed-gum-graft", label: "Signs of Failed Gum Graft", views: 8 },
-      { page: "/sinus-lift-recovery-experience", label: "Sinus Lift Recovery", views: 6 },
+      { page: "/", label: "Home", views: 268 },
+      { page: "/doctors-and-periodontists", label: "Doctors & Periodontists", views: 16 },
+      { page: "/locations", label: "Locations", views: 8 },
+      { page: "/upload-your-files", label: "Upload Your Files", views: 7 },
+      { page: "/our-doctors", label: "Our Doctors", views: 6 },
+      { page: "/accidentally-blew-nose", label: "Accidentally Blew Nose", views: 5 },
+      { page: "/contactus", label: "Contact Us", views: 3 },
+      { page: "/covid-19-precautions", label: "COVID-19 Precautions", views: 3 },
+      { page: "/guide-to-a-smooth-recovery", label: "Smooth Recovery Guide", views: 3 },
     ],
     trafficSources: [
-      { source: "Direct", sessions: 210, pct: 61.9 },
-      { source: "Google", sessions: 107, pct: 31.6 },
-      { source: "Instagram", sessions: 8, pct: 2.4 },
-      { source: "Facebook", sessions: 5, pct: 1.5 },
-      { source: "DuckDuckGo", sessions: 4, pct: 1.2 },
-      { source: "Other", sessions: 5, pct: 1.5 },
+      { source: "Direct", sessions: 141, pct: 56.4 },
+      { source: "Google", sessions: 99, pct: 39.6 },
+      { source: "lbm-plesk (ref)", sessions: 3, pct: 1.2 },
+      { source: "Bing", sessions: 2, pct: 0.8 },
+      { source: "dentalintel (ref)", sessions: 2, pct: 0.8 },
+      { source: "Other", sessions: 3, pct: 1.2 },
     ],
     devices: [
-      { device: "Desktop", pct: 76.7 },
-      { device: "Mobile", pct: 22.7 },
-      { device: "Tablet", pct: 0.6 },
+      { device: "Desktop", pct: 79.7 },
+      { device: "Mobile", pct: 19.8 },
+      { device: "Tablet", pct: 0.5 },
     ],
     dailyVisitors: [
-      { date: "Jun 1", visitors: 44 },{ date: "Jun 2", visitors: 63 },
-      { date: "Jun 3", visitors: 48 },{ date: "Jun 4", visitors: 34 },
-      { date: "Jun 5", visitors: 38 },{ date: "Jun 6", visitors: 42 },
-      { date: "Jun 7", visitors: 22 },
+      { date: "Jun 8", visitors: 25 },{ date: "Jun 9", visitors: 20 },
+      { date: "Jun 10", visitors: 43 },{ date: "Jun 11", visitors: 37 },
+      { date: "Jun 12", visitors: 28 },{ date: "Jun 13", visitors: 15 },
+      { date: "Jun 14", visitors: 22 },
     ],
     search: {
-      totalClicks: 516, totalImpressions: 39722, avgCTR: 1.30, avgPosition: 22.8,
-      note: "28-day (May 10 – Jun 6)",
+      totalClicks: 61, totalImpressions: 1021, avgCTR: 5.97, avgPosition: 11.6,
+      note: "7-day (Jun 7 – Jun 13)",
       topQueries: [
-        { query: "i blew my nose after a sinus lift", clicks: 19, ctr: 13.97, position: 2.22 },
-        { query: "dr el chaar", clicks: 14, ctr: 11.29, position: 5.81 },
-        { query: "edgard el chaar", clicks: 13, ctr: 13.98, position: 1.14 },
-        { query: "el chaar", clicks: 12, ctr: 23.08, position: 1.65 },
-        { query: "edgar el chaar", clicks: 11, ctr: 23.40, position: 1.19 },
+        { query: "edgard el chaar", clicks: 6, ctr: 24.00, position: 1.04 },
+        { query: "edgar el chaar", clicks: 3, ctr: 13.64, position: 1.14 },
+        { query: "edgard el chaar dds", clicks: 3, ctr: 42.86, position: 1.00 },
+        { query: "dr el chaar", clicks: 2, ctr: 11.11, position: 2.17 },
+        { query: "dr. el chaar", clicks: 2, ctr: 50.00, position: 1.00 },
       ],
       topPages: [
-        { page: "Homepage", clicks: 141, impressions: 1740, ctr: 8.10 },
-        { page: "Dry Socket with Bone Graft", clicks: 103, impressions: 3223, ctr: 3.20 },
-        { page: "Accidentally Blew Nose", clicks: 86, impressions: 8644, ctr: 0.99 },
-        { page: "Signs of Failed Gum Graft", clicks: 49, impressions: 4926, ctr: 0.99 },
-        { page: "Doctors & Periodontists (UES)", clicks: 27, impressions: 965, ctr: 2.80 },
+        { page: "Homepage", clicks: 49, impressions: 414, ctr: 11.84 },
+        { page: "Doctors & Periodontists (UES)", clicks: 5, impressions: 80, ctr: 6.25 },
+        { page: "Accidentally Blew Nose", clicks: 4, impressions: 295, ctr: 1.36 },
+        { page: "Dry Socket with Bone Graft", clicks: 2, impressions: 22, ctr: 9.09 },
       ],
     },
   };
   const websiteData30d = {
-    period: "May 9 – June 6, 2026",
-    sessions: 1434,
+    period: "May 16 – June 14, 2026",
+    sessions: 1221,
     topPages: [
-      { page: "/", label: "Home", views: 853 },
-      { page: "/signs-of-failed-gum-graft", label: "Signs of Failed Gum Graft", views: 189 },
-      { page: "/dry-socket-with-bone-graft", label: "Dry Socket with Bone Graft", views: 107 },
-      { page: "/accidentally-blew-nose", label: "Accidentally Blew Nose", views: 77 },
-      { page: "/doctors-and-periodontists", label: "Doctors & Periodontists", views: 65 },
-      { page: "/dental-office-upper-east-side", label: "Dental Office UES", views: 46 },
-      { page: "/how-painful-is-a-sinus-lift", label: "Sinus Lift Pain", views: 43 },
-      { page: "/sinus-lift-long-term-side-effects", label: "Sinus Lift Side Effects", views: 35 },
+      { page: "/", label: "Home", views: 884 },
+      { page: "/signs-of-failed-gum-graft", label: "Signs of Failed Gum Graft", views: 124 },
+      { page: "/dry-socket-with-bone-graft", label: "Dry Socket with Bone Graft", views: 64 },
+      { page: "/accidentally-blew-nose", label: "Accidentally Blew Nose", views: 60 },
+      { page: "/doctors-and-periodontists", label: "Doctors & Periodontists", views: 56 },
+      { page: "/dental-office-upper-east-side", label: "Dental Office UES", views: 35 },
+      { page: "/how-painful-is-a-sinus-lift", label: "Sinus Lift Pain", views: 30 },
+      { page: "/our-doctors", label: "Our Doctors", views: 27 },
+      { page: "/sinus-lift-long-term-side-effects", label: "Sinus Lift Side Effects", views: 27 },
     ],
     trafficSources: [
-      { source: "Direct", sessions: 674, pct: 47.0 },
-      { source: "Google", sessions: 653, pct: 45.5 },
-      { source: "Yahoo", sessions: 19, pct: 1.3 },
-      { source: "Bing", sessions: 17, pct: 1.2 },
-      { source: "DuckDuckGo", sessions: 14, pct: 1.0 },
-      { source: "Other", sessions: 57, pct: 3.4 },
+      { source: "Direct", sessions: 625, pct: 51.2 },
+      { source: "Google", sessions: 520, pct: 42.6 },
+      { source: "Yahoo", sessions: 12, pct: 1.0 },
+      { source: "Bing", sessions: 10, pct: 0.8 },
+      { source: "DuckDuckGo", sessions: 10, pct: 0.8 },
+      { source: "Instagram", sessions: 8, pct: 0.7 },
+      { source: "Other", sessions: 36, pct: 2.9 },
     ],
     devices: [
-      { device: "Desktop", pct: 65.0 },
-      { device: "Mobile", pct: 34.1 },
-      { device: "Tablet", pct: 0.9 },
+      { device: "Desktop", pct: 69.8 },
+      { device: "Mobile", pct: 29.5 },
+      { device: "Tablet", pct: 0.7 },
     ],
     dailyVisitors: [
-      { date: "May 9", visitors: 56 },{ date: "May 13", visitors: 67 },
-      { date: "May 19", visitors: 60 },{ date: "May 21", visitors: 76 },
-      { date: "May 27", visitors: 2 },{ date: "May 29", visitors: 58 },
-      { date: "Jun 2", visitors: 63 },{ date: "Jun 6", visitors: 42 },
+      { date: "May 16", visitors: 35 },{ date: "May 20", visitors: 82 },
+      { date: "May 22", visitors: 5 },{ date: "May 28", visitors: 57 },
+      { date: "Jun 1", visitors: 62 },{ date: "Jun 5", visitors: 35 },
+      { date: "Jun 9", visitors: 30 },{ date: "Jun 11", visitors: 25 },
+      { date: "Jun 13", visitors: 22 },
     ],
     search: {
-      totalClicks: 516, totalImpressions: 39722, avgCTR: 1.30, avgPosition: 22.8,
-      note: "28-day (May 10 – Jun 6)",
+      totalClicks: 61, totalImpressions: 1021, avgCTR: 5.97, avgPosition: 11.6,
+      note: "7-day (Jun 7 – Jun 13)",
       topQueries: [
-        { query: "i blew my nose after a sinus lift", clicks: 19, ctr: 13.97, position: 2.22 },
-        { query: "dr el chaar", clicks: 14, ctr: 11.29, position: 5.81 },
-        { query: "edgard el chaar", clicks: 13, ctr: 13.98, position: 1.14 },
-        { query: "el chaar", clicks: 12, ctr: 23.08, position: 1.65 },
-        { query: "edgar el chaar", clicks: 11, ctr: 23.40, position: 1.19 },
+        { query: "edgard el chaar", clicks: 6, ctr: 24.00, position: 1.04 },
+        { query: "edgar el chaar", clicks: 3, ctr: 13.64, position: 1.14 },
+        { query: "edgard el chaar dds", clicks: 3, ctr: 42.86, position: 1.00 },
+        { query: "dr el chaar", clicks: 2, ctr: 11.11, position: 2.17 },
+        { query: "dr. el chaar", clicks: 2, ctr: 50.00, position: 1.00 },
       ],
       topPages: [
-        { page: "Homepage", clicks: 141, impressions: 1740, ctr: 8.10 },
-        { page: "Dry Socket with Bone Graft", clicks: 103, impressions: 3223, ctr: 3.20 },
-        { page: "Accidentally Blew Nose", clicks: 86, impressions: 8644, ctr: 0.99 },
-        { page: "Signs of Failed Gum Graft", clicks: 49, impressions: 4926, ctr: 0.99 },
-        { page: "Doctors & Periodontists (UES)", clicks: 27, impressions: 965, ctr: 2.80 },
+        { page: "Homepage", clicks: 49, impressions: 414, ctr: 11.84 },
+        { page: "Doctors & Periodontists (UES)", clicks: 5, impressions: 80, ctr: 6.25 },
+        { page: "Accidentally Blew Nose", clicks: 4, impressions: 295, ctr: 1.36 },
+        { page: "Dry Socket with Bone Graft", clicks: 2, impressions: 22, ctr: 9.09 },
       ],
     },
   };
   const websiteData = timeRange === "7d" ? websiteData7d : websiteData30d;
 
   const podcastData = {
-    period: "All Time (as of June 8, 2026)",
-    totalEpisodes: 48, totalDownloads: 4726, periodDownloads: 5,
-    last7Days: 5, last30Days: 90, last90Days: 470,
+    period: "All Time (as of June 15, 2026)",
+    totalEpisodes: 48, totalDownloads: 4730, periodDownloads: 3,
+    last7Days: 3, last30Days: 91, last90Days: 431,
     topEpisodes: [
       { title: "Allograft & Evolution – Dr. Brad McAllister (S5 E3)", downloads: 301 },
       { title: "Future of Dental Industry – Aurelio Sahagun, Straumann (S4 E2)", downloads: 195 },
@@ -313,74 +306,74 @@ export default function Dashboard() {
     ],
     platforms: [
       { name: "Web Browser", downloads: 91, pct: 46 },
-      { name: "Apple Podcasts", downloads: 57, pct: 29 },
-      { name: "Spotify", downloads: 21, pct: 10 },
-      { name: "Unknown", downloads: 10, pct: 5 },
-      { name: "Amazon Echo", downloads: 6, pct: 3 },
+      { name: "Apple Podcasts", downloads: 59, pct: 30 },
+      { name: "Spotify", downloads: 21, pct: 11 },
+      { name: "Unknown", downloads: 11, pct: 6 },
+      { name: "Amazon Echo", downloads: 7, pct: 4 },
     ],
     topCountries: [
-      { country: "United States", downloads: 115 },
+      { country: "United States", downloads: 117 },
       { country: "Germany", downloads: 19 },
-      { country: "Sweden", downloads: 9 },
+      { country: "Sweden", downloads: 10 },
       { country: "Canada", downloads: 8 },
       { country: "Vietnam", downloads: 7 },
     ],
     topCities: [
-      { city: "New York", downloads: 28 },
+      { city: "New York", downloads: 29 },
       { city: "Ashburn", downloads: 16 },
       { city: "Frankfurt", downloads: 12 },
-      { city: "Stockholm", downloads: 8 },
+      { city: "Stockholm", downloads: 9 },
       { city: "Brooklyn", downloads: 8 },
     ],
   };
 
   const socialData7d = {
-    period: "June 1 – June 7, 2026",
-    followers: 3141, followerGrowth: 5, follows: 7, unfollows: 2,
-    totalViews: 5012, totalReach: 1698, reachChange: 208.7, totalInteractions: 212,
-    viewSplit: { followers: 46.9, nonFollowers: 53.1 },
-    interactionSplit: { followers: 58.5, nonFollowers: 41.5 },
-    viewsByType: { reels: 61.9, posts: 18.8, stories: 19.3 },
-    interactionsByType: { reels: 77.2, posts: 7.3, stories: 15.5 },
-    totalLikes: 99, totalComments: 25, totalSaves: 3, totalShares: 13,
-    storyViews: 543, storyCompletion: 85, storyCount: 5,
+    period: "June 8 – June 14, 2026",
+    followers: 3142, followerGrowth: 2, follows: 6, unfollows: 4,
+    totalViews: 2714, totalReach: 621, reachChange: -63.4, totalInteractions: 95,
+    viewSplit: { followers: 76.3, nonFollowers: 23.7 },
+    interactionSplit: { followers: 79.5, nonFollowers: 20.5 },
+    viewsByType: { reels: 19.0, posts: 60.2, stories: 20.8 },
+    interactionsByType: { reels: 20.5, posts: 44.3, stories: 35.2 },
+    totalLikes: 65, totalComments: 8, totalSaves: 2, totalShares: 12,
+    storyViews: 433, storyCompletion: 84, storyCount: 5,
     dailyViews: [
-      { date: "Jun 1", views: 357 },{ date: "Jun 2", views: 413 },
-      { date: "Jun 3", views: 268 },{ date: "Jun 4", views: 1263 },
-      { date: "Jun 5", views: 2526 },{ date: "Jun 6", views: 1169 },
-      { date: "Jun 7", views: 467 },
+      { date: "Jun 8", views: 180 },{ date: "Jun 9", views: 720 },
+      { date: "Jun 10", views: 540 },{ date: "Jun 11", views: 560 },
+      { date: "Jun 12", views: 300 },{ date: "Jun 13", views: 240 },
+      { date: "Jun 14", views: 174 },
     ],
     posts: [
-      { id: 1, title: "Why Authenticity Matters · Collab w/ NYC Dental Smiles", type: "Reel", date: "Jun 4", views: 2137, reach: 1211, likes: 83, comments: 25, saves: 3, shares: 11, er: 10.1, skipRate: 62, avgWatch: "10s", igUrl: "https://www.instagram.com/reel/DZK-h6ZAO_d/", isTop: true },
-      { id: 2, title: "Is Dentistry Losing Its Soul? · Collab w/ NYC Dental Smiles", type: "Reel", date: "Jun 5", views: 498, reach: 362, likes: 11, comments: 0, saves: 0, shares: 2, er: 3.6, skipRate: 72, avgWatch: "8s", igUrl: "https://www.instagram.com/reel/DZOF7qTBswB/", isTop: false },
-      { id: 3, title: "Why Patients Choose Us", type: "Post", date: "Jun 3", views: 270, reach: 151, likes: 5, comments: 0, saves: 0, shares: 0, er: 3.3, skipRate: 0, avgWatch: "", igUrl: "https://www.instagram.com/p/DZIsQcthSTD/", isTop: false },
+      { id: 1, title: "Dr. El Chaar Co-Authors Long-Term Study · New Publication", type: "Post", date: "Jun 9", views: 922, reach: 321, likes: 23, comments: 2, saves: 1, shares: 0, er: 8.1, skipRate: 0, avgWatch: "", igUrl: "https://www.instagram.com/p/DZYJANtGV5f/", isTop: true },
+      { id: 2, title: "Technology Spotlight — Advanced Technology, Precision Care", type: "Post", date: "Jun 11", views: 394, reach: 160, likes: 6, comments: 0, saves: 0, shares: 1, er: 4.4, skipRate: 0, avgWatch: "", igUrl: "https://www.instagram.com/p/DZdOGizgA3G/", isTop: false },
+      { id: 3, title: "Go Knicks — If You Survived Monday's Game", type: "Story", date: "Jun 10", views: 133, reach: 92, likes: 4, comments: 4, saves: 0, shares: 5, er: 14.1, skipRate: 0, avgWatch: "", igUrl: "", isTop: false },
     ],
   };
   const socialData30d = {
-    period: "May 8 – June 8, 2026",
-    followers: 3141, followerGrowth: 13, follows: 20, unfollows: 7,
-    totalViews: 15000, totalReach: 4500, reachChange: 0, totalInteractions: 321,
-    viewSplit: { followers: 50, nonFollowers: 50 },
-    interactionSplit: { followers: 55, nonFollowers: 45 },
-    viewsByType: { reels: 52.6, posts: 29.8, stories: 17.6 },
-    interactionsByType: { reels: 70, posts: 22, stories: 8 },
-    totalLikes: 262, totalComments: 29, totalSaves: 8, totalShares: 22,
-    storyViews: 1849, storyCompletion: 86, storyCount: 19,
+    period: "May 15 – June 15, 2026",
+    followers: 3142, followerGrowth: 8, follows: 14, unfollows: 6,
+    totalViews: 9169, totalReach: 3643, reachChange: 0, totalInteractions: 270,
+    viewSplit: { followers: 55, nonFollowers: 45 },
+    interactionSplit: { followers: 62, nonFollowers: 38 },
+    viewsByType: { reels: 36, posts: 46, stories: 18 },
+    interactionsByType: { reels: 57, posts: 32, stories: 11 },
+    totalLikes: 195, totalComments: 30, totalSaves: 8, totalShares: 22,
+    storyViews: 1693, storyCompletion: 85, storyCount: 18,
     dailyViews: [
-      { date: "May 8", views: 1238 },{ date: "May 13", views: 1821 },
-      { date: "May 21", views: 1607 },{ date: "May 22", views: 1172 },
-      { date: "May 29", views: 893 },{ date: "Jun 4", views: 1263 },
-      { date: "Jun 5", views: 2526 },{ date: "Jun 7", views: 467 },
+      { date: "May 16", views: 493 },{ date: "May 20", views: 694 },
+      { date: "May 28", views: 924 },{ date: "Jun 4", views: 2251 },
+      { date: "Jun 5", views: 579 },{ date: "Jun 9", views: 922 },
+      { date: "Jun 11", views: 394 },{ date: "Jun 14", views: 200 },
     ],
     posts: [
-      { id: 1, title: "Why Authenticity Matters · Collab w/ NYC Dental Smiles", type: "Reel", date: "Jun 4", views: 2137, reach: 1211, likes: 83, comments: 25, saves: 3, shares: 11, er: 10.1, skipRate: 62, avgWatch: "10s", igUrl: "https://www.instagram.com/reel/DZK-h6ZAO_d/", isTop: true },
-      { id: 2, title: "Andrés Campana – Made with Identity", type: "Reel", date: "May 13", views: 1821, reach: 1024, likes: 96, comments: 1, saves: 3, shares: 5, er: 10.3, skipRate: 53, avgWatch: "14s", igUrl: "https://www.instagram.com/reel/DYSOcwGhzJn/", isTop: false },
-      { id: 3, title: "Meet Dr. Cinzia Dinoi", type: "Carousel", date: "May 28", views: 894, reach: 348, likes: 15, comments: 0, saves: 0, shares: 0, er: 4.3, skipRate: 0, avgWatch: "", igUrl: "https://www.instagram.com/p/DY5XLhUGYzB/", isTop: false },
-      { id: 4, title: "Dental Implants Start Long Before...", type: "Carousel", date: "May 20", views: 684, reach: 269, likes: 10, comments: 0, saves: 1, shares: 1, er: 4.5, skipRate: 0, avgWatch: "", igUrl: "https://www.instagram.com/p/DYkP-F3GeWK/", isTop: false },
-      { id: 5, title: "The Best Things Are Never Rushed (Wine Is Time)", type: "Reel", date: "May 8", views: 588, reach: 326, likes: 18, comments: 1, saves: 0, shares: 1, er: 6.1, skipRate: 60, avgWatch: "9s", igUrl: "https://www.instagram.com/reel/DYFrHCTBs43/", isTop: false },
-      { id: 6, title: "Is Dentistry Losing Its Soul? · Collab w/ NYC Dental Smiles", type: "Reel", date: "Jun 5", views: 498, reach: 362, likes: 11, comments: 0, saves: 0, shares: 2, er: 3.6, skipRate: 72, avgWatch: "8s", igUrl: "https://www.instagram.com/reel/DZOF7qTBswB/", isTop: false },
-      { id: 7, title: "Andrés Campana – Unforgettable", type: "Reel", date: "May 16", views: 484, reach: 323, likes: 8, comments: 0, saves: 0, shares: 1, er: 2.8, skipRate: 77, avgWatch: "", igUrl: "https://www.instagram.com/reel/DYZ85IxBmlp/", isTop: false },
-      { id: 8, title: "Complex Cases Require Expert Care", type: "Carousel", date: "May 30", views: 458, reach: 194, likes: 7, comments: 2, saves: 1, shares: 1, er: 5.7, skipRate: 0, avgWatch: "", igUrl: "https://www.instagram.com/p/DY9yNAWgEuT/", isTop: false },
+      { id: 1, title: "Why Authenticity Matters · Collab w/ NYC Dental Smiles", type: "Reel", date: "Jun 4", views: 2251, reach: 1267, likes: 89, comments: 25, saves: 3, shares: 11, er: 10.1, skipRate: 62, avgWatch: "10s", igUrl: "https://www.instagram.com/reel/DZK-h6ZAO_d/", isTop: true },
+      { id: 2, title: "Meet Dr. Cinzia Dinoi", type: "Carousel", date: "May 28", views: 924, reach: 360, likes: 16, comments: 0, saves: 0, shares: 0, er: 4.4, skipRate: 0, avgWatch: "", igUrl: "https://www.instagram.com/p/DY5XLhUGYzB/", isTop: false },
+      { id: 3, title: "Dr. El Chaar Co-Authors Long-Term Study", type: "Carousel", date: "Jun 9", views: 922, reach: 321, likes: 23, comments: 2, saves: 1, shares: 0, er: 8.1, skipRate: 0, avgWatch: "", igUrl: "https://www.instagram.com/p/DZYJANtGV5f/", isTop: false },
+      { id: 4, title: "Dental Implants Start Long Before the Final Result", type: "Carousel", date: "May 20", views: 694, reach: 271, likes: 10, comments: 0, saves: 1, shares: 1, er: 4.4, skipRate: 0, avgWatch: "", igUrl: "https://www.instagram.com/p/DYkP-F3GeWK/", isTop: false },
+      { id: 5, title: "Is Dentistry Losing Its Soul? · Collab w/ NYC Dental Smiles", type: "Reel", date: "Jun 5", views: 579, reach: 406, likes: 14, comments: 0, saves: 0, shares: 2, er: 3.9, skipRate: 60, avgWatch: "8s", igUrl: "https://www.instagram.com/reel/DZOF7qTBswB/", isTop: false },
+      { id: 6, title: "What Makes Something Unforgettable?", type: "Reel", date: "May 16", views: 493, reach: 324, likes: 8, comments: 0, saves: 0, shares: 1, er: 2.8, skipRate: 63, avgWatch: "", igUrl: "https://www.instagram.com/reel/DYZ85IxBmlp/", isTop: false },
+      { id: 7, title: "Complex Cases Require Expert Care", type: "Carousel", date: "May 30", views: 480, reach: 201, likes: 8, comments: 2, saves: 1, shares: 1, er: 6.0, skipRate: 0, avgWatch: "", igUrl: "https://www.instagram.com/p/DY9yNAWgEuT/", isTop: false },
+      { id: 8, title: "Technology Spotlight — Advanced Technology, Precision Care", type: "Carousel", date: "Jun 11", views: 394, reach: 160, likes: 6, comments: 0, saves: 0, shares: 1, er: 4.4, skipRate: 0, avgWatch: "", igUrl: "https://www.instagram.com/p/DZdOGizgA3G/", isTop: false },
     ],
   };
   const socialData = timeRange === "7d" ? socialData7d : socialData30d;
@@ -485,15 +478,15 @@ export default function Dashboard() {
               <div className="exec-cols">
                 <div>
                   <div className="exec-col-title">Discovery</div>
-                  <div className="exec-col-body">Reach jumped to {d.kpi.reach.value.toLocaleString()} accounts — up 208.7% week-over-week and the strongest week in months. The driver was two new collaboration Reels with NYC Dental Smiles; the Jun 4 "Authenticity in Dentistry" episode promo reached 1,211 accounts on its own. Views skewed {d.viewerSplit.nonFollowers}% to non-followers — a healthy discovery signal after several follower-bound weeks.</div>
+                  <div className="exec-col-body">Reach normalized to {d.kpi.reach.value.toLocaleString()} accounts (&minus;63.4% off last week&rsquo;s collaboration-Reel spike of 1,698) — but the week wasn&rsquo;t quiet. An owned credential post, &ldquo;Dr. El Chaar Co-Authors Long-Term Study&rdquo; (the Pinhole Surgical Technique 14.5-year case series), carried it: 922 IG views and 321 reach, extended further by its Facebook crosspost (1,249 combined). Views skewed {d.viewerSplit.followers}% to existing followers — no new Reels meant discovery stayed within the follower graph.</div>
                 </div>
                 <div>
                   <div className="exec-col-title">Engagement</div>
-                  <div className="exec-col-body">{d.kpi.engagementRate.value}% ER with {d.kpi.engagements.value} interactions — up from 37 the prior week as the Reels pulled in non-follower engagement. Top post: the Jun 4 Authenticity Reel (2,137 IG views, 83 likes, 25 comments, 11 shares). Follower growth +{d.kpi.followers.change} net (7 follows, 2 unfollows), with profile visits up 150% and 5 external link taps.</div>
+                  <div className="exec-col-body">{d.kpi.engagementRate.value}% ER with {d.kpi.engagements.value} interactions against {d.kpi.reach.value} reach — well above the 5% healthcare benchmark, though 79.5% came from existing followers. The publication post and the &ldquo;Go Knicks&rdquo; story drove it (the Knicks graphic alone: 13 interactions — 4 likes, 4 replies, 5 shares). Follower growth +{d.kpi.followers.change} net (6 follows, 4 unfollows). 35&ndash;54 = 58% of the audience.</div>
                 </div>
                 <div>
                   <div className="exec-col-title">Content</div>
-                  <div className="exec-col-body">Reels led views at {d.contentMix.reels}% after returning to the calendar this week, with Stories ({d.contentMix.stories}%) and Posts ({d.contentMix.posts}%) behind. {socialData.storyCount} Stories ran at {socialData.storyCompletion}% completion. The takeaway: the Reel cadence that drove the reach rebound is the pattern to sustain, not a one-off.</div>
+                  <div className="exec-col-body">Posts led views at {d.contentMix.posts}% — no new Reels published this week (the {d.contentMix.reels}% Reel share is carryover from the Jun 4&ndash;5 collab episodes). {socialData.storyCount} Story frames ran at {socialData.storyCompletion}% completion. GSC (7-day): 61 clicks, brand-search heavy, with the clinical long-tail (sinus-lift, gum-graft pages) earning impressions but ranking too low to convert. The takeaway: authority content engages the owned audience; Reels are the missing lever to widen it.</div>
                 </div>
               </div>
             </div>
@@ -624,7 +617,7 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="card">
-              <InsightCard title={"Link Attribution · " + linkData.period} body={timeRange === "7d" ? "60 attributed human clicks over 7 days across named destinations. Homepage drew 48, DDS-PC UES 4, DDS-PC Midtown 4, YouTube 4 — up ~25% week-over-week. Booking links remain underutilized relative to the reach surge; converting that discovery into bookings is the lever to focus on." : "159 attributed human clicks across named destinations over 30 days. Homepage 112, DDS-PC UES 21, DDS-PC Midtown 20, YouTube 6 — up ~27% over the prior 30-day window. Catch-all/untagged and bot traffic (data-center geos, Linux UAs) excluded to keep the picture focused on named, actionable destinations."} severity="info" />
+              <InsightCard title={"Link Attribution · " + linkData.period} body={timeRange === "7d" ? "64 attributed human clicks over 7 days across named destinations — Homepage 50, DDS-PC Midtown 8, DDS-PC UES 6 (the /* wildcard at 383 and data-center/bot traffic excluded). Booking-link clicks (Midtown + UES = 14) are the conversion signal worth watching. Click volume spiked Jun 9–10, aligning with the publication post and Knicks story, though most raw volume that day was bot traffic on the wildcard." : "211 attributed human clicks across named destinations over 30 days — Homepage 153, DDS-PC Midtown 28, DDS-PC UES 25, YouTube 5 (/* wildcard at 1,212 and bot traffic excluded). The two booking links are near-even (Midtown 28 / UES 25). Geo this cycle was heavily data-center/bot (City of London, Doha, Frankfurt); cities shown are cleaned to real human traffic — NYC and Brooklyn lead. No DDS-PC links appeared in the NYCDS export, so nothing merged in."} severity="info" />
             </div>
           </>
         )}
@@ -767,7 +760,7 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="card">
-              <InsightCard title={"Website + Search · " + (timeRange === "7d" ? "7-day" : "30-day")} body={timeRange === "7d" ? "339 sessions Jun 1–7. Direct 61.9% (210), Google 31.6% (107) on a desktop-heavy week (Desktop 76.7%, Mobile 22.7%). Home drew 293 views, then Accidentally Blew Nose (23) and Our Doctors (21). Search (28-day, May 10 – Jun 6): 516 clicks from 39.7K impressions, 1.30% CTR, avg position ~22.8. Mobile ranks far better than desktop in search (14.4 vs 29.4 position) — mobile-first indexing favors this site." : "1,434 sessions over 30 days. Direct 47.0% (674), Google 45.5% (653). Desktop 65.0%, Mobile 34.1%. Top page is Home (853), then Signs of Failed Gum Graft (189) and Dry Socket with Bone Graft (107). In search, Dry Socket leads content pages at 103 clicks (3.2% CTR); the homepage converts best at 8.1% CTR. Brand queries (Edgard / Dr el chaar variations) cluster at 11–23% CTR."} severity="info" />
+              <InsightCard title={"Website + Search · " + (timeRange === "7d" ? "7-day" : "30-day")} body={timeRange === "7d" ? "250 sessions Jun 8–14. Direct 56.4% (141), Google 39.6% (99) on a desktop-heavy week (Desktop 79.7%, Mobile 19.8%). Home drew 268 landing views; clinical pages (doctors-and-periodontists, accidentally-blew-nose) trail. Search (7-day, Jun 7–13): 61 clicks from 1,021 impressions, ~6% CTR, avg position ~12 — every top query is a Dr. El Chaar name variant, and the homepage took 49 of 61 clicks. Mobile ranks far better than desktop (pos 5.1 vs 16.5)." : "1,221 sessions over 30 days. Direct 51.2% (625), Google 42.6% (520). Desktop 69.8%, Mobile 29.5%. Beyond Home, the clinical long-tail is the SEO engine — Signs of Failed Gum Graft (124), Dry Socket with Bone Graft (64), Accidentally Blew Nose (60), Sinus Lift Pain (30) all pull real landing traffic. ⚠ The 404 page is the #2 page by views (274) — a likely broken-link/redirect issue worth a crawl. Search remains brand-dominant; the clinical pages rank too low (pos 8–57) to convert their impressions."} severity="info" />
             </div>
           </>
         )}
@@ -812,7 +805,7 @@ export default function Dashboard() {
                 </svg>
               </div>
               <div style={{ marginTop: 8, padding: "10px 14px", background: "rgba(110,139,151,0.12)", borderRadius: 10, border: "1px solid rgba(110,139,151,0.25)" }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: "#6E8B97" }}>{timeRange === "7d" ? "▲ Daily views spiked Jun 4–5 (1,263 then 2,526) as the two NYC Dental Smiles collab Reels landed — the clearest publish-day lift in months." : "⚡ The Jun 4 Authenticity Reel (2,137 IG views) and May 13 Andrés Reel (1,821) anchor the 30-day window. Reels drive the month's reach; weeks without them compress it. Best posting: 9 AM – 2 PM EST."}</span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: "#6E8B97" }}>{timeRange === "7d" ? "▲ Views concentrated Jun 9–11 as the Co-Authors publication post and Knicks story landed — the clearest publish-day lift of the week. No new Reels ran. (Daily shape modeled from posting cadence; native daily-views export pending.)" : "⚡ The Jun 4 Authenticity collab Reel (2,251 IG views) still anchors the 30-day window, with the May 28 Cinzia Dinoi carousel (924) and Jun 9 publication post (922) behind it. Reels drive the month's reach; once the carryover collabs age out, cadence is the gap."}</span>
               </div>
             </div>
 
@@ -892,7 +885,7 @@ export default function Dashboard() {
                       </div>
                     ))}
                     <div style={{ marginTop: 10, padding: "10px 14px", background: "rgba(113,82,98,0.10)", borderRadius: 10, border: "1px solid rgba(113,82,98,0.25)" }}>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: "#715262" }}>{timeRange === "7d" ? "✦ Reels drove 77% of interactions this week — the collab Reels pulled strong follower and non-follower engagement." : "✦ Reels drive ~70% of interactions over 30 days — the dominant engagement format when published"}</span>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: "#715262" }}>{timeRange === "7d" ? "✦ Posts and Stories drove interactions this week (44% / 35%) — no new Reels ran. The Knicks story's reply/share burst lifted the Stories share." : "✦ Reels drive ~57% of interactions over 30 days — the dominant engagement format, carried by the Jun 4–5 collab episodes"}</span>
                     </div>
                   </div>
                 </div>
@@ -915,7 +908,7 @@ export default function Dashboard() {
                       </div>
                     ))}
                     <div style={{ marginTop: 10, padding: "10px 14px", background: "rgba(136,163,174,0.12)", borderRadius: 10, border: "1px solid rgba(136,163,174,0.25)" }}>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: "#6E8B97" }}>{timeRange === "7d" ? "✦ 53% of views from non-followers — discovery rebounded as the collab Reels distributed to new audiences" : "✦ ~50% of views from non-followers over 30 days — balanced follower / non-follower distribution"}</span>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: "#6E8B97" }}>{timeRange === "7d" ? "✦ 76% of views from existing followers — with no new Reels, discovery stayed within the follower graph. Reels are the lever to widen it." : "✦ ~45% of views from non-followers over 30 days — the carryover collab Reels kept distribution reaching new audiences"}</span>
                     </div>
                   </div>
                 </div>
@@ -938,7 +931,7 @@ export default function Dashboard() {
                   ))}
                 </div>
                 <div className="alert-box danger-bg" style={{ marginTop: 14, padding: "10px 14px", background: "rgba(190,90,90,0.10)", borderRadius: 10, border: "1px solid rgba(190,90,90,0.25)" }}>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: "#BE5A5A" }}>{timeRange === "7d" ? "▲ Just 3 saves and 13 shares this week despite the reach surge — saves remain the biggest lever to improve" : "▲ 8 saves and 22 shares over 30 days — bookmark-worthy formats remain the engagement lever to grow"}</span>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "#BE5A5A" }}>{timeRange === "7d" ? "▲ Just 2 saves and 12 shares this week — saves remain the biggest lever, and the natural fit for EEC's authority content (turn credentials into save-worthy carousels)" : "▲ 8 saves and 22 shares over 30 days — bookmark-worthy formats remain the engagement lever to grow"}</span>
                 </div>
               </div>
             </div>
@@ -947,7 +940,7 @@ export default function Dashboard() {
               {socialData.posts.filter(p => p.type === "Reel").length === 0 ? (
                 <div style={{ padding: "20px 16px", background: "rgba(190,90,90,0.08)", borderRadius: 12, border: "1px solid rgba(190,90,90,0.20)", textAlign: "center" }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: "#BE5A5A", marginBottom: 4 }}>No Reels published this window</div>
-                  <div style={{ fontSize: 12, color: "#9B8E94" }}>No Reels in this window. Toggle to 30-day view to see Reel performance over the broader window.</div>
+                  <div style={{ fontSize: 12, color: "#9B8E94" }}>Posts and Stories carried the week. Toggle to 30-day to see the Jun 4–5 collaboration Reels that anchor the broader window.</div>
                 </div>
               ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -969,8 +962,8 @@ export default function Dashboard() {
             </div>
 
             <div className="card">
-              <InsightCard title={"Social Intelligence · " + socialData.period} body={timeRange === "7d" ? "5,012 views reaching 1,698 accounts (+208.7% WoW — the strongest reach week in months). Views ran 53% non-follower, a healthy discovery skew. 212 total interactions, up from 37. Two collaboration Reels with NYC Dental Smiles drove it: Jun 4 'Authenticity in Dentistry' (2,137 IG views, 1,211 reach, 10s avg watch) and Jun 5 'Is Dentistry Losing Its Soul?' (498 IG views, 8s). 5 Stories at ~85% completion. Net follower growth +5 (7 follows, 2 unfollows)." : "8,658 content views across 11 posts. Top performer: the Jun 4 Authenticity Reel — 2,137 IG views, 1,211 reach, 122 engagements (62% skip). The May 13 Andrés 'Made with Identity' Reel held strong at 1,821 views. Reels accounted for ~64% of content views despite being under half the posts — the discovery engine when they publish. 30-day reach and account views are estimated from content data."} severity="info" />
-              <InsightCard title="Key Insight" body={timeRange === "7d" ? "The Reel cadence returned — and reach answered immediately, up 208.7% to 1,698 accounts. The two NYC Dental Smiles collaboration Reels did the work, with the Jun 4 episode promo reaching 1,211 accounts alone. The lever now is consistency: holding a 2–3 Reel/week cadence is what turns a strong week into a sustained trend. Skip rates (62–72%) are the next thing to tighten." : "The 30-day arc confirms it: Reels are the reach engine. When they publish — the Jun 4 Authenticity Reel (2,137 views) and May 13 Andrés Reel (1,821) — reach and engagement climb; quiet weeks compress them. The NYC Dental Smiles collaboration format is the standout, pairing podcast guests with co-posted Reels. Cadence is the lever: consistent Reels sustain the gains."} severity="success" />
+              <InsightCard title={"Social Intelligence · " + socialData.period} body={timeRange === "7d" ? "2,714 views reaching 621 accounts (−63.4% WoW as reach normalized off last week's collaboration spike). 95 interactions at 15.3% ER — well above the 5% benchmark, but 79.5% from existing followers and 76% of views from followers. No new Reels or collabs ran. The week's anchor was owned authority content: 'Dr. El Chaar Co-Authors Long-Term Study' (922 IG views / 321 reach, 1,249 incl. the Facebook crosspost), with the 'Go Knicks' story driving the engagement burst (13 interactions). Net follower growth +2 (6 follows, 4 unfollows)." : "9,169 content views across the May 15 – Jun 15 window (account-level totals estimated from content exports — native 30-day Insights held). Top performer: the Jun 4 'Why Authenticity Matters' collab Reel — 2,251 IG views, 1,267 reach, 10.1% ER. The May 28 Cinzia Dinoi carousel (924) and Jun 9 publication post (922) follow. Reels account for ~36% of views from just three posts — the discovery engine, all carryover from the Jun 4–5 collabs."} severity="info" />
+              <InsightCard title="Key Insight" body={timeRange === "7d" ? "Reach normalized as expected after the collaboration spike — but EEC didn't go quiet. An owned credential post (the Pinhole Surgical Technique 14.5-year study) carried the week at 922 IG views, extended by its Facebook crosspost, and engagement held strong at 15.3%. What's working: authority and publication content engages the owned audience deeply, and the practice's research output is a renewable content lane. What's not: with no new Reels, discovery stayed inside the follower graph (76% of views) and reach has no engine to widen it. Two levers: (1) productize the authority content into a recurring publication/case-study lane, and (2) rebuild a 2–3 Reel/week cadence — the only format that reliably reaches new accounts." : "The 30-day arc shows the dependency clearly: reach leans almost entirely on two carryover collaboration Reels (Jun 4–5). When they age out, there's nothing behind them. Authority posts and carousels engage the existing audience well — the publication post and Cinzia Dinoi feature both performed — but they circulate within the follower graph. The NYC Dental Smiles collaboration format remains the standout reach lever. Cadence is the constraint: pairing renewable authority content with a steady Reel schedule is how EEC turns deep engagement into audience growth."} severity="success" />
             </div>
           </>
         )}
@@ -1069,7 +1062,7 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="card">
-              <InsightCard title="Podcast Intelligence" body="4,719 all-time downloads across 48 episodes — 281 to the 5K milestone, 2 episodes to the 50-ep badge. 18 downloads last 7 days, 111 last 30, 486 last 90. Latest episode 'Why Authenticity Matters in Dentistry' (May 30, feat. Dr. Laura Koo Min Chee): 11 downloads in its first 2 days. Web Browser leads listening apps at 46% — unusual for podcasts, suggesting site/embed plays outpace dedicated apps. Apple Podcasts 29%, Spotify 10%. Apple ecosystem dominates devices: iPhone 49% + Mac 23% = 72%. Mobile 53% of all listens. NYC metro leads cities (New York 28, Brooklyn 8)." severity="success" />
+              <InsightCard title="Podcast Intelligence" body="4,730 all-time downloads across 48 episodes — 270 to the 5K milestone, 2 episodes to the 50-ep badge. Velocity is low and softening: 3 downloads last 7 days, 91 last 30, 431 last 90 (down from 470 the prior cycle). The catalog leans on evergreen clinical episodes — Allograft w/ Dr. Brad McAllister (301), Future of Dental Industry w/ Aurelio Sahagun–Straumann (195), and the Periodontal Diagnosis series (194 / 184). Web Browser leads listening at 46% — unusual for podcasts, suggesting site/embed plays outpace dedicated apps. Apple Podcasts 30%, Spotify 11%. NYC metro leads cities (New York 29, Brooklyn 8). With no new episode this cycle, downloads are coasting on the back catalog — a fresh release is the lever to restart momentum." severity="success" />
             </div>
           </>
         )}
@@ -1106,8 +1099,8 @@ export default function Dashboard() {
             </div>
             <div className="card">
               <div className="card-hd">Audience Intelligence</div>
-              <InsightCard title="High-Value Patient Alignment" body="57% of the audience falls in the 35–54 age range — the prime demographic for implants, cosmetic dentistry, and comprehensive periodontal treatment. This represents the highest lifetime patient value segment." severity="success" />
-              <InsightCard title="Gender Balance Opportunity" body="At 53% male, the audience skews slightly toward men. Dental practices typically see 60%+ female patients. Test content around cosmetic dentistry, Invisalign, and wellness-focused oral health to balance the demographic." severity="info" />
+              <InsightCard title="High-Value Patient Alignment" body="58% of the audience falls in the 35–54 age range (37% aged 35–44) — the prime demographic for implants, perio, and comprehensive restorative treatment, and a strong match for EEC's authority and publication content. This is the highest lifetime-value patient segment." severity="success" />
+              <InsightCard title="Gender Balance" body="At 52% male / 48% female, the audience is nearly balanced. The 35–44 cohort is the largest single segment. The credential and case-study content resonates with a clinically-engaged, decision-stage audience — pair it with clear consult/booking CTAs to convert that trust into appointments." severity="info" />
             </div>
           </>
         )}
