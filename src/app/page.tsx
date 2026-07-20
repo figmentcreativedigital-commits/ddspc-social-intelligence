@@ -3,21 +3,21 @@ import { useState, useEffect } from "react";
 
 // Fallback data — used while loading or if Sheets API fails
 const FALLBACK_DATA = {
-  client: { name: "EEC", fullName: "Edgard El Chaar, DDS, PC", period: "July 6 – July 12, 2026" },
+  client: { name: "EEC", fullName: "Edgard El Chaar, DDS, PC", period: "July 13 – July 19, 2026" },
   kpi: {
-    followers: { value: 3177, change: 17, label: "Followers" },
-    reach: { value: 8253, label: "Reach" },
-    views: { value: 11850, label: "Total Views" },
-    engagementRate: { value: 1.6, label: "Engagement Rate", suffix: "%" },
-    engagements: { value: 130, label: "Engagements" },
-    watchTime: { value: "—", label: "Watch Time" },
+    followers: { value: 3181, change: 7, label: "Followers" },
+    reach: { value: 5460, label: "Reach" },
+    views: { value: 6183, label: "Total Views" },
+    engagementRate: { value: 2.0, label: "Engagement Rate", suffix: "%" },
+    engagements: { value: 111, label: "Engagements" },
+    watchTime: { value: "5.2s", label: "Watch Time" },
   },
   posts: [
-    { id: 1, title: "Your Smile Is Just One Part of Your Health · Dr. Dinoi (Reel)", type: "Reel", views: 1202, reach: 928, likes: 23, comments: 0, saves: 1, shares: 1, isTop: true, igPostUrl: "https://www.instagram.com/reel/DalQX81hr1D/" },
-    { id: 2, title: "The Best Care Goes Beyond the Procedure (Reel)", type: "Reel", views: 328, reach: 207, likes: 14, comments: 0, saves: 0, shares: 0, isTop: false, igPostUrl: "https://www.instagram.com/reel/DankehjhoQC/" },
-    { id: 3, title: "Not Every Patient Journey Is Straightforward (Reel)", type: "Reel", views: 303, reach: 223, likes: 7, comments: 0, saves: 0, shares: 0, isTop: false, igPostUrl: "https://www.instagram.com/reel/DaqQKdKBa-_/" },
+    { id: 1, title: "When a Tooth Is Worth Saving · Dr. Vitaliya Sobol (Carousel)", type: "Post", views: 1004, reach: 431, likes: 29, comments: 0, saves: 0, shares: 5, isTop: true, igPostUrl: "" },
+    { id: 2, title: "Before You Add Another Lemon Wedge (Reel)", type: "Reel", views: 348, reach: 240, likes: 10, comments: 0, saves: 0, shares: 1, isTop: false, igPostUrl: "https://www.instagram.com/reel/Da6E3hUBoVD/" },
+    { id: 3, title: "Healthy Smiles Start Below the Surface", type: "Post", views: 315, reach: 171, likes: 5, comments: 0, saves: 0, shares: 2, isTop: false, igPostUrl: "" },
   ] as any[],
-  contentMix: { posts: 0, reels: 86, stories: 14 },
+  contentMix: { posts: 69, reels: 21, stories: 10 },
   audience: {
     gender: { male: 52, female: 48 },
     age: [
@@ -25,84 +25,179 @@ const FALLBACK_DATA = {
       { range: "45-54", pct: 21.3 }, { range: "55-64", pct: 12.8 }, { range: "65+", pct: 6.5 },
     ],
   },
-  viewerSplit: { followers: 18, nonFollowers: 82 },
+  viewerSplit: { followers: 39, nonFollowers: 61 },
 };
 
 type ReportData = typeof FALLBACK_DATA;
 
-function generateInsights(data: ReportData) {
-  const insights: { title: string; body: string; severity: string }[] = [];
-  const opportunities: typeof insights = [];
-  const recommendations: { text: string; priority: string }[] = [];
-  const alerts: typeof insights = [];
+type Insight = { title: string; evidence: string[]; impact: string; action: string; severity: string };
+type Rec = { priority: string; title: string; why: string; outcomes: string[] };
 
-  // Collab Reel reopened discovery — reach and views recovered
-  opportunities.push({
-    title: "Reels Are Back — Reach Held Its Paid-Lifted High",
-    body: `Account reach ran ${data.kpi.reach.value.toLocaleString()} (Metricool avg. reach/day of 1,179 × 7; +79% WoW off last week's 4,620) even as total views normalized to ${data.kpi.views.value.toLocaleString()} from last week's paid-inflated 28,770. The healthy shift this week: three Reels returned to the calendar (zero feed posts), led by the Jul 9 "Your Smile Is Just One Part of Your Health" Reel with Dr. Dinoi (1,202 organic views, 928 reach). Paid distribution is still running underneath — ~${data.viewerSplit.nonFollowers}% of views were non-followers, and paid IG + FB drove ~363 website sessions this month. Reach is the Metricool avg-reach-per-day basis (Profile Growth CSV retired). Ending two straight reel-less weeks is the win; the lever now is holding a 2–3 Reel/week cadence and converting the wide paid-and-reel discovery window into follows and saves.`,
-    severity: "success"
-  });
+function generateInsights(data: ReportData) {
+  const insights: Insight[] = [];
+  const opportunities: Insight[] = [];
+  const alerts: Insight[] = [];
+  const recommendations: Rec[] = [];
 
   const er = data.kpi.engagementRate.value;
-  if (er >= 8) {
-    insights.push({ title: `Engagement Rate ${er}% — Real, but Paid-Lifted`, body: `${data.kpi.engagements.value} accounts engaged against ${data.kpi.reach.value.toLocaleString()} reached = ${er}% — above the 5% healthcare benchmark. Account-level counts per the locked rule. The durable signals to chase are saves and net follows; pair the reach window with a collab Reel and save-CTAs to bank lasting value from it.`, severity: "success" });
-  } else {
-    insights.push({ title: `Blended ER Compressed to ${er}% — a Reach Story, Not an Engagement Drop`, body: `${data.kpi.engagements.value} accounts engaged against ${data.kpi.reach.value.toLocaleString()} reached = ${er}% blended (account-level counts per the locked rule). The low headline is the denominator, not the content: paid ad reach nearly doubled the reach base this week, which mechanically compresses a blended rate. Organic per-content ER is healthy underneath — the three Reels ran 2.7–6.8% organic ER (the Jul 10 Reel hit 6.8%), in line with the ~3–5% healthcare benchmark. Read blended ER alongside that organic signal rather than on its own.`, severity: "info" });
-  }
+  const reach = data.kpi.reach.value;
+  const eng = data.kpi.engagements.value;
 
-  // Adaptive content-mix language (sorts to find leader)
-  const sortedMix = [
-    { name: "Posts", val: data.contentMix.posts },
-    { name: "Reels", val: data.contentMix.reels },
-    { name: "Stories", val: data.contentMix.stories },
-  ].sort((a, b) => b.val - a.val);
-  insights.push({
-    title: "Reels Were the Owned Output This Week",
-    body: `${sortedMix[0].name} led at ${sortedMix[0].val}% of published-content views, followed by ${sortedMix[1].name} (${sortedMix[1].val}%) and ${sortedMix[2].name} (${sortedMix[2].val}%) — a full flip from the carousel-only prior week, with no feed posts published this window. Three Reels (1,833 combined organic views) and four Stories (287 impressions) were the owned output; the account's ${data.kpi.views.value.toLocaleString()} total views still carry a large paid layer on top. The 30-day view is anchored by the Jun 15 concierge collab Reel — collaboration and personal-care Reels are the organic reach engine, and getting three out this week is exactly the cadence to keep.`,
-    severity: "info"
+  alerts.push({
+    title: "A quarter of site traffic is landing on a 404",
+    evidence: [
+      "404 page drew 164 views this week \u2014 3rd most-viewed page",
+      "526 views over 30 days, more than Our Doctors (211)",
+      "Booking-link clicks fell to 7 while homepage clicks tripled",
+      "Paid is sending 29% of sessions into this funnel",
+    ],
+    impact: "Paid budget and social clicks are being spent on a broken destination.",
+    action: "Audit redirects today \u2014 likely a changed booking or locations URL.",
+    severity: "danger",
   });
 
-  const totalSaves = data.posts.reduce((s, p) => s + p.saves, 0);
-  if (totalSaves < 3) {
-    alerts.push({ title: "Saves Still the Missing Signal", body: `Just ${totalSaves} save${totalSaves === 1 ? "" : "s"} on owned content this week — across all three Reels, despite a reach window of ${data.kpi.reach.value.toLocaleString()}. Saves are the #1 algorithmic signal of lasting value and the natural fit for EEC's authority positioning. Reach reached thousands of non-followers this week; converting even a fraction into saved, bookmark-worthy content — a save-CTA on the personal-care Reels, or authority carousels like '5 Signs of a Failed Graft' and 'What to Expect After a Sinus Lift' with a 'Save this before your consult' prompt — is how you turn wide reach into durable signal.`, severity: "warning" });
-  }
-
-  // Reel cadence
+  // ---------- KEY INSIGHTS ----------
   insights.push({
-    title: "Reels Returned — Cadence Restored",
-    body: `Three Reels shipped this week, ending two straight reel-less weeks. Reels are the organic format that reaches new accounts, and they carried the owned output here: the Jul 9 "Your Smile" Reel with Dr. Dinoi (1,202 views, 928 reach) led, with two more personal-care Reels behind it. Paid distribution still lifts account reach to ${data.kpi.reach.value.toLocaleString()}, but the earned layer is back underneath it. The job now is to hold this 2–3 Reel/week cadence — and line up the next NYC Dental Smiles collab Reel (the Jun 15 concierge Reel still anchors the 30-day window) to widen discovery further.`,
-    severity: "success"
+    title: "Engagement rate rose while reach fell \u2014 the audience got better, not bigger",
+    evidence: [
+      `Engagement rate ${er}% \u2014 up from 1.6%`,
+      `Reach ${reach.toLocaleString()} \u2014 down 34%`,
+      "Views 6,183 \u2014 down 48%",
+      `${eng} account-level interactions`,
+    ],
+    impact: "Low-quality reach fell away. The engaged core held.",
+    action: "Hold the format mix; do not chase reach with volume.",
+    severity: "success",
   });
 
-  // Viewer split
-  if (data.viewerSplit.nonFollowers > 50) {
-    opportunities.push({ title: "A Wide Discovery Window — Reels + Paid", body: `${data.viewerSplit.nonFollowers}% of viewers were non-followers this week — the widest non-follower share in the file, driven by both the returning Reels and continued paid distribution pushing content well outside the follower graph. That's a real discovery window: the challenge is capturing it. Follow-prompts and save-CTAs on the Reels, plus booking-link stickers, convert borrowed reach into owned audience — the +17 net follows this week is a start, but 82% non-follower views should be converting harder.`, severity: "success" });
-  } else {
-    opportunities.push({
-      title: "Discovery Narrowed Without a Reel",
-      body: `Non-follower share was an estimated ${data.viewerSplit.nonFollowers}% of views this week — more follower-heavy than the Reel-and-paid weeks. Reels and collaborations are the proven reset to push distribution outside the follower graph again; the next collab Reel is the single highest-leverage item on the calendar.`,
-      severity: "warning"
-    });
-  }
+  insights.push({
+    title: "Follower share of views nearly doubled",
+    evidence: [
+      `Followers now ${data.viewerSplit.followers}% of views \u2014 up from 18%`,
+      "2,332 follower views vs 3,678 non-follower",
+      "Net +7 followers on a low-publish week",
+      "Reach split still 649 non-follower vs 106 follower",
+    ],
+    impact: "The account is converting reach into owned audience.",
+    action: "Publish for the followed audience, not the algorithm.",
+    severity: "success",
+  });
 
-  insights.push({ title: "Brand-Search Dependency on Google", body: `Fresh 30-day GSC this cycle (edgardelchaar.com, Jun 12–Jul 11): 161 clicks on 2,565 impressions at 6.28% CTR, avg position 10.8. Every top query is a Dr. El Chaar name variant — "edgard el chaar" leads (15 clicks, 21.7% CTR, pos 1.2), "dr el chaar" follows (12 clicks), and the homepage takes 33 of those clicks. The clinical long-tail still ranks too low to convert: "sinus lift recovery experience" sat at position 21 with 44 impressions and zero clicks, and "types of bone graft" ranks deep. Those pages are the non-brand SEO upside — internal links and on-page work to climb.`, severity: "info" });
+  insights.push({
+    title: "Carousels now carry the account",
+    evidence: [
+      `Posts took ${data.contentMix.posts}% of organic views vs Reels ${data.contentMix.reels}%`,
+      "Dr. Sobol carousel: 1,004 views on 431 reach, 29 likes",
+      "Post interactions 84 of 111 account-level",
+      "Only one Reel published, and it was the weakest of the month",
+    ],
+    impact: "The format that scales here is the carousel, not the Reel.",
+    action: "Shift the ratio toward 2 carousels per Reel.",
+    severity: "info",
+  });
 
-  insights.push({ title: "Mobile Outranks Desktop on Google", body: "GSC (recent window): Mobile ranks at position 3.6 vs Desktop at 5.4 — a ranking advantage on the same content, though Desktop still takes more clicks (27 vs 10). Mobile is the stronger-ranking surface; the upside is converting those better-ranked mobile impressions. Audit mobile Core Web Vitals and keep booking CTAs thumb-reachable. (Device split is from the trailing search window; the full 30-day device breakdown wasn't exported.)", severity: "info" });
+  insights.push({
+    title: "The lone Reel underperformed its own back catalogue",
+    evidence: [
+      "Lemon wedge: 5.2s avg watch, 27.4% view rate",
+      "Dr. Dinoi (Jul 9): 6.7s watch, 38.2% view rate",
+      "Patient journey (Jul 11): 6.6s, 31.8%",
+      "348 views vs a 4-Reel monthly average of 638",
+    ],
+    impact: "Educational tips hold attention less well than doctor-led stories.",
+    action: "Return to doctor-led and patient-story Reels.",
+    severity: "warning",
+  });
 
-  insights.push({ title: "Audience Alignment", body: `Primary audience is 35–44 (${data.audience.age[2].pct}%), ${data.audience.gender.male > 50 ? "slightly male" : "slightly female"} (${data.audience.gender.male > 50 ? data.audience.gender.male : data.audience.gender.female}%). The 35–54 range represents ${data.audience.age[2].pct + data.audience.age[3].pct}% of the audience — the highest-value patient demographic for implants, perio, and elective procedures, and a strong match for EEC's authority/credential content.`, severity: "success" });
+  insights.push({
+    title: "Search is small, precise and almost entirely name-brand",
+    evidence: [
+      "56 clicks on 564 impressions \u2014 9.93% CTR at position 4.9",
+      "30-day: 172 clicks at 7.35% CTR, position 8.6",
+      "Top queries are all variants of \u2018Dr. El Chaar\u2019",
+      "Mobile ranks 3.28 vs desktop 6.35",
+    ],
+    impact: "Reputation search works. Non-brand demand is unclaimed.",
+    action: "Build procedure-question pages to capture non-brand search.",
+    severity: "info",
+  });
 
-  if (data.kpi.followers.change != null && data.kpi.followers.change < 15) {
-    opportunities.push({ title: "Follower Velocity", body: `+${data.kpi.followers.change} net followers this week from an ${data.kpi.reach.value.toLocaleString()}-account reach window. The reach isn't fully translating into roster growth. A clear follow CTA on the Reels, plus the next collab Reel for organic pull, is how a reach spike turns into followers.`, severity: "warning" });
-  }
+  // ---------- OPPORTUNITIES ----------
+  opportunities.push({
+    title: "Booking-link clicks have collapsed",
+    evidence: [
+      "7 booking clicks this week \u2014 UES 4, Midtown 3",
+      "30-day UES fell from 157 to 23",
+      "Human clicks down 29.6% weekly, 83.6% over 30 days",
+      "Homepage absorbed the shift \u2014 34 to 129 clicks",
+    ],
+    impact: "Traffic is landing on the homepage instead of a booking page.",
+    action: "Put location booking links back in Stories and bio.",
+    severity: "danger",
+  });
 
+  opportunities.push({
+    title: "Paid buys cheap reach that does not convert",
+    evidence: [
+      "$209.16 spend \u2192 272 landing-page views at $0.77",
+      "Both ads rank Conversion rate Below average (bottom 35%)",
+      "Ads = 30% of 7-day views but 2.7% of interactions",
+      "\u2018Make it a summer to remember\u2019 costs $0.87 per result",
+    ],
+    impact: "Media delivers. The landing page wastes it.",
+    action: "Add a Lead/Booking event and fix the landing page before raising budget.",
+    severity: "warning",
+  });
+
+  opportunities.push({
+    title: "Saves and comments are effectively zero",
+    evidence: [
+      "0 saves and 0 comments across all three posts",
+      "44 likes and 8 shares carried the week",
+      "30-day totals: 4 saves, 2 comments on 29 pieces",
+    ],
+    impact: "Meta weights saves and comments highest. The account earns neither.",
+    action: "End every carousel on a question and a save prompt.",
+    severity: "warning",
+  });
+
+  opportunities.push({
+    title: "An older carousel resurged and drove the month",
+    evidence: [
+      "30-day account carousel views: 20,630",
+      "All eight posts published in-window total only 7,038",
+      "A single ~8,000-view day landed on Jul 1 with nothing published",
+    ],
+    impact: "Evergreen carousels keep earning long after posting.",
+    action: "Identify the resurging post and build three more like it.",
+    severity: "success",
+  });
+
+  opportunities.push({
+    title: "Instagram promotion measurably drove podcast downloads",
+    evidence: [
+      "\u2018Postgraduate Dentistry\u2019 (pub. Jun 25) took 33 downloads in 30 days \u2014 20% of all 161",
+      "Next-best episode managed 7",
+      "It was promoted twice on Instagram: Jun 27 (1,496 views) and Jul 5 (942)",
+      "Both promos ranked in the month's top five posts",
+    ],
+    impact: "The two channels compound when a single topic runs across both.",
+    action: "Give every new episode a two-post Instagram run.",
+    severity: "success",
+  });
+
+  // ---------- RECOMMENDATIONS ----------
   recommendations.push(
-    { text: "Hold the reel cadence — three Reels this week ended a two-week gap. Keep 2–3 Reels/week on the calendar so organic reach stays repeatable rather than leaning on paid distribution", priority: "high" },
-    { text: "Line up the next NYC Dental Smiles collab Reel — the Jun 15 concierge Reel still anchors the 30-day window; a fresh collab is the proven engine to widen discovery beyond the personal-care Reels", priority: "high" },
-    { text: "Convert the 82%-non-follower discovery window — layer follow-prompts, save-CTAs and booking-link stickers directly on the Reels so the wide reach turns into follows and consults, not just views", priority: "high" },
-    { text: "Convert clinical SEO impressions to clicks — 'sinus lift recovery experience' ranks at position 21 and the bone-graft long-tail deeper, with impressions but zero clicks. Internal links + title/meta work to push them toward page one", priority: "medium" },
-    { text: "Create save-worthy authority content ('5 Signs of a Failed Graft', 'Sinus Lift Recovery, Day by Day') with a 'Save before your consult' CTA — just 1 save this week despite the reach", priority: "medium" },
-    { text: "Refresh a Buzzsprout episode — podcast downloads jumped (43 last 7 days vs 17) but the catalog coasts on evergreen back-episodes; a new release would sustain the momentum", priority: "low" },
+    { priority: "high", title: "Fix the 404s", why: "526 views hit an error page over 30 days while paid drove 29% of sessions \u2014 traffic is being paid for and thrown away.", outcomes: ["Recovered paid traffic", "Restored booking path", "Better conversion ranking"] },
+    { priority: "high", title: "Restore booking-link placement", why: "Booking clicks fell to 7 while homepage clicks tripled \u2014 traffic is arriving without a booking path.", outcomes: ["Recovered booking clicks", "Location-level attribution"] },
+    { priority: "high", title: "Fix the whitening landing page", why: "Paid delivers 272 landing-page views at $0.77, but conversion rate ranks bottom 35%.", outcomes: ["Better return on existing spend", "Measurable bookings"] },
+    { priority: "high", title: "Shift the format ratio toward carousels", why: "Carousels took 69% of organic views and 76% of interactions off two posts.", outcomes: ["Higher engagement rate", "More efficient production"] },
+    { priority: "medium", title: "Pair every episode with two Instagram posts", why: "The one episode promoted twice took 20% of all 30-day downloads; the next best managed 7.", outcomes: ["Higher podcast downloads", "Compounding cross-channel reach"] },
+    { priority: "medium", title: "Return to doctor-led Reels", why: "The one Reel published had the lowest watch time and view rate of the month.", outcomes: ["Longer watch time", "Stronger Reel reach"] },
+    { priority: "medium", title: "Engineer for saves and comments", why: "Zero of both this week, against 44 likes.", outcomes: ["Stronger ranking signal", "Higher durable engagement"] },
+    { priority: "low", title: "Claim non-brand search", why: "Search is high-CTR but almost entirely name queries; procedure demand is unclaimed.", outcomes: ["Long-term organic growth"] },
   );
+
   return { insights, opportunities, recommendations, alerts };
 }
 
@@ -172,207 +267,225 @@ export default function Dashboard() {
   const isIgEmbed = (url: string) => /instagram\.com\/(p|reel)\//i.test(url);
 
   const linkData7d = {
-    period: "July 6 – July 12, 2026", totalClicks: 69,
-    topLinks: [{ path: "Homepage", clicks: 30 }, { path: "DDS-PC UES", clicks: 11 }, { path: "DDS-PC Midtown", clicks: 4 }, { path: "Instagram", clicks: 2 }, { path: "YouTube", clicks: 1 }],
-    trafficSources: [{ source: "Human clicks (named + homepage)", clicks: 69 }, { source: "Bot / datacenter + wildcard (excluded)", clicks: 232 }],
-    topCountries: [{ country: "United States", clicks: 45 }, { country: "Netherlands", clicks: 6 }, { country: "Singapore", clicks: 5 }],
-    topCities: [{ city: "New York City", clicks: 20 }, { city: "Amsterdam", clicks: 6 }, { city: "Singapore", clicks: 5 }],
-    devices: [{ os: "iOS (Mobile Safari)", clicks: 40 }, { os: "Windows / Chrome", clicks: 26 }, { os: "Mac OS X", clicks: 3 }],
+    period: "July 13 – July 19, 2026", totalClicks: 46,
+    topLinks: [{ path: "Homepage", clicks: 38 }, { path: "DDS-PC UES", clicks: 4 }, { path: "DDS-PC Midtown", clicks: 3 }, { path: "Instagram", clicks: 1 }, { path: "YouTube", clicks: 0 }],
+    trafficSources: [{ source: "Human clicks (named + homepage)", clicks: 46 }, { source: "Bot / datacenter + wildcard (excluded)", clicks: 426 }],
+    topCountries: [{ country: "United States", clicks: 27 }, { country: "Netherlands", clicks: 7 }, { country: "Singapore", clicks: 4 }],
+    topCities: [{ city: "Amsterdam", clicks: 6 }, { city: "Hong Kong", clicks: 4 }, { city: "New York City", clicks: 2 }],
+    devices: [{ os: "iOS (Mobile Safari)", clicks: 35 }, { os: "Windows / Chrome", clicks: 9 }, { os: "Mac OS X", clicks: 5 }],
   };
   const linkData30d = {
-    period: "June 13 – July 12, 2026", totalClicks: 576,
-    topLinks: [{ path: "DDS-PC UES", clicks: 157 }, { path: "Homepage", clicks: 34 }, { path: "DDS-PC Midtown", clicks: 23 }, { path: "Instagram", clicks: 8 }, { path: "YouTube", clicks: 4 }],
-    trafficSources: [{ source: "Human clicks (named + homepage)", clicks: 576 }, { source: "Bot / datacenter + wildcard (excluded)", clicks: 1889 }],
-    topCountries: [{ country: "United States", clicks: 33 }, { country: "Singapore", clicks: 24 }, { country: "Netherlands", clicks: 6 }],
-    topCities: [{ city: "New York City", clicks: 33 }, { city: "Singapore", clicks: 24 }, { city: "Brooklyn", clicks: 8 }],
-    devices: [{ os: "Chrome", clicks: 266 }, { os: "Mobile Safari (iOS)", clicks: 138 }, { os: "Safari", clicks: 22 }],
+    period: "June 20 – July 19, 2026", totalClicks: 194,
+    topLinks: [{ path: "Homepage", clicks: 129 }, { path: "DDS-PC Midtown", clicks: 35 }, { path: "DDS-PC UES", clicks: 23 }, { path: "Instagram", clicks: 6 }, { path: "YouTube", clicks: 1 }],
+    trafficSources: [{ source: "Human clicks (named + homepage)", clicks: 194 }, { source: "Bot / datacenter + wildcard (excluded)", clicks: 1825 }],
+    topCountries: [{ country: "United States", clicks: 145 }, { country: "Netherlands", clicks: 20 }, { country: "Singapore", clicks: 19 }],
+    topCities: [{ city: "New York City", clicks: 26 }, { city: "Singapore", clicks: 19 }, { city: "Amsterdam", clicks: 18 }],
+    devices: [{ os: "Mobile Safari (iOS)", clicks: 126 }, { os: "Chrome", clicks: 67 }, { os: "Safari", clicks: 15 }],
   };
   const linkData = timeRange === "7d" ? linkData7d : linkData30d;
 
   const websiteData7d = {
-    period: "July 6 – July 12, 2026",
-    sessions: 575,
+    period: "July 13 – July 19, 2026",
+    sessions: 581,
     topPages: [
-      { page: "/", label: "Home", views: 290 },
-      { page: "/locations", label: "Locations", views: 130 },
-      { page: "/doctors-and-periodontists-at-upper-east-side", label: "Doctors (UES)", views: 18 },
-      { page: "/our-doctors", label: "Our Doctors", views: 10 },
-      { page: "/is-gum-grafting-painful", label: "Is Gum Grafting Painful", views: 8 },
+      { page: "/", label: "Home", views: 282 },
+      { page: "/locations", label: "Locations", views: 188 },
+      { page: "/our-doctors", label: "Our Doctors", views: 30 },
+      { page: "/what-are-the-benefits-of-dental-implants", label: "Benefits of Implants", views: 9 },
+      { page: "/pain-after-gum-graft", label: "Pain After Gum Graft", views: 8 },
     ],
     trafficSources: [
-      { source: "Direct", sessions: 299, pct: 52.0 },
-      { source: "Google", sessions: 113, pct: 19.6 },
-      { source: "Instagram (paid)", sessions: 97, pct: 16.8 },
-      { source: "Facebook (paid)", sessions: 35, pct: 6.1 },
-      { source: "Other", sessions: 31, pct: 5.5 },
+      { source: "Direct", sessions: 284, pct: 48.8 },
+      { source: "Instagram (paid)", sessions: 106, pct: 18.2 },
+      { source: "Google", sessions: 103, pct: 17.7 },
+      { source: "Facebook (paid)", sessions: 63, pct: 10.8 },
+      { source: "Other", sessions: 25, pct: 4.5 },
     ],
     devices: [
-      { device: "Desktop", pct: 62.8 },
-      { device: "Mobile", pct: 37.2 },
+      { device: "Desktop", pct: 60.5 },
+      { device: "Mobile", pct: 39.5 },
       { device: "Tablet", pct: 0.0 },
     ],
     dailyVisitors: [
-      { date: "Jul 6", visitors: 119 },{ date: "Jul 7", visitors: 86 },
-      { date: "Jul 8", visitors: 48 },{ date: "Jul 9", visitors: 99 },
-      { date: "Jul 10", visitors: 85 },{ date: "Jul 11", visitors: 69 },
-      { date: "Jul 12", visitors: 69 },
+      { date: "Jul 13", visitors: 107 },{ date: "Jul 14", visitors: 94 },
+      { date: "Jul 15", visitors: 62 },{ date: "Jul 16", visitors: 65 },
+      { date: "Jul 17", visitors: 72 },{ date: "Jul 18", visitors: 53 },
+      { date: "Jul 19", visitors: 51 },
     ],
     search: {
-      totalClicks: 36, totalImpressions: 574, avgCTR: 6.27, avgPosition: 4.19,
-      note: "GSC Jul 5 – Jul 11 (edgardelchaar.com)",
+      totalClicks: 56, totalImpressions: 564, avgCTR: 9.93, avgPosition: 4.9,
+      note: "GSC Jul 12 – Jul 18 (edgardelchaar.com · one-day lag)",
       topQueries: [
-        { query: "edgard el chaar", clicks: 4, ctr: 25.00, position: 1.12 },
-        { query: "el chaar", clicks: 2, ctr: 14.29, position: 2.00 },
-        { query: "dr edgard el chaar", clicks: 2, ctr: 16.67, position: 5.92 },
-        { query: "dr el chaar", clicks: 1, ctr: 5.00, position: 2.85 },
-        { query: "anamaria castillo", clicks: 1, ctr: 25.00, position: 9.25 },
+        { query: "dr el chaar", clicks: 4, ctr: 20.00, position: 3.20 },
+        { query: "edgar el chaar", clicks: 3, ctr: 33.33, position: 1.78 },
+        { query: "edgard el chaar", clicks: 2, ctr: 4.00, position: 1.20 },
+        { query: "el chaar", clicks: 2, ctr: 22.22, position: 1.78 },
+        { query: "dr. el chaar", clicks: 1, ctr: 12.50, position: 3.38 },
       ],
       topPages: [
-        { page: "Homepage", clicks: 33, impressions: 495, ctr: 6.67 },
-        { page: "Doctors & Periodontists (UES)", clicks: 3, impressions: 88, ctr: 3.41 },
-        { page: "Locations", clicks: 1, impressions: 103, ctr: 0.97 },
-        { page: "Dental Services", clicks: 0, impressions: 109, ctr: 0.00 },
+        { page: "Homepage", clicks: 46, impressions: 398, ctr: 11.56 },
+        { page: "Our Doctors", clicks: 7, impressions: 271, ctr: 2.58 },
+        { page: "Doctors & Periodontists (UES)", clicks: 3, impressions: 159, ctr: 1.89 },
+        { page: "Locations", clicks: 0, impressions: 88, ctr: 0.00 },
       ],
     },
   };
   const websiteData30d = {
-    period: "June 13 – July 12, 2026",
-    sessions: 1585,
+    period: "June 20 – July 19, 2026",
+    sessions: 1937,
     topPages: [
-      { page: "/", label: "Home", views: 1103 },
-      { page: "/locations", label: "Locations", views: 498 },
-      { page: "/doctors-and-periodontists-at-upper-east-side", label: "Doctors (UES)", views: 68 },
-      { page: "/our-doctors", label: "Our Doctors", views: 39 },
-      { page: "/is-gum-grafting-painful", label: "Is Gum Grafting Painful", views: 31 },
-      { page: "/do-you-need-a-crown-after-a-root-canal", label: "Crown After Root Canal", views: 18 },
-      { page: "/about", label: "About", views: 16 },
+      { page: "/", label: "Home", views: 1155 },
+      { page: "/locations", label: "Locations", views: 681 },
+      { page: "/our-doctors", label: "Our Doctors", views: 67 },
+      { page: "/doctors-and-periodontists-at-upper-east-side", label: "Doctors (UES)", views: 66 },
+      { page: "/is-gum-grafting-painful", label: "Is Gum Grafting Painful", views: 34 },
     ],
     trafficSources: [
-      { source: "Direct", sessions: 822, pct: 51.9 },
-      { source: "Google", sessions: 311, pct: 19.6 },
-      { source: "Instagram (paid)", sessions: 266, pct: 16.8 },
-      { source: "Facebook (paid)", sessions: 97, pct: 6.1 },
-      { source: "Other", sessions: 89, pct: 5.6 },
+      { source: "Direct", sessions: 967, pct: 49.9 },
+      { source: "Instagram (paid)", sessions: 373, pct: 19.3 },
+      { source: "Google", sessions: 345, pct: 17.8 },
+      { source: "Facebook (paid)", sessions: 161, pct: 8.3 },
+      { source: "Other", sessions: 91, pct: 4.7 },
     ],
     devices: [
-      { device: "Desktop", pct: 62.8 },
-      { device: "Mobile", pct: 37.2 },
+      { device: "Desktop", pct: 59.4 },
+      { device: "Mobile", pct: 40.6 },
       { device: "Tablet", pct: 0.0 },
     ],
     dailyVisitors: [
-      { date: "Jun 13", visitors: 14 },{ date: "Jun 18", visitors: 27 },
-      { date: "Jun 23", visitors: 19 },{ date: "Jun 28", visitors: 14 },
-      { date: "Jul 2", visitors: 73 },{ date: "Jul 6", visitors: 119 },
-      { date: "Jul 9", visitors: 99 },{ date: "Jul 12", visitors: 69 },
+      { date: "Jun 20", visitors: 24 },{ date: "Jun 24", visitors: 19 },
+      { date: "Jun 28", visitors: 14 },{ date: "Jul 2", visitors: 73 },
+      { date: "Jul 6", visitors: 119 },{ date: "Jul 10", visitors: 85 },
+      { date: "Jul 14", visitors: 94 },{ date: "Jul 18", visitors: 53 },
     ],
     search: {
-      totalClicks: 161, totalImpressions: 2565, avgCTR: 6.28, avgPosition: 10.81,
-      note: "GSC Jun 12 – Jul 11 (edgardelchaar.com)",
+      totalClicks: 172, totalImpressions: 2339, avgCTR: 7.35, avgPosition: 8.6,
+      note: "GSC Jun 19 – Jul 18 (edgardelchaar.com)",
       topQueries: [
-        { query: "edgard el chaar", clicks: 15, ctr: 21.74, position: 1.23 },
-        { query: "dr el chaar", clicks: 12, ctr: 14.46, position: 2.98 },
-        { query: "dr edgard el chaar", clicks: 7, ctr: 17.95, position: 2.54 },
-        { query: "edgar el chaar", clicks: 5, ctr: 13.89, position: 1.83 },
-        { query: "el chaar dentist", clicks: 5, ctr: 45.45, position: 1.00 },
+        { query: "dr el chaar", clicks: 14, ctr: 16.09, position: 2.25 },
+        { query: "edgard el chaar", clicks: 13, ctr: 13.27, position: 1.26 },
+        { query: "dr edgard el chaar", clicks: 6, ctr: 20.00, position: 3.00 },
+        { query: "edgar el chaar", clicks: 5, ctr: 14.71, position: 2.06 },
+        { query: "el chaar", clicks: 4, ctr: 10.53, position: 1.82 },
       ],
       topPages: [
-        { page: "Homepage", clicks: 33, impressions: 495, ctr: 6.67 },
-        { page: "Doctors & Periodontists (UES)", clicks: 3, impressions: 88, ctr: 3.41 },
-        { page: "Locations", clicks: 1, impressions: 103, ctr: 0.97 },
-        { page: "Dental Services", clicks: 0, impressions: 109, ctr: 0.00 },
+        { page: "Homepage", clicks: 153, impressions: 1684, ctr: 9.09 },
+        { page: "Doctors & Periodontists (UES)", clicks: 9, impressions: 359, ctr: 2.51 },
+        { page: "Our Doctors", clicks: 7, impressions: 271, ctr: 2.58 },
+        { page: "Locations", clicks: 1, impressions: 337, ctr: 0.30 },
       ],
     },
   };
   const websiteData = timeRange === "7d" ? websiteData7d : websiteData30d;
 
   const podcastData = {
-    period: "All Time (as of July 12, 2026)",
-    totalEpisodes: 49, totalDownloads: 4830, periodDownloads: 43,
-    last7Days: 43, last30Days: 100, last90Days: 284,
+    period: "All Time (as of July 19, 2026)",
+    totalEpisodes: 49, totalDownloads: 4899, periodDownloads: 66,
+    last7Days: 66, last30Days: 161, last90Days: 312,
     topEpisodes: [
-      { title: "Allograft & Evolution – Dr. Brad McAllister (S5 E3)", downloads: 302 },
+      { title: "Allograft & Evolution – Dr. Brad McAllister (S5 E3)", downloads: 305 },
       { title: "Future of Dental Industry – Aurelio Sahagun, Straumann (S4 E2)", downloads: 195 },
       { title: "Periodontal Diagnosis – Gingivitis (S1 E2)", downloads: 194 },
       { title: "Periodontal Diagnosis – Periodontitis (S1 E3)", downloads: 185 },
       { title: "Oral and Systemic Health (E1)", downloads: 172 },
     ],
     platforms: [
-      { name: "Spotify", downloads: 1191, pct: 25 },
-      { name: "Web Browser", downloads: 1066, pct: 22 },
-      { name: "Apple Podcasts", downloads: 1055, pct: 22 },
+      { name: "Spotify", downloads: 1194, pct: 24 },
+      { name: "Web Browser", downloads: 1163, pct: 24 },
+      { name: "Apple Podcasts", downloads: 1064, pct: 22 },
       { name: "Buzzsprout Site", downloads: 406, pct: 8 },
       { name: "iVoox", downloads: 333, pct: 7 },
     ],
     topCountries: [
-      { country: "United States", downloads: 3090 },
+      { country: "United States", downloads: 3105 },
+      { country: "India", downloads: 145 },
       { country: "Canada", downloads: 141 },
-      { country: "India", downloads: 139 },
-      { country: "Germany", downloads: 125 },
+      { country: "Germany", downloads: 126 },
       { country: "Russian Federation", downloads: 113 },
     ],
     topCities: [
-      { city: "New York", downloads: 407 },
+      { city: "New York", downloads: 409 },
       { city: "Brooklyn", downloads: 123 },
       { city: "Queens", downloads: 90 },
-      { city: "Frankfurt", downloads: 86 },
-      { city: "Philadelphia", downloads: 62 },
+      { city: "Frankfurt am Main", downloads: 87 },
+      { city: "Philadelphia", downloads: 64 },
     ],
   };
 
   const socialData7d = {
-    period: "July 6 – July 12, 2026",
-    followers: 3177, followerGrowth: 17, follows: 17, unfollows: 0,
-    totalViews: 11850, totalReach: 8253, reachChange: 78.6, totalInteractions: 130,
-    viewSplit: { followers: 18, nonFollowers: 82 },
+    period: "July 13 – July 19, 2026",
+    followers: 3181, followerGrowth: 7, follows: 7, unfollows: 0,
+    totalViews: 6183, totalReach: 5460, reachChange: -33.8, totalInteractions: 111,
+    viewSplit: { followers: 39, nonFollowers: 61 },
     interactionSplit: { followers: 31, nonFollowers: 69 },
-    viewsByType: { reels: 86, posts: 0, stories: 14 },
-    interactionsByType: { reels: 100, posts: 0, stories: 0 },
-    totalLikes: 46, totalComments: 0, totalSaves: 1, totalShares: 1,
-    storyViews: 287, storyCompletion: 86, storyCount: 4,
+    viewsByType: { reels: 21, posts: 69, stories: 10 },
+    interactionsByType: { reels: 20, posts: 78, stories: 2 },
+    totalLikes: 44, totalComments: 0, totalSaves: 0, totalShares: 8,
+    storyViews: 184, storyCompletion: 86, storyCount: 4,
     dailyViews: [
-      { date: "Jul 6", views: 1400 },{ date: "Jul 7", views: 1350 },
-      { date: "Jul 8", views: 1100 },{ date: "Jul 9", views: 2200 },
-      { date: "Jul 10", views: 2100 },{ date: "Jul 11", views: 1750 },
-      { date: "Jul 12", views: 1950 },
+      { date: "Jul 13", views: 1290 },{ date: "Jul 14", views: 840 },
+      { date: "Jul 15", views: 520 },{ date: "Jul 16", views: 380 },
+      { date: "Jul 17", views: 780 },{ date: "Jul 18", views: 690 },
+      { date: "Jul 19", views: 1683 },
     ],
     posts: [
-      { id: 1, title: "Your Smile Is Just One Part of Your Health · Dr. Dinoi", type: "Reel", date: "Jul 9", views: 1202, reach: 928, likes: 23, comments: 0, saves: 1, shares: 1, er: 2.7, skipRate: 0, avgWatch: "", igUrl: "https://www.instagram.com/reel/DalQX81hr1D/", isTop: true },
-      { id: 2, title: "The Best Care Goes Beyond the Procedure", type: "Reel", date: "Jul 10", views: 328, reach: 207, likes: 14, comments: 0, saves: 0, shares: 0, er: 6.8, skipRate: 0, avgWatch: "", igUrl: "https://www.instagram.com/reel/DankehjhoQC/", isTop: false },
-      { id: 3, title: "Not Every Patient Journey Is Straightforward", type: "Reel", date: "Jul 11", views: 303, reach: 223, likes: 7, comments: 0, saves: 0, shares: 0, er: 3.1, skipRate: 0, avgWatch: "", igUrl: "https://www.instagram.com/reel/DaqQKdKBa-_/", isTop: false },
+      { id: 1, title: "When a Tooth Is Worth Saving · Dr. Vitaliya Sobol", type: "Post", date: "Jul 19", views: 1004, reach: 431, likes: 29, comments: 0, saves: 0, shares: 5, er: 7.89, skipRate: 0, avgWatch: "—", igUrl: "", isTop: true },
+      { id: 2, title: "Before You Add Another Lemon Wedge", type: "Reel", date: "Jul 17", views: 348, reach: 240, likes: 10, comments: 0, saves: 0, shares: 1, er: 4.58, skipRate: 0, avgWatch: "5.2s", igUrl: "https://www.instagram.com/reel/Da6E3hUBoVD/", isTop: false },
+      { id: 3, title: "Healthy Smiles Start Below the Surface", type: "Post", date: "Jul 18", views: 315, reach: 171, likes: 5, comments: 0, saves: 0, shares: 2, er: 4.09, skipRate: 0, avgWatch: "—", igUrl: "", isTop: false },
     ],
   };
   const socialData30d = {
-    period: "June 13 – July 12, 2026",
-    followers: 3177, followerGrowth: 30, follows: 30, unfollows: 0,
-    totalViews: 48440, totalReach: 16110, reachChange: 69.9, totalInteractions: 776,
-    viewSplit: { followers: 28, nonFollowers: 72 },
+    period: "June 20 – July 19, 2026",
+    followers: 3181, followerGrowth: 38, follows: 38, unfollows: 0,
+    totalViews: 51430, totalReach: 20130, reachChange: 43.9, totalInteractions: 761,
+    viewSplit: { followers: 29, nonFollowers: 71 },
     interactionSplit: { followers: 31, nonFollowers: 69 },
-    viewsByType: { reels: 33, posts: 56, stories: 11 },
-    interactionsByType: { reels: 38, posts: 62, stories: 0 },
-    totalLikes: 185, totalComments: 2, totalSaves: 3, totalShares: 16,
-    storyViews: 1194, storyCompletion: 86, storyCount: 14,
+    viewsByType: { reels: 13, posts: 81, stories: 6 },
+    interactionsByType: { reels: 13, posts: 82, stories: 5 },
+    totalLikes: 201, totalComments: 2, totalSaves: 4, totalShares: 21,
+    storyViews: 1299, storyCompletion: 86, storyCount: 17,
     dailyViews: [
-      { date: "Jun 13", views: 300 },{ date: "Jun 18", views: 600 },
-      { date: "Jun 23", views: 400 },{ date: "Jun 26", views: 1540 },
-      { date: "Jul 1", views: 8000 },{ date: "Jul 5", views: 2600 },
-      { date: "Jul 9", views: 2200 },{ date: "Jul 12", views: 1600 },
+      { date: "Jun 20", views: 180 },{ date: "Jun 24", views: 420 },
+      { date: "Jun 27", views: 1500 },{ date: "Jul 1", views: 11000 },
+      { date: "Jul 5", views: 1700 },{ date: "Jul 9", views: 2100 },
+      { date: "Jul 14", views: 840 },{ date: "Jul 19", views: 1683 },
     ],
     posts: [
-      { id: 1, title: "Plot Twist: Concierge Dentists · Collab w/ NYC Dental Smiles", type: "Reel", date: "Jun 15", views: 1831, reach: 1053, likes: 28, comments: 1, saves: 1, shares: 2, er: 3.0, skipRate: 60, avgWatch: "8s", igUrl: "https://www.instagram.com/reel/DZnrjSHhL4a/", isTop: true, isCollab: true },
-      { id: 2, title: "Get to Know the Faces Behind Your Care — Team", type: "Post", date: "Jun 26", views: 1537, reach: 504, likes: 35, comments: 0, saves: 0, shares: 3, er: 7.5, skipRate: 0, avgWatch: "", igUrl: "https://www.instagram.com/p/DaD2rTCGS6T/", isTop: false },
-      { id: 3, title: "NEW EPISODE — Postgraduate Dentistry (Podcast Promo)", type: "Post", date: "Jun 27", views: 1435, reach: 593, likes: 21, comments: 0, saves: 1, shares: 4, er: 4.4, skipRate: 0, avgWatch: "", igUrl: "https://www.instagram.com/p/DaEBGU2Bh1J/", isTop: false },
-      { id: 4, title: "Your Smile Is Just One Part of Your Health · Dr. Dinoi", type: "Reel", date: "Jul 9", views: 1202, reach: 928, likes: 23, comments: 0, saves: 1, shares: 1, er: 2.7, skipRate: 0, avgWatch: "", igUrl: "https://www.instagram.com/reel/DalQX81hr1D/", isTop: false },
-      { id: 5, title: "Choosing a Postgraduate Program (Carousel)", type: "Post", date: "Jul 5", views: 863, reach: 453, likes: 27, comments: 0, saves: 0, shares: 2, er: 6.4, skipRate: 0, avgWatch: "", igUrl: "https://www.instagram.com/p/DaTSj0UhvIf/", isTop: false },
-      { id: 6, title: "Learning Never Stops — Provider Education", type: "Post", date: "Jun 18", views: 607, reach: 248, likes: 7, comments: 0, saves: 0, shares: 1, er: 3.2, skipRate: 0, avgWatch: "", igUrl: "https://www.instagram.com/p/DZvOtJXBsn2/", isTop: false },
+      { id: 1, title: "Which Summer Treat Is Toughest? (Carousel)", type: "Post", date: "Jun 26", views: 1612, reach: 512, likes: 35, comments: 1, saves: 1, shares: 4, er: 7.81, skipRate: 0, avgWatch: "—", igUrl: "", isTop: true },
+      { id: 2, title: "Healthy Gums, Healthy Bone", type: "Post", date: "Jun 27", views: 1496, reach: 600, likes: 21, comments: 0, saves: 1, shares: 3, er: 4.17, skipRate: 0, avgWatch: "—", igUrl: "", isTop: false },
+      { id: 3, title: "Your Smile Is Just One Part of Your Health · Dr. Dinoi", type: "Reel", date: "Jul 9", views: 1301, reach: 964, likes: 24, comments: 0, saves: 1, shares: 1, er: 2.70, skipRate: 0, avgWatch: "6.7s", igUrl: "https://www.instagram.com/reel/DalQX81hr1D/", isTop: false },
+      { id: 4, title: "When a Tooth Is Worth Saving · Dr. Vitaliya Sobol", type: "Post", date: "Jul 19", views: 1004, reach: 431, likes: 29, comments: 0, saves: 0, shares: 5, er: 7.89, skipRate: 0, avgWatch: "—", igUrl: "", isTop: false },
+      { id: 5, title: "Is the Name of the School Really What Matters?", type: "Post", date: "Jul 5", views: 942, reach: 474, likes: 29, comments: 1, saves: 1, shares: 3, er: 7.17, skipRate: 0, avgWatch: "—", igUrl: "", isTop: false },
+      { id: 6, title: "Every Recommendation Should Have a Reason", type: "Post", date: "Jul 2", views: 463, reach: 188, likes: 5, comments: 0, saves: 0, shares: 2, er: 3.72, skipRate: 0, avgWatch: "—", igUrl: "", isTop: false },
     ],
   };
   const socialData = timeRange === "7d" ? socialData7d : socialData30d;
+
+  const adsData = {
+    period: "June 20 – July 19, 2026",
+    campaign: "July Whitening Promo (active through Jul 31)",
+    totalSpend: 209.16,
+    impressions: 27821,
+    reach: 20115,
+    activeAds: 2,
+    results: 272,
+    costPerResult: 0.77,
+    pctOfViews: 21.8,
+    pctOfInteractions: 1.3,
+    pctOfViews7d: 30.0,
+    pctOfInteractions7d: 2.7,
+    ads: [
+      { name: "Your best summer accessory", spend: 156.15, impressions: 20526, reach: 13473, results: 211, cpr: 0.74, quality: "Quality Average · Engagement Average · Conversion rate Below average (bottom 35%)" },
+      { name: "Make it a summer to remember", spend: 53.01, impressions: 7295, reach: 6642, results: 61, cpr: 0.87, quality: "Quality Average · Engagement Average · Conversion rate Below average (bottom 35%)" },
+    ],
+  };
 
   const tabs = [
     { id: "overview", label: "Overview", icon: "◉" },
     { id: "social", label: "Social", icon: "◍" },
     { id: "links", label: "Links", icon: "⊞" },
     { id: "website", label: "Website", icon: "◈" },
+    { id: "ads", label: "Paid Ads", icon: "◐" },
     { id: "podcast", label: "Podcast", icon: "◉" },
     { id: "audience", label: "Audience", icon: "◎" },
     { id: "insights", label: "Insights", icon: "✦" },
@@ -385,15 +498,52 @@ export default function Dashboard() {
     info: { bg: "rgba(189,203,206,0.15)", border: "rgba(189,203,206,0.35)", dot: "#88A3AE" },
   };
 
-  function InsightCard({ title, body, severity }: { title: string; body: string; severity: string }) {
-    const s = severityStyle[severity] || severityStyle.info;
-    return (
-      <div style={{ background: s.bg, border: `1px solid ${s.border}`, borderRadius: 14, padding: "18px 22px", marginBottom: 12 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 8 }}>
-          <div style={{ width: 8, height: 8, borderRadius: 99, background: s.dot, flexShrink: 0 }} />
-          <span style={{ fontWeight: 700, fontSize: 13, color: "#715262", letterSpacing: "0.01em" }}>{title}</span>
+  const sevMark: Record<string, string> = { success: "\u25B2", warning: "\u25BC", danger: "\u25CF", info: "\u25C6" };
+  const sevColor: Record<string, string> = { success: "#88A3AE", warning: "#715262", danger: "#BE5A5A", info: "#BDCBCE" };
+
+  function InsightCard({ title, body, evidence, impact, action, severity }: { title: string; body?: string; evidence?: string[]; impact?: string; action?: string; severity: string }) {
+    const sv = severity || "info";
+    if (!evidence) {
+      const s2 = severityStyle[sv] || severityStyle.info;
+      return (
+        <div style={{ background: s2.bg, border: `1px solid ${s2.border}`, borderRadius: 14, padding: "18px 22px", marginBottom: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 8 }}>
+            <div style={{ width: 8, height: 8, borderRadius: 99, background: s2.dot, flexShrink: 0 }} />
+            <span style={{ fontWeight: 700, fontSize: 13, color: "#715262", letterSpacing: "0.01em" }}>{title}</span>
+          </div>
+          <div style={{ fontSize: 13, lineHeight: 1.7, color: "#5C4A53" }}>{body}</div>
         </div>
-        <div style={{ fontSize: 13, lineHeight: 1.7, color: "#5C4A53" }}>{body}</div>
+      );
+    }
+    return (
+      <div className={`ins sev-${sv}`}>
+        <div className="ins-title"><span className="ins-mark" style={{ color: sevColor[sv] }}>{sevMark[sv]}</span><span>{title}</span></div>
+        <div className="ins-label">Evidence</div>
+        <ul className="ins-ev">{evidence.map((e, i) => <li key={i}>{e}</li>)}</ul>
+        {impact && <><div className="ins-label">Business Impact</div><div className="ins-impact">{impact}</div></>}
+        {action && <><div className="ins-label">Recommended Action</div><div className="ins-action">{action}</div></>}
+      </div>
+    );
+  }
+
+  function ExecCard({ eyebrow, tone, metrics, hero, noteLabel, notes }: { eyebrow: string; tone: string; metrics?: { val: string; label: string; delta?: string; dir?: string }[]; hero?: { label: string; title: string; stats: { val: string; label: string }[] }; noteLabel: string; notes: { text: string; tone?: string }[] }) {
+    return (
+      <div className={`exec-card tone-${tone}`}>
+        <div className="exec-eyebrow">{eyebrow}</div>
+        {metrics && (<div className="exec-metrics">{metrics.map((m, i) => (
+          <div key={i} className="exec-metric">
+            <div className="exec-metric-val">{m.val}</div>
+            <div className="exec-metric-label">{m.label}</div>
+            {m.delta && <div className={`exec-metric-delta ${m.dir || "flat"}`}>{m.dir === "up" ? "\u25B2" : m.dir === "down" ? "\u25BC" : "\u2014"} {m.delta}</div>}
+          </div>))}
+        </div>)}
+        {hero && (<div className="exec-hero">
+          <div className="exec-hero-label">{hero.label}</div>
+          <div className="exec-hero-title">{hero.title}</div>
+          <div className="exec-hero-stats">{hero.stats.map((h, i) => <div key={i} className="exec-hero-stat">{h.val} <span>{h.label}</span></div>)}</div>
+        </div>)}
+        <div className="exec-note-label">{noteLabel}</div>
+        <ul className="exec-list">{notes.map((n, i) => <li key={i} className={n.tone || ""}>{n.text}</li>)}</ul>
       </div>
     );
   }
@@ -465,19 +615,54 @@ export default function Dashboard() {
 
             <div className="exec">
               <div className="card-hd">Executive Summary</div>
-              <div className="exec-cols">
-                <div>
-                  <div className="exec-col-title">Discovery</div>
-                  <div className="exec-col-body">Account reach ran {d.kpi.reach.value.toLocaleString()} (avg. reach/day &times; 7; +79% WoW) and views normalized to {d.kpi.views.value.toLocaleString()} on a week that saw <em>three Reels return</em> (zero feed posts). The Jul 9 &ldquo;Your Smile&rdquo; Reel with Dr. Dinoi led owned content at 1,202 views. Paid distribution still runs underneath — an estimated {d.viewerSplit.nonFollowers}% of views were non-followers, and paid IG + FB drove ~363 website sessions this month. Reach is the Metricool avg-reach-per-day basis (Profile Growth CSV retired).</div>
-                </div>
-                <div>
-                  <div className="exec-col-title">Engagement</div>
-                  <div className="exec-col-body">{d.kpi.engagementRate.value}% blended ER with {d.kpi.engagements.value} accounts engaged against {d.kpi.reach.value.toLocaleString()} reach — the low headline is the denominator, not the content: paid reach nearly doubled the reach base, which compresses a blended rate. Organic per-Reel ER stayed healthy (2.7&ndash;6.8%). The durable signals still lag: 1 save and +{d.kpi.followers.change} net follows. With no feed post, 100% of owned interactions came from Reels. 35&ndash;54 = 58% of the audience.</div>
-                </div>
-                <div>
-                  <div className="exec-col-title">Content</div>
-                  <div className="exec-col-body">Owned output was three Reels ({d.contentMix.reels}% of published views) and {socialData.storyCount} Stories — no feed post this window. Fresh 30-day GSC (edgardelchaar.com, Jun 12–Jul 11): 161 clicks at 6.28% CTR, position 11, entirely Dr. El Chaar brand terms; the clinical long-tail (sinus lift, bone graft) ranks at position 21+ with impressions but no clicks. The takeaway: Reels are back after two quiet weeks — holding the cadence and adding the next collab Reel is what keeps discovery earned, not only paid.</div>
-                </div>
+              <div className="exec-grid">
+                <ExecCard
+                  eyebrow="Discovery"
+                  tone="warn"
+                  metrics={[
+                    { val: d.kpi.reach.value.toLocaleString(), label: "Reach", delta: "34%", dir: "down" },
+                    { val: d.kpi.views.value.toLocaleString(), label: "Views", delta: "48%", dir: "down" },
+                    { val: `${d.viewerSplit.nonFollowers}%`, label: "Non-Follower", delta: "21pt", dir: "down" },
+                  ]}
+                  noteLabel="Takeaway"
+                  notes={[
+                    { text: "Reach and views both fell sharply on a low-publish week.", tone: "neg" },
+                    { text: "What fell away was non-follower reach, not engaged audience.", tone: "" },
+                    { text: "Paid still supplies 30% of views at 2.7% of interactions.", tone: "" },
+                  ]}
+                />
+                <ExecCard
+                  eyebrow="Engagement"
+                  tone="pos"
+                  metrics={[
+                    { val: `${d.kpi.engagementRate.value}%`, label: "Eng. Rate", delta: "0.4pt", dir: "up" },
+                    { val: d.kpi.engagements.value.toLocaleString(), label: "Interactions", delta: "15%", dir: "down" },
+                    { val: `${d.viewerSplit.followers}%`, label: "Follower Views", delta: "21pt", dir: "up" },
+                  ]}
+                  noteLabel="Why"
+                  notes={[
+                    { text: "Engagement rate rose even as reach fell \u2014 a better audience, not a bigger one.", tone: "pos" },
+                    { text: "Follower share of views nearly doubled, from 18% to 39%.", tone: "pos" },
+                    { text: "Posts drove 84 of 111 account interactions.", tone: "pos" },
+                    { text: "Saves 0 \u00b7 Comments 0 \u00b7 Shares 8.", tone: "neg" },
+                  ]}
+                />
+                <ExecCard
+                  eyebrow="Content"
+                  tone="neutral"
+                  hero={{
+                    label: "Top Performer",
+                    title: "When a Tooth Is Worth Saving \u00b7 Dr. Vitaliya Sobol",
+                    stats: [{ val: "1,004", label: "views" }, { val: "431", label: "reach" }, { val: "29", label: "likes" }],
+                  }}
+                  noteLabel="Key Notes"
+                  notes={[
+                    { text: `Carousels led at ${d.contentMix.posts}% of organic views; Reels ${d.contentMix.reels}%.`, tone: "pos" },
+                    { text: "The one Reel had the month's weakest watch time at 5.2s.", tone: "neg" },
+                    { text: "Search CTR strong at 9.93%, position 4.9 \u2014 all name-brand.", tone: "pos" },
+                    { text: "Booking-link clicks fell to 7.", tone: "neg" },
+                  ]}
+                />
               </div>
             </div>
 
@@ -750,7 +935,24 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="card">
-              <InsightCard title={"Website + Search · " + (timeRange === "7d" ? "7-day" : "30-day")} body={timeRange === "7d" ? "575 new visitors Jul 6–12, sustaining the early-July climb — traffic peaked at 119 on Jul 6 as the paid push ran. Direct 52.0% (299), Google 19.6% (113), then paid — Instagram 16.8% (97), Facebook 6.1% (35); desktop 63% / mobile 37%. Home drew ~290 landing views, Locations ~130. Fresh GSC (edgardelchaar.com, Jul 5–11): 36 clicks at 6.27% CTR, position 4.2, entirely Dr. El Chaar brand terms — homepage takes 33 clicks. (7-day source/page splits are modeled from the 30-day GA4 export; daily visitor counts are actual.)" : "1,585 sessions over 30 days (1,364 new visitors). Direct 51.9% (822), Google 19.6% (311), then paid IG 16.8% (266) and FB 6.1% (97) — paid social is a much bigger share this cycle. Desktop 63%, Mobile 37%. Beyond Home (1,103), Locations (498), Doctors-UES (68) and the gum-grafting / crown clinical pages lead. GSC (Jun 12–Jul 11): 161 clicks, 6.28% CTR, position 10.8 — brand-dominant; clinical long-tail (sinus lift, bone graft) ranks pos 21+ with impressions but no clicks."} severity="info" />
+              <InsightCard
+                title={"Website + Search \u00b7 " + (timeRange === "7d" ? websiteData.period : websiteData.period)}
+                evidence={timeRange === "7d" ? [
+                  "504 new visitors, 581 sessions \u2014 volume holding",
+                  "Paid social = 29% of sessions (IG 106, FB 63)",
+                  "\u26a0 404 page drew 164 views \u2014 the 3rd most-viewed page",
+                  "Search: 56 clicks at 9.93% CTR, position 4.9",
+                  "Desktop 60.5% / Mobile 39.5%",
+                ] : [
+                  "1,686 new visitors, 1,937 sessions over 30 days",
+                  "Traffic tripled from ~20/day in late June to 70\u2013120/day once ads went live Jul 2",
+                  "\u26a0 404 pages drew 526 views \u2014 more than Our Doctors (211)",
+                  "Search: 172 clicks at 7.35% CTR, position 8.6, all name-brand",
+                  "Spam referrals scrubbed (golbm.com, bitrix24.ru, lucxspace) \u2014 9 sessions",
+                ]}
+                impact="Paid is filling the funnel, but a quarter of arrivals hit a broken URL."
+                action="Audit the 404s first \u2014 fixing them recovers traffic already paid for."
+                severity="danger" />
             </div>
           </>
         )}
@@ -952,13 +1154,131 @@ export default function Dashboard() {
             </div>
 
             <div className="card">
-              <InsightCard title={"Social Intelligence · " + socialData.period} body={timeRange === "7d" ? "11,850 account views reaching ~8,253 (avg. reach/day × 7; +79% WoW) with 130 accounts engaged at 1.6% blended ER — reach kept its paid-lifted high while views normalized off last week's boost peak. The healthy shift: three Reels returned (zero feed posts), led by the Jul 9 'Your Smile' Reel with Dr. Dinoi (1,202 views, 928 reach), with two more personal-care Reels behind it. Organic per-Reel ER ran 2.7–6.8%. Paid still runs underneath (~363 website sessions this month from IG + FB); ~82% of views were non-followers. The gap is conversion — 1 save and +17 follows against a wide reach window. Reach uses the Metricool avg-reach-per-day basis." : "48,440 account views reaching ~16,110 (avg. reach/day × 30) with 776 accounts engaged across Jun 13 – Jul 12, lifted heavily by the Jul 1 paid spike. Top organic performers: the Jun 15 concierge collab Reel (1,831 IG views, 1,053 reach), the 'Get to Know the Faces' team post (1,537 / 504) and the podcast-promo post (1,435 / 593). Posts drove ~62% of interactions and Reels ~38%; ~72% of views were non-followers. Paid and the collab Reel remain the month's reach engines — and organic Reel cadence returned in the final week after two quiet ones."} severity="info" />
-              <InsightCard title="Key Insight" body={timeRange === "7d" ? "A reels-back week with reach holding high. Account reach stayed at ~8,253 (+79% WoW) while views normalized to 11.9K off last week's paid peak — and crucially, three Reels returned after two reel-less weeks. What's working: the Jul 9 'Your Smile' Reel with Dr. Dinoi led owned content (1,202 views, 928 reach); organic per-Reel ER was healthy (2.7–6.8%); the podcast jumped (43 downloads last 7 days vs 17). What's not: the wide 82%-non-follower reach converted to just 1 save and +17 follows, and blended ER reads low (1.6%) because paid inflates the denominator. Two levers: (1) hold the 2–3 Reel/week cadence and layer follow/save CTAs onto the Reels to capture the discovery window, and (2) line up the next NYC Dental Smiles collab Reel so reach keeps widening organically." : "The 30-day arc: reach runs on two engines — the NYC Dental Smiles collaboration Reels (the Jun 15 concierge Reel anchors this window) and paid boosts (the Jul 1 spike), which together drive most discovery, while authority posts and carousels engage the existing audience. This month the paid reliance was visible in the account-view spike, but the encouraging turn is that organic Reel cadence came back in the final week after going quiet. The strategy that works is in the data: collab and personal-care Reels plus paid open the funnel, authority content deepens it. The constraint is consistency — a steady collab + credential cadence, with paid amplifying rather than replacing organic, is how EEC turns reach into durable engagement and growth."} severity="success" />
+              <InsightCard
+                title={"Social Intelligence \u00b7 " + socialData.period}
+                evidence={timeRange === "7d" ? [
+                  "6,183 views on 5,460 reach (780 avg/day \u00d7 7) \u2014 both down sharply",
+                  "111 account-level interactions: Post 84 \u00b7 Reel 22 \u00b7 Ad 3 \u00b7 Story 2",
+                  "Engagement rate 2.03%, up from 1.6% despite the reach drop",
+                  "Follower share of views 39%, up from 18%",
+                  "Seven pieces published \u2014 2 posts, 1 Reel, 4 Stories",
+                ] : [
+                  "51,430 views on 20,130 reach (671 avg/day \u00d7 30)",
+                  "761 account-level interactions: Post 616 \u00b7 Reel 100 \u00b7 Story 35 \u00b7 Ad 10",
+                  "Engagement rate 3.78% across 29 pieces",
+                  "Carousel views 20,630 \u2014 far above the 7,038 published in-window",
+                  "Followers +38; 71% of views from non-followers",
+                ]}
+                impact={timeRange === "7d" ? "A smaller, more engaged audience \u2014 quality up, volume down." : "Evergreen carousels are carrying the account beyond the posting week."}
+                action={timeRange === "7d" ? "Hold the carousel-led mix and restore doctor-led Reels." : "Identify the resurging carousel and build three more like it."}
+                severity={timeRange === "7d" ? "success" : "info"} />
+              <InsightCard
+                title="Key Insight"
+                evidence={[
+                  "Reach \u221234% and views \u221248%, but engagement rate rose to 2.03%",
+                  "Follower share of views nearly doubled to 39%",
+                  "Dr. Sobol carousel: 1,004 views, 431 reach, 29 likes",
+                  "The one Reel logged the month's weakest watch time at 5.2s",
+                  "Booking clicks fell to 7; homepage clicks tripled to 129 over 30 days",
+                ]}
+                impact="EEC traded reach for relevance this week \u2014 the opposite trade to NYCDS. The risk is a booking funnel that no longer has a door."
+                action="Restore booking links in Stories and bio, then rebalance to two carousels per doctor-led Reel."
+                severity="success" />
             </div>
           </>
         )}
 
         {/* PODCAST */}
+        {tab === "ads" && (
+          <>
+            <div className="kpi-row">
+              {[
+                { label: "Total Spend", value: "$209.16", delay: 0 },
+                { label: "Landing-Page Views", value: adsData.results, delay: 80 },
+                { label: "Cost / Result", value: "$0.77", delay: 160 },
+                { label: "Impressions", value: adsData.impressions, delay: 240 },
+                { label: "Paid Reach", value: adsData.reach, delay: 320 },
+              ].map((k, i) => (
+                <div key={i} className="kpi" style={{ animationDelay: `${k.delay}ms` }}>
+                  <div className="kpi-label">{k.label}</div>
+                  <div className="kpi-val">{typeof k.value === "number" ? <AnimatedNumber value={k.value} /> : <span>{k.value}</span>}</div>
+                </div>
+              ))}
+            </div>
+
+            <div className="card"><div className="card-hd">Ad Performance · {adsData.campaign} · {adsData.period}</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+                {adsData.ads.map((a, i) => {
+                  const maxImp = Math.max(...adsData.ads.map(x => x.impressions));
+                  return (
+                    <div key={i} style={{ paddingBottom: 16, borderBottom: i < adsData.ads.length - 1 ? "1px solid var(--border)" : "none" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8, gap: 12 }}>
+                        <span style={{ fontSize: 14, fontWeight: 700, color: "var(--text-heading)" }}>{a.name}</span>
+                        <span className="display-num">${a.spend.toFixed(2)}</span>
+                      </div>
+                      <div style={{ height: 8, background: "var(--bg-warm)", borderRadius: 99, overflow: "hidden", marginBottom: 8 }}>
+                        <div style={{ width: `${(a.impressions / maxImp) * 100}%`, height: "100%", background: i === 0 ? "var(--plum)" : "var(--steel)", borderRadius: 99, transition: "width 1.2s ease" }} />
+                      </div>
+                      <div style={{ display: "flex", gap: 18, flexWrap: "wrap" as const, marginBottom: 6 }}>
+                        {[{ l: "Impressions", v: a.impressions.toLocaleString() }, { l: "Reach", v: a.reach.toLocaleString() }, { l: "Results", v: a.results.toLocaleString() }, { l: "Cost / result", v: "$" + a.cpr.toFixed(2) }].map((m) => (
+                          <div key={m.l}><span style={{ fontSize: 13, fontWeight: 700, color: "var(--plum)" }}>{m.v}</span> <span style={{ fontSize: 11, color: "var(--text-muted)" }}>{m.l}</span></div>
+                        ))}
+                      </div>
+                      <div style={{ fontSize: 11.5, color: "var(--text-muted)", lineHeight: 1.5 }}>{a.quality}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="cols2">
+              <div className="card"><div className="card-hd">Spend Allocation</div>
+                <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
+                  <Donut data={[{ value: 75 }, { value: 25 }]} colors={["#715262", "#88A3AE"]} size={120} stroke={18} />
+                  <div style={{ flex: 1 }}>
+                    {[{ label: "Your best summer accessory", value: 75, color: "#715262" }, { label: "Make it a summer to remember", value: 25, color: "#88A3AE" }].map((item) => (
+                      <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 10, padding: "7px 0" }}>
+                        <div style={{ width: 10, height: 10, borderRadius: 3, background: item.color }} />
+                        <span style={{ flex: 1, fontSize: 13, fontWeight: 500 }}>{item.label}</span>
+                        <span className="display-num">{item.value}%</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="card"><div className="card-hd">Paid Contribution · Native IG</div>
+                <div style={{ display: "flex", gap: 14 }}>
+                  <div className="stat-box" style={{ flex: 1, textAlign: "center" as const, padding: "16px", background: "rgba(113,82,98,0.08)", borderRadius: 12 }}>
+                    <div style={{ fontSize: 26, fontWeight: 700, color: "#715262" }}>{adsData.pctOfViews7d}%</div>
+                    <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4 }}>of Views from ads (7d)</div>
+                  </div>
+                  <div className="stat-box" style={{ flex: 1, textAlign: "center" as const, padding: "16px", background: "rgba(136,163,174,0.10)", borderRadius: 12 }}>
+                    <div style={{ fontSize: 26, fontWeight: 700, color: "#88A3AE" }}>{adsData.pctOfInteractions7d}%</div>
+                    <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4 }}>of Interactions from ads (7d)</div>
+                  </div>
+                </div>
+                <div style={{ marginTop: 14, padding: "10px 14px", background: "rgba(136,163,174,0.12)", borderRadius: 10, border: "1px solid rgba(136,163,174,0.25)" }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "#6E8B97" }}>&#10022; Over 30 days ads carried {adsData.pctOfViews}% of content-type views (8,742 of 40,056) but only {adsData.pctOfInteractions}% of interactions (10 of 761). Paid buys reach; organic earns engagement. &#9888; Per-ad reach is not de-duplicated &mdash; the {adsData.reach.toLocaleString()} total overstates unique people; use impressions.</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="card"><div className="card-hd">Paid Intelligence</div>
+              <InsightCard
+                title="Cheap reach that stalls at the landing page"
+                evidence={[
+                  "$209.16 spend \u2192 272 landing-page views at $0.77",
+                  "Both ads rank Conversion rate Below average (bottom 35%)",
+                  "Quality and engagement rankings sit at Average",
+                  "Ads = 30% of 7-day content views but 2.7% of interactions",
+                ]}
+                impact="The buy delivers volume. The destination does not convert it."
+                action="Add a Lead/Booking event, then fix the whitening landing page before raising budget."
+                severity="warning" />
+            </div>
+          </>
+        )}
+
         {tab === "podcast" && (
           <>
             <div className="kpi-row">
@@ -1052,7 +1372,18 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="card">
-              <InsightCard title="Podcast Intelligence" body="4,830 all-time downloads across 49 episodes — 170 to the 5K milestone, 1 episode to the 50-ep badge. Velocity jumped this cycle: 43 downloads last 7 days (vs 17), 100 last 30, 284 last 90. The catalog leans on evergreen clinical episodes — Allograft w/ Dr. Brad McAllister (302), Future of Dental Industry w/ Aurelio Sahagun–Straumann (195), and the Periodontal Diagnosis series (194 / 185). Recent episodes skew Apple Podcasts 36% / Web Browser 28% / Spotify 16%, played mostly on Apple iPhone (49%) and mobile (53%); the all-time platform totals shown below are carried from the prior pull. NYC metro leads cities (New York 407, Brooklyn 123). No new episode this cycle — the uptick coasts on the back catalog; a fresh release is the lever to sustain it." severity="success" />
+              <InsightCard
+                title="Podcast Intelligence"
+                evidence={[
+                  "4,899 all-time downloads across 49 episodes \u2014 101 from the 5K milestone",
+                  "Velocity climbing: 66 downloads last 7 days (vs 43), 161 last 30, 312 last 90",
+                  "\u2018Postgraduate Dentistry\u2019 (pub. Jun 25) took 33 of the 161 \u2014 next-best managed 7",
+                  "Platform split: Spotify 1,194 \u00b7 Web 1,163 \u00b7 Apple 1,064",
+                  "NYC metro dominates \u2014 New York 409, Brooklyn 123, Queens 90",
+                ]}
+                impact="One new, socially-promoted episode outperformed the entire evergreen catalogue this month."
+                action="Ship a new episode and give it a two-post Instagram run."
+                severity="success" />
             </div>
           </>
         )}
@@ -1111,12 +1442,25 @@ export default function Dashboard() {
             </div>
             <div className="card">
               <div className="card-hd">Strategic Recommendations</div>
-              {engine.recommendations.map((r, i) => (
-                <div key={i} className="rec">
-                  <span className={`rec-badge ${r.priority}`}>{r.priority}</span>
-                  <span style={{ fontSize: 13, lineHeight: 1.6 }}>{r.text}</span>
-                </div>
-              ))}
+              {["high", "medium", "low"].map((pri) => {
+                const items = engine.recommendations.filter((r) => r.priority === pri);
+                if (!items.length) return null;
+                return (
+                  <div key={pri} className="rec-group">
+                    <div className="rec-group-hd">
+                      <span className={`rec-badge ${pri}`}>{pri} priority</span>
+                      <span className="rec-group-count">{items.length} action{items.length > 1 ? "s" : ""}</span>
+                    </div>
+                    {items.map((r, i) => (
+                      <div key={i} className="rec-item">
+                        <div className="rec-title">{r.title}</div>
+                        <div className="rec-why"><strong>Why</strong>{r.why}</div>
+                        <div className="rec-outcomes">{r.outcomes.map((o, j) => <span key={j} className="rec-chip">{o}</span>)}</div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
             </div>
           </>
         )}
