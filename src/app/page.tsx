@@ -43,19 +43,6 @@ function generateInsights(data: ReportData) {
   const reach = data.kpi.reach.value;
   const eng = data.kpi.engagements.value;
 
-  alerts.push({
-    title: "A quarter of site traffic is landing on a 404",
-    evidence: [
-      "404 page drew 164 views this week \u2014 3rd most-viewed page",
-      "526 views over 30 days, more than Our Doctors (211)",
-      "Booking-link clicks fell to 7 while homepage clicks tripled",
-      "Paid is sending 29% of sessions into this funnel",
-    ],
-    impact: "Paid budget and social clicks are being spent on a broken destination.",
-    action: "Audit redirects today \u2014 likely a changed booking or locations URL.",
-    severity: "danger",
-  });
-
   // ---------- KEY INSIGHTS ----------
   insights.push({
     title: "Engagement rate rose while reach fell \u2014 the audience got better, not bigger",
@@ -188,7 +175,6 @@ function generateInsights(data: ReportData) {
 
   // ---------- RECOMMENDATIONS ----------
   recommendations.push(
-    { priority: "high", title: "Fix the 404s", why: "526 views hit an error page over 30 days while paid drove 29% of sessions \u2014 traffic is being paid for and thrown away.", outcomes: ["Recovered paid traffic", "Restored booking path", "Better conversion ranking"] },
     { priority: "high", title: "Restore booking-link placement", why: "Booking clicks fell to 7 while homepage clicks tripled \u2014 traffic is arriving without a booking path.", outcomes: ["Recovered booking clicks", "Location-level attribution"] },
     { priority: "high", title: "Fix the whitening landing page", why: "Paid delivers 272 landing-page views at $0.77, but conversion rate ranks bottom 35%.", outcomes: ["Better return on existing spend", "Measurable bookings"] },
     { priority: "high", title: "Shift the format ratio toward carousels", why: "Carousels took 69% of organic views and 76% of interactions off two posts.", outcomes: ["Higher engagement rate", "More efficient production"] },
@@ -940,19 +926,19 @@ export default function Dashboard() {
                 evidence={timeRange === "7d" ? [
                   "504 new visitors, 581 sessions \u2014 volume holding",
                   "Paid social = 29% of sessions (IG 106, FB 63)",
-                  "\u26a0 404 page drew 164 views \u2014 the 3rd most-viewed page",
+                  "Locations is the top landing page at 188 views",
                   "Search: 56 clicks at 9.93% CTR, position 4.9",
                   "Desktop 60.5% / Mobile 39.5%",
                 ] : [
                   "1,686 new visitors, 1,937 sessions over 30 days",
                   "Traffic tripled from ~20/day in late June to 70\u2013120/day once ads went live Jul 2",
-                  "\u26a0 404 pages drew 526 views \u2014 more than Our Doctors (211)",
+                  "Locations (681) and Home (1,155) absorb most arrivals",
                   "Search: 172 clicks at 7.35% CTR, position 8.6, all name-brand",
                   "Spam referrals scrubbed (golbm.com, bitrix24.ru, lucxspace) \u2014 9 sessions",
                 ]}
-                impact="Paid is filling the funnel, but a quarter of arrivals hit a broken URL."
-                action="Audit the 404s first \u2014 fixing them recovers traffic already paid for."
-                severity="danger" />
+                impact="Paid is filling the funnel; search supplies small but high-intent volume."
+                action="Route paid arrivals to a booking page rather than the homepage."
+                severity="info" />
             </div>
           </>
         )}
@@ -997,7 +983,7 @@ export default function Dashboard() {
                 </svg>
               </div>
               <div style={{ marginTop: 8, padding: "10px 14px", background: "rgba(110,139,151,0.12)", borderRadius: 10, border: "1px solid rgba(110,139,151,0.25)" }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: "#6E8B97" }}>{timeRange === "7d" ? "▲ Account views were steadier this week (~11.9K total) as three Reels carried the owned output — the Jul 9 'Your Smile' Reel with Dr. Dinoi led at 1,202 organic views. Paid distribution still lifts the account total above organic. (Daily shape is estimated — the account-view series isn't exported now that the Profile Growth CSV is retired.)" : "⚡ The Jul 1 paid spike (~8K account views) and the Jun 15 concierge collab Reel (1,831 IG views) anchor the 30-day window. Reels returned in the final week — three shipped — so collab Reels and paid remain the month's reach engines, now with organic cadence back."}</span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: "#6E8B97" }}>{timeRange === "7d" ? "▲ Account views fell to 6,183 (−48%) on a light publishing week — two feed posts and a single Reel. The Jul 19 Dr. Vitaliya Sobol carousel led at 1,004 organic views on 431 reach. Paid still lifts the account total above organic. (Daily shape is estimated — the account-view series isn't exported now that the Profile Growth CSV is retired.)" : "⚡ A ~8K single-day carousel surge around Jul 1 anchors the 30-day window, and it did not come from anything published in-period — the eight in-window posts total 7,038 organic views against 20,630 account-level carousel views. Evergreen carousels are the month's reach engine."}</span>
               </div>
             </div>
 
@@ -1077,7 +1063,7 @@ export default function Dashboard() {
                       </div>
                     ))}
                     <div style={{ marginTop: 10, padding: "10px 14px", background: "rgba(113,82,98,0.10)", borderRadius: 10, border: "1px solid rgba(113,82,98,0.25)" }}>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: "#715262" }}>{timeRange === "7d" ? "✦ With no feed post this week, 100% of owned interactions came from Reels — the 130 account-level engaged accounts read low against a paid-lifted reach base, but the three Reels ran a healthy 2.7–6.8% organic ER." : "✦ Feed posts drove ~62% of interactions over 30 days and Reels ~38% — a more balanced mix than last cycle as Reels returned in the final week; the Jun 15 collab Reel leads the Reel side"}</span>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: "#715262" }}>{timeRange === "7d" ? "✦ Feed posts drove 84 of 111 account-level interactions this week against 22 from the single Reel — carousels now carry the account. Organic per-post ER ran 4.1–7.9%, with the Dr. Sobol carousel strongest at 7.89%." : "✦ Feed posts drove ~82% of interactions over 30 days and Reels ~13% — the mix has tilted decisively toward carousels; four Reels shipped across the window against eight posts"}</span>
                     </div>
                   </div>
                 </div>
