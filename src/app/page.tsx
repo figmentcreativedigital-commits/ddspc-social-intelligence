@@ -13,9 +13,9 @@ const FALLBACK_DATA = {
     watchTime: { value: "5.2s", label: "Watch Time" },
   },
   posts: [
-    { id: 1, title: "When a Tooth Is Worth Saving · Dr. Vitaliya Sobol (Carousel)", type: "Post", views: 1004, reach: 431, likes: 29, comments: 0, saves: 0, shares: 5, isTop: true, igPostUrl: "" },
+    { id: 1, title: "When a Tooth Is Worth Saving · Dr. Vitaliya Sobol (Carousel)", type: "Post", views: 1004, reach: 431, likes: 29, comments: 0, saves: 0, shares: 5, isTop: true, igPostUrl: "https://www.instagram.com/p/Da-vqkPmRRE/" },
     { id: 2, title: "Before You Add Another Lemon Wedge (Reel)", type: "Reel", views: 348, reach: 240, likes: 10, comments: 0, saves: 0, shares: 1, isTop: false, igPostUrl: "https://www.instagram.com/reel/Da6E3hUBoVD/" },
-    { id: 3, title: "Healthy Smiles Start Below the Surface", type: "Post", views: 315, reach: 171, likes: 5, comments: 0, saves: 0, shares: 2, isTop: false, igPostUrl: "" },
+    { id: 3, title: "Healthy Smiles Start Below the Surface", type: "Post", views: 315, reach: 171, likes: 5, comments: 0, saves: 0, shares: 2, isTop: false, igPostUrl: "https://www.instagram.com/p/Da6OUvshLF6/" },
   ] as any[],
   contentMix: { posts: 69, reels: 21, stories: 10 },
   audience: {
@@ -429,9 +429,9 @@ export default function Dashboard() {
       { date: "Jul 19", views: 1683 },
     ],
     posts: [
-      { id: 1, title: "When a Tooth Is Worth Saving · Dr. Vitaliya Sobol", type: "Post", date: "Jul 19", views: 1004, reach: 431, likes: 29, comments: 0, saves: 0, shares: 5, er: 7.89, skipRate: 0, avgWatch: "—", igUrl: "", isTop: true },
+      { id: 1, title: "When a Tooth Is Worth Saving · Dr. Vitaliya Sobol", type: "Post", date: "Jul 19", views: 1004, reach: 431, likes: 29, comments: 0, saves: 0, shares: 5, er: 7.89, skipRate: 0, avgWatch: "—", igUrl: "https://www.instagram.com/p/Da-vqkPmRRE/", isTop: true },
       { id: 2, title: "Before You Add Another Lemon Wedge", type: "Reel", date: "Jul 17", views: 348, reach: 240, likes: 10, comments: 0, saves: 0, shares: 1, er: 4.58, skipRate: 0, avgWatch: "5.2s", igUrl: "https://www.instagram.com/reel/Da6E3hUBoVD/", isTop: false },
-      { id: 3, title: "Healthy Smiles Start Below the Surface", type: "Post", date: "Jul 18", views: 315, reach: 171, likes: 5, comments: 0, saves: 0, shares: 2, er: 4.09, skipRate: 0, avgWatch: "—", igUrl: "", isTop: false },
+      { id: 3, title: "Healthy Smiles Start Below the Surface", type: "Post", date: "Jul 18", views: 315, reach: 171, likes: 5, comments: 0, saves: 0, shares: 2, er: 4.09, skipRate: 0, avgWatch: "—", igUrl: "https://www.instagram.com/p/Da6OUvshLF6/", isTop: false },
     ],
   };
   const socialData30d = {
@@ -454,7 +454,7 @@ export default function Dashboard() {
       { id: 1, title: "Which Summer Treat Is Toughest? (Carousel)", type: "Post", date: "Jun 26", views: 1612, reach: 512, likes: 35, comments: 1, saves: 1, shares: 4, er: 7.81, skipRate: 0, avgWatch: "—", igUrl: "", isTop: true },
       { id: 2, title: "Healthy Gums, Healthy Bone", type: "Post", date: "Jun 27", views: 1496, reach: 600, likes: 21, comments: 0, saves: 1, shares: 3, er: 4.17, skipRate: 0, avgWatch: "—", igUrl: "", isTop: false },
       { id: 3, title: "Your Smile Is Just One Part of Your Health · Dr. Dinoi", type: "Reel", date: "Jul 9", views: 1301, reach: 964, likes: 24, comments: 0, saves: 1, shares: 1, er: 2.70, skipRate: 0, avgWatch: "6.7s", igUrl: "https://www.instagram.com/reel/DalQX81hr1D/", isTop: false },
-      { id: 4, title: "When a Tooth Is Worth Saving · Dr. Vitaliya Sobol", type: "Post", date: "Jul 19", views: 1004, reach: 431, likes: 29, comments: 0, saves: 0, shares: 5, er: 7.89, skipRate: 0, avgWatch: "—", igUrl: "", isTop: false },
+      { id: 4, title: "When a Tooth Is Worth Saving · Dr. Vitaliya Sobol", type: "Post", date: "Jul 19", views: 1004, reach: 431, likes: 29, comments: 0, saves: 0, shares: 5, er: 7.89, skipRate: 0, avgWatch: "—", igUrl: "https://www.instagram.com/p/Da-vqkPmRRE/", isTop: false },
       { id: 5, title: "Is the Name of the School Really What Matters?", type: "Post", date: "Jul 5", views: 942, reach: 474, likes: 29, comments: 1, saves: 1, shares: 3, er: 7.17, skipRate: 0, avgWatch: "—", igUrl: "", isTop: false },
       { id: 6, title: "Every Recommendation Should Have a Reason", type: "Post", date: "Jul 2", views: 463, reach: 188, likes: 5, comments: 0, saves: 0, shares: 2, er: 3.72, skipRate: 0, avgWatch: "—", igUrl: "", isTop: false },
     ],
