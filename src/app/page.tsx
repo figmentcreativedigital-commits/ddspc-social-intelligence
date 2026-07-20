@@ -31,13 +31,11 @@ const FALLBACK_DATA = {
 type ReportData = typeof FALLBACK_DATA;
 
 type Insight = { title: string; evidence: string[]; impact: string; action: string; severity: string };
-type Rec = { priority: string; title: string; why: string; outcomes: string[] };
 
 function generateInsights(data: ReportData) {
   const insights: Insight[] = [];
   const opportunities: Insight[] = [];
   const alerts: Insight[] = [];
-  const recommendations: Rec[] = [];
 
   const er = data.kpi.engagementRate.value;
   const reach = data.kpi.reach.value;
@@ -173,18 +171,7 @@ function generateInsights(data: ReportData) {
     severity: "success",
   });
 
-  // ---------- RECOMMENDATIONS ----------
-  recommendations.push(
-    { priority: "high", title: "Restore booking-link placement", why: "Booking clicks fell to 7 while homepage clicks tripled \u2014 traffic is arriving without a booking path.", outcomes: ["Recovered booking clicks", "Location-level attribution"] },
-    { priority: "high", title: "Fix the whitening landing page", why: "Paid delivers 272 landing-page views at $0.77, but conversion rate ranks bottom 35%.", outcomes: ["Better return on existing spend", "Measurable bookings"] },
-    { priority: "high", title: "Shift the format ratio toward carousels", why: "Carousels took 69% of organic views and 76% of interactions off two posts.", outcomes: ["Higher engagement rate", "More efficient production"] },
-    { priority: "medium", title: "Pair every episode with two Instagram posts", why: "The one episode promoted twice took 20% of all 30-day downloads; the next best managed 7.", outcomes: ["Higher podcast downloads", "Compounding cross-channel reach"] },
-    { priority: "medium", title: "Return to doctor-led Reels", why: "The one Reel published had the lowest watch time and view rate of the month.", outcomes: ["Longer watch time", "Stronger Reel reach"] },
-    { priority: "medium", title: "Engineer for saves and comments", why: "Zero of both this week, against 44 likes.", outcomes: ["Stronger ranking signal", "Higher durable engagement"] },
-    { priority: "low", title: "Claim non-brand search", why: "Search is high-CTR but almost entirely name queries; procedure demand is unclaimed.", outcomes: ["Long-term organic growth"] },
-  );
-
-  return { insights, opportunities, recommendations, alerts };
+  return { insights, opportunities, alerts };
 }
 
 function AnimatedNumber({ value, suffix = "" }: { value: number | string; suffix?: string }) {
@@ -1425,28 +1412,6 @@ export default function Dashboard() {
                 {engine.opportunities.map((o, i) => <InsightCard key={i} {...o} />)}
                 {engine.alerts.map((a, i) => <InsightCard key={`a${i}`} {...a} />)}
               </div>
-            </div>
-            <div className="card">
-              <div className="card-hd">Strategic Recommendations</div>
-              {["high", "medium", "low"].map((pri) => {
-                const items = engine.recommendations.filter((r) => r.priority === pri);
-                if (!items.length) return null;
-                return (
-                  <div key={pri} className="rec-group">
-                    <div className="rec-group-hd">
-                      <span className={`rec-badge ${pri}`}>{pri} priority</span>
-                      <span className="rec-group-count">{items.length} action{items.length > 1 ? "s" : ""}</span>
-                    </div>
-                    {items.map((r, i) => (
-                      <div key={i} className="rec-item">
-                        <div className="rec-title">{r.title}</div>
-                        <div className="rec-why"><strong>Why</strong>{r.why}</div>
-                        <div className="rec-outcomes">{r.outcomes.map((o, j) => <span key={j} className="rec-chip">{o}</span>)}</div>
-                      </div>
-                    ))}
-                  </div>
-                );
-              })}
             </div>
           </>
         )}
