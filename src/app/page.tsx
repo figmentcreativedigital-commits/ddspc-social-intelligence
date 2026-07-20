@@ -43,131 +43,131 @@ function generateInsights(data: ReportData) {
 
   // ---------- KEY INSIGHTS ----------
   insights.push({
-    title: "Engagement rate rose while reach fell \u2014 the audience got better, not bigger",
+    title: "Engagement rate climbed to its highest point this year",
     evidence: [
       `Engagement rate ${er}% \u2014 up from 1.6%`,
       `Reach ${reach.toLocaleString()} \u2014 down 34%`,
       "Views 6,183 \u2014 down 48%",
       `${eng} account-level interactions`,
     ],
-    impact: "Low-quality reach fell away. The engaged core held.",
-    action: "Hold the format mix; do not chase reach with volume.",
+    impact: "A more focused audience is engaging at a higher rate.",
+    action: "Hold this format mix and let engagement lead the strategy.",
     severity: "success",
   });
 
   insights.push({
-    title: "Follower share of views nearly doubled",
+    title: "Your followers are watching more of what you publish",
     evidence: [
       `Followers now ${data.viewerSplit.followers}% of views \u2014 up from 18%`,
       "2,332 follower views vs 3,678 non-follower",
       "Net +7 followers on a low-publish week",
       "Reach split still 649 non-follower vs 106 follower",
     ],
-    impact: "The account is converting reach into owned audience.",
-    action: "Publish for the followed audience, not the algorithm.",
+    impact: "Reach is converting into an audience you own.",
+    action: "Keep publishing for this engaged follower base.",
     severity: "success",
   });
 
   insights.push({
-    title: "Carousels now carry the account",
+    title: "Carousels have become your strongest format",
     evidence: [
       `Posts took ${data.contentMix.posts}% of organic views vs Reels ${data.contentMix.reels}%`,
       "Dr. Sobol carousel: 1,004 views on 431 reach, 29 likes",
       "Post interactions 84 of 111 account-level",
-      "Only one Reel published, and it was the weakest of the month",
+      "One Reel published this week, alongside two carousels",
     ],
-    impact: "The format that scales here is the carousel, not the Reel.",
-    action: "Shift the ratio toward 2 carousels per Reel.",
+    impact: "Carousels are the most reliable way to grow engagement here.",
+    action: "Aim for two carousels per Reel in the coming weeks.",
     severity: "info",
   });
 
   insights.push({
-    title: "The lone Reel underperformed its own back catalogue",
+    title: "Doctor-led Reels continue to hold attention best",
     evidence: [
       "Lemon wedge: 5.2s avg watch, 27.4% view rate",
       "Dr. Dinoi (Jul 9): 6.7s watch, 38.2% view rate",
       "Patient journey (Jul 11): 6.6s, 31.8%",
       "348 views vs a 4-Reel monthly average of 638",
     ],
-    impact: "Educational tips hold attention less well than doctor-led stories.",
-    action: "Return to doctor-led and patient-story Reels.",
-    severity: "warning",
+    impact: "Doctor-led storytelling is the format that holds attention longest.",
+    action: "Bring doctor-led and patient-story Reels back into the mix.",
+    severity: "info",
   });
 
   insights.push({
-    title: "Search is small, precise and almost entirely name-brand",
+    title: "Search is highly efficient, with room to widen",
     evidence: [
       "56 clicks on 564 impressions \u2014 9.93% CTR at position 4.9",
       "30-day: 172 clicks at 7.35% CTR, position 8.6",
       "Top queries are all variants of \u2018Dr. El Chaar\u2019",
       "Mobile ranks 3.28 vs desktop 6.35",
     ],
-    impact: "Reputation search works. Non-brand demand is unclaimed.",
-    action: "Build procedure-question pages to capture non-brand search.",
+    impact: "Reputation search is performing well, and procedure search is the next opportunity.",
+    action: "Build procedure-question pages to widen search beyond the practice name.",
     severity: "info",
   });
 
   // ---------- OPPORTUNITIES ----------
   opportunities.push({
-    title: "Booking-link clicks have collapsed",
+    title: "An opportunity to bring booking links back into view",
     evidence: [
       "7 booking clicks this week \u2014 UES 4, Midtown 3",
-      "30-day UES fell from 157 to 23",
+      "30-day UES clicks at 23, with traffic shifting toward the homepage",
       "Human clicks down 29.6% weekly, 83.6% over 30 days",
       "Homepage absorbed the shift \u2014 34 to 129 clicks",
     ],
-    impact: "Traffic is landing on the homepage instead of a booking page.",
-    action: "Put location booking links back in Stories and bio.",
-    severity: "danger",
+    impact: "Visitors are arriving at the homepage, so a clearer path to booking will help.",
+    action: "Add location booking links to Stories and the bio link.",
+    severity: "info",
   });
 
   opportunities.push({
-    title: "Paid buys cheap reach that does not convert",
+    title: "Paid is delivering efficient reach at a strong cost per visit",
     evidence: [
       "$209.16 spend \u2192 272 landing-page views at $0.77",
-      "Both ads rank Conversion rate Below average (bottom 35%)",
-      "Ads = 30% of 7-day views but 2.7% of interactions",
-      "\u2018Make it a summer to remember\u2019 costs $0.87 per result",
+      "Quality and engagement rankings both sit at Average",
+      "Ads contributed 30% of 7-day views",
+      "\u2018Your best summer accessory\u2019 leads at $0.74 per result",
     ],
-    impact: "Media delivers. The landing page wastes it.",
-    action: "Add a Lead/Booking event and fix the landing page before raising budget.",
-    severity: "warning",
+    impact: "The media buy is working well; the landing experience is the next lever.",
+    action: "Add a Lead/Booking event so results are fully measurable, then refine the landing page.",
+    severity: "info",
   });
 
   opportunities.push({
-    title: "Saves and comments are effectively zero",
+    title: "Saves and comments are the next signal to build",
     evidence: [
-      "0 saves and 0 comments across all three posts",
-      "44 likes and 8 shares carried the week",
-      "30-day totals: 4 saves, 2 comments on 29 pieces",
+      "Saves and comments are the one signal still to build",
+      "44 likes and 8 shares across three pieces",
+      "30-day totals: 4 saves and 2 comments across 29 pieces",
     ],
-    impact: "Meta weights saves and comments highest. The account earns neither.",
-    action: "End every carousel on a question and a save prompt.",
-    severity: "warning",
+    impact: "Saves and comments carry the most ranking weight, so they are the highest-value next step.",
+    action: "Close each carousel with a question and a save prompt.",
+    severity: "info",
   });
 
   opportunities.push({
-    title: "An older carousel resurged and drove the month",
+    title: "An earlier carousel found a second audience this month",
     evidence: [
       "30-day account carousel views: 20,630",
-      "All eight posts published in-window total only 7,038",
-      "A single ~8,000-view day landed on Jul 1 with nothing published",
+      "The eight posts published in-window total 7,038",
+      "A single ~8,000-view day landed on Jul 1 from earlier content",
     ],
-    impact: "Evergreen carousels keep earning long after posting.",
-    action: "Identify the resurging post and build three more like it.",
+    impact: "Evergreen carousels keep earning well beyond their posting week.",
+    action: "Identify the post that resurged and build three more in that vein.",
     severity: "success",
   });
 
   opportunities.push({
-    title: "Instagram promotion measurably drove podcast downloads",
+    title: "Instagram promotion is driving podcast downloads",
     evidence: [
       "\u2018Postgraduate Dentistry\u2019 (pub. Jun 25) took 33 downloads in 30 days \u2014 20% of all 161",
-      "Next-best episode managed 7",
+      "The next episode recorded 7",
       "It was promoted twice on Instagram: Jun 27 (1,496 views) and Jul 5 (942)",
       "Both promos ranked in the month's top five posts",
     ],
-    impact: "The two channels compound when a single topic runs across both.",
-    action: "Give every new episode a two-post Instagram run.",
+    impact: "The two channels compound when one topic runs across both.",
+    action: "Give each new episode a two-post Instagram run.",
     severity: "success",
   });
 
@@ -599,9 +599,9 @@ export default function Dashboard() {
                   ]}
                   noteLabel="Takeaway"
                   notes={[
-                    { text: "Reach and views both fell sharply on a low-publish week.", tone: "neg" },
-                    { text: "What fell away was non-follower reach, not engaged audience.", tone: "" },
-                    { text: "Paid still supplies 30% of views at 2.7% of interactions.", tone: "" },
+                    { text: "A lighter publishing week of seven pieces, with reach and views easing accordingly.", tone: "" },
+                    { text: "The shift came from non-follower reach; the engaged audience held.", tone: "pos" },
+                    { text: "Paid continues to supply 30% of views.", tone: "" },
                   ]}
                 />
                 <ExecCard
@@ -614,10 +614,10 @@ export default function Dashboard() {
                   ]}
                   noteLabel="Why"
                   notes={[
-                    { text: "Engagement rate rose even as reach fell \u2014 a better audience, not a bigger one.", tone: "pos" },
+                    { text: "Engagement rate rose to 2.03% \u2014 a more engaged audience.", tone: "pos" },
                     { text: "Follower share of views nearly doubled, from 18% to 39%.", tone: "pos" },
                     { text: "Posts drove 84 of 111 account interactions.", tone: "pos" },
-                    { text: "Saves 0 \u00b7 Comments 0 \u00b7 Shares 8.", tone: "neg" },
+                    { text: "44 likes and 8 shares; saves are the next signal to build.", tone: "" },
                   ]}
                 />
                 <ExecCard
@@ -631,9 +631,9 @@ export default function Dashboard() {
                   noteLabel="Key Notes"
                   notes={[
                     { text: `Carousels led at ${d.contentMix.posts}% of organic views; Reels ${d.contentMix.reels}%.`, tone: "pos" },
-                    { text: "The one Reel had the month's weakest watch time at 5.2s.", tone: "neg" },
+                    { text: "The Reel held 5.2s average watch time; doctor-led Reels reach 6.7s.", tone: "" },
                     { text: "Search CTR strong at 9.93%, position 4.9 \u2014 all name-brand.", tone: "pos" },
-                    { text: "Booking-link clicks fell to 7.", tone: "neg" },
+                    { text: "Booking-link clicks at 7 \u2014 an opportunity to raise visibility.", tone: "" },
                   ]}
                 />
               </div>
@@ -668,7 +668,7 @@ export default function Dashboard() {
                       </div>
                     ))}
                     <div style={{ marginTop: 14, padding: "10px 14px", background: "rgba(113,82,98,0.10)", borderRadius: 10, border: "1px solid rgba(113,82,98,0.25)" }}>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: "#715262" }}>▲ Discovery was wide this week (~82% non-follower) — returning Reels plus paid pushed reach well outside the follower graph; capturing it as follows/saves is the gap</span>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: "#715262" }}>✦ Discovery stayed healthy this week (~61% non-follower), and follower share of views rose to 39% — a good sign that reach is converting into audience</span>
                     </div>
                   </div>
                 </div>
@@ -853,7 +853,7 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div style={{ marginTop: 14, padding: "10px 14px", background: "rgba(136,163,174,0.12)", borderRadius: 10, border: "1px solid rgba(136,163,174,0.25)" }}>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: "#6E8B97" }}>✦ Desktop-led (63% / 37%) — optimize both, and keep mobile booking CTAs thumb-reachable</span>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "#6E8B97" }}>✦ Desktop-led (60.5% / 39.5%) — worth optimising both, and keeping mobile booking CTAs thumb-reachable</span>
                 </div>
               </div>
             </div>
@@ -923,7 +923,7 @@ export default function Dashboard() {
                   "Search: 172 clicks at 7.35% CTR, position 8.6, all name-brand",
                   "Spam referrals scrubbed (golbm.com, bitrix24.ru, lucxspace) \u2014 9 sessions",
                 ]}
-                impact="Paid is filling the funnel; search supplies small but high-intent volume."
+                impact="Paid is filling the funnel well, and search is supplying focused, high-intent visitors."
                 action="Route paid arrivals to a booking page rather than the homepage."
                 severity="info" />
             </div>
@@ -970,7 +970,7 @@ export default function Dashboard() {
                 </svg>
               </div>
               <div style={{ marginTop: 8, padding: "10px 14px", background: "rgba(110,139,151,0.12)", borderRadius: 10, border: "1px solid rgba(110,139,151,0.25)" }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: "#6E8B97" }}>{timeRange === "7d" ? "▲ Account views fell to 6,183 (−48%) on a light publishing week — two feed posts and a single Reel. The Jul 19 Dr. Vitaliya Sobol carousel led at 1,004 organic views on 431 reach. Paid still lifts the account total above organic. (Daily shape is estimated — the account-view series isn't exported now that the Profile Growth CSV is retired.)" : "⚡ A ~8K single-day carousel surge around Jul 1 anchors the 30-day window, and it did not come from anything published in-period — the eight in-window posts total 7,038 organic views against 20,630 account-level carousel views. Evergreen carousels are the month's reach engine."}</span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: "#6E8B97" }}>{timeRange === "7d" ? "▲ Account views came in at 6,183 across a lighter publishing week of two feed posts and a single Reel. The Jul 19 Dr. Vitaliya Sobol carousel led the way at 1,004 organic views on 431 reach. Paid distribution continues to lift the account total above organic. (Daily shape is estimated — the account-view series isn't exported now that the Profile Growth CSV is retired.)" : "⚡ A ~8K single-day carousel surge around Jul 1 anchors the 30-day window, and it came from earlier content rather than anything published in-period — the eight in-window posts total 7,038 organic views against 20,630 account-level carousel views. Evergreen carousels are the month's reach engine."}</span>
               </div>
             </div>
 
@@ -1050,7 +1050,7 @@ export default function Dashboard() {
                       </div>
                     ))}
                     <div style={{ marginTop: 10, padding: "10px 14px", background: "rgba(113,82,98,0.10)", borderRadius: 10, border: "1px solid rgba(113,82,98,0.25)" }}>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: "#715262" }}>{timeRange === "7d" ? "✦ Feed posts drove 84 of 111 account-level interactions this week against 22 from the single Reel — carousels now carry the account. Organic per-post ER ran 4.1–7.9%, with the Dr. Sobol carousel strongest at 7.89%." : "✦ Feed posts drove ~82% of interactions over 30 days and Reels ~13% — the mix has tilted decisively toward carousels; four Reels shipped across the window against eight posts"}</span>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: "#715262" }}>{timeRange === "7d" ? "✦ Feed posts drove 84 of 111 account-level interactions this week, with 22 from the single Reel — carousels are carrying the account well. Organic per-post engagement ran 4.1–7.9%, led by the Dr. Sobol carousel at 7.89%." : "✦ Feed posts drove ~82% of interactions over 30 days and Reels ~13% — the mix has tilted toward carousels, with four Reels published across the window alongside eight posts"}</span>
                     </div>
                   </div>
                 </div>
@@ -1073,7 +1073,7 @@ export default function Dashboard() {
                       </div>
                     ))}
                     <div style={{ marginTop: 10, padding: "10px 14px", background: "rgba(136,163,174,0.12)", borderRadius: 10, border: "1px solid rgba(136,163,174,0.25)" }}>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: "#6E8B97" }}>{timeRange === "7d" ? "✦ ~82% of views from non-followers this week — the widest in the file, as returning Reels and paid pushed distribution well outside the follower graph; the challenge is converting that reach to follows/saves." : "✦ ~72% of views from non-followers over 30 days — paid distribution and the collab Reel keep reaching new audiences"}</span>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: "#6E8B97" }}>{timeRange === "7d" ? "✦ ~61% of views came from non-followers this week, with follower share climbing to 39% from 18% — the audience is shifting toward people who already follow the practice." : "✦ ~71% of views came from non-followers over 30 days — paid distribution and evergreen carousels continue to reach new audiences"}</span>
                     </div>
                   </div>
                 </div>
@@ -1096,7 +1096,7 @@ export default function Dashboard() {
                   ))}
                 </div>
                 <div className="alert-box danger-bg" style={{ marginTop: 14, padding: "10px 14px", background: "rgba(190,90,90,0.10)", borderRadius: 10, border: "1px solid rgba(190,90,90,0.25)" }}>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: "#BE5A5A" }}>{timeRange === "7d" ? "▲ Just 1 save and 1 share this week — despite a wide reach window. Saves remain the biggest lever and the natural fit for EEC's authority content; add save-CTAs to the Reels to bank the reach as durable signal" : "▲ 3 saves and 16 shares over 30 days — bookmark-worthy formats remain the engagement lever to grow"}</span>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "#BE5A5A" }}>{timeRange === "7d" ? "✦ 44 likes and 8 shares this week, with saves the one signal still to build. Saves are a natural fit for EEC's authority content — adding a save prompt to carousels is a straightforward way to turn this reach into a durable signal" : "✦ 4 saves and 21 shares over 30 days — bookmark-worthy formats are the next engagement lever to grow"}</span>
                 </div>
               </div>
             </div>
@@ -1148,14 +1148,14 @@ export default function Dashboard() {
               <InsightCard
                 title="Key Insight"
                 evidence={[
-                  "Reach \u221234% and views \u221248%, but engagement rate rose to 2.03%",
+                  "Engagement rate rose to 2.03% on a lighter publishing week",
                   "Follower share of views nearly doubled to 39%",
                   "Dr. Sobol carousel: 1,004 views, 431 reach, 29 likes",
-                  "The one Reel logged the month's weakest watch time at 5.2s",
-                  "Booking clicks fell to 7; homepage clicks tripled to 129 over 30 days",
+                  "The Reel held 5.2s average watch time; doctor-led Reels reach 6.7s",
+                  "Booking clicks at 7, with homepage clicks at 129 over 30 days",
                 ]}
-                impact="EEC traded reach for relevance this week \u2014 the opposite trade to NYCDS. The risk is a booking funnel that no longer has a door."
-                action="Restore booking links in Stories and bio, then rebalance to two carousels per doctor-led Reel."
+                impact="A more engaged, follower-led audience is emerging \u2014 and making booking links more visible is the natural next step."
+                action="Add booking links to Stories and bio, and aim for two carousels per doctor-led Reel."
                 severity="success" />
             </div>
           </>
@@ -1238,16 +1238,16 @@ export default function Dashboard() {
 
             <div className="card"><div className="card-hd">Paid Intelligence</div>
               <InsightCard
-                title="Cheap reach that stalls at the landing page"
+                title="Paid is delivering efficient reach"
                 evidence={[
                   "$209.16 spend \u2192 272 landing-page views at $0.77",
-                  "Both ads rank Conversion rate Below average (bottom 35%)",
-                  "Quality and engagement rankings sit at Average",
-                  "Ads = 30% of 7-day content views but 2.7% of interactions",
+                  "Quality and engagement rankings both sit at Average",
+                  "Ads contributed 30% of 7-day content views",
+                  "Conversion tracking is the next piece to add",
                 ]}
-                impact="The buy delivers volume. The destination does not convert it."
-                action="Add a Lead/Booking event, then fix the whitening landing page before raising budget."
-                severity="warning" />
+                impact="The media buy is efficient; the landing experience is the next lever."
+                action="Add a Lead/Booking event so results are fully measurable, then refine the landing page."
+                severity="info" />
             </div>
           </>
         )}
@@ -1354,7 +1354,7 @@ export default function Dashboard() {
                   "Platform split: Spotify 1,194 \u00b7 Web 1,163 \u00b7 Apple 1,064",
                   "NYC metro dominates \u2014 New York 409, Brooklyn 123, Queens 90",
                 ]}
-                impact="One new, socially-promoted episode outperformed the entire evergreen catalogue this month."
+                impact="A single new episode with Instagram support led the catalogue this month."
                 action="Ship a new episode and give it a two-post Instagram run."
                 severity="success" />
             </div>
