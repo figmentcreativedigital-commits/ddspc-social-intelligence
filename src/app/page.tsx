@@ -3,21 +3,21 @@ import { useState, useEffect } from "react";
 
 // Fallback data — used while loading or if Sheets API fails
 const FALLBACK_DATA = {
-  client: { name: "EEC", fullName: "Edgard El Chaar, DDS, PC", period: "July 20 – July 26, 2026" },
+  client: { name: "EEC", fullName: "Edgard El Chaar, DDS, PC", period: "July 27 – August 2, 2026" },
   kpi: {
-    followers: { value: 3188, change: 7, label: "Followers" },
-    reach: { value: 4977, label: "Reach" },
-    views: { value: 5487, label: "Total Views" },
-    engagementRate: { value: 2.1, label: "Engagement Rate", suffix: "%" },
-    engagements: { value: 104, label: "Engagements" },
-    watchTime: { value: "—", label: "Watch Time" },
+    followers: { value: 3193, change: 5, label: "Followers" },
+    reach: { value: 4543, label: "Reach" },
+    views: { value: 6973, label: "Total Views" },
+    engagementRate: { value: 2.6, label: "Engagement Rate", suffix: "%" },
+    engagements: { value: 119, label: "Engagements" },
+    watchTime: { value: "16.6s", label: "Watch Time" },
   },
   posts: [
-    { id: 1, title: "73% of Americans Fear the Dentist (Carousel)", type: "Post", views: 433, reach: 198, likes: 4, comments: 0, saves: 0, shares: 1, isTop: true, igPostUrl: "https://www.instagram.com/p/DbBp3dwh-7i/" },
-    { id: 2, title: "Gum Disease Is Often Silent Until It Isn't", type: "Post", views: 411, reach: 172, likes: 5, comments: 0, saves: 0, shares: 1, isTop: false, igPostUrl: "https://www.instagram.com/p/DbL1akHmVPB/" },
-    { id: 3, title: "Your Oral Health Doesn't Stop at Your Smile", type: "Post", views: 358, reach: 135, likes: 5, comments: 0, saves: 0, shares: 1, isTop: false, igPostUrl: "https://www.instagram.com/p/DbJC2kNmb5C/" },
+    { id: 1, title: "Gum Health & Heart Health (Reel)", type: "Reel", views: 1332, reach: 797, likes: 73, comments: 5, saves: 0, shares: 8, isTop: true, igPostUrl: "https://www.instagram.com/reel/DbbSMVEhWzx/" },
+    { id: 2, title: "NEW EPISODE · What 50 Years in Dentistry Teaches You (Reel)", type: "Reel", views: 1512, reach: 1242, likes: 13, comments: 0, saves: 2, shares: 1, isTop: false, igPostUrl: "https://www.instagram.com/reel/DbgAPneBJRm/" },
+    { id: 3, title: "Your Gums and Your Heart May Be Connected", type: "Post", views: 590, reach: 199, likes: 6, comments: 0, saves: 0, shares: 5, isTop: false, igPostUrl: "https://www.instagram.com/p/DbY6ZfGGYZt/" },
   ] as any[],
-  contentMix: { posts: 66, reels: 10, stories: 24 },
+  contentMix: { posts: 21, reels: 63, stories: 16 },
   audience: {
     gender: { male: 52, female: 48 },
     age: [
@@ -25,7 +25,7 @@ const FALLBACK_DATA = {
       { range: "45-54", pct: 21.3 }, { range: "55-64", pct: 12.8 }, { range: "65+", pct: 6.5 },
     ],
   },
-  viewerSplit: { followers: 57, nonFollowers: 43 },
+  viewerSplit: { followers: 45, nonFollowers: 55 },
 };
 
 type ReportData = typeof FALLBACK_DATA;
@@ -43,131 +43,131 @@ function generateInsights(data: ReportData) {
 
   // ---------- KEY INSIGHTS ----------
   insights.push({
-    title: "A lighter week that leaned on your own followers",
+    title: "Reels returned and views followed",
     evidence: [
-      `Engagement rate ${er}% \u2014 a blended read across three carousels`,
-      `Reach ${reach.toLocaleString()} \u2014 down 8.8%`,
-      "Views 5,487 \u2014 a no-Reel week",
-      `${eng} account-level interactions`,
+      `Engagement rate ${er}% \u2014 up 0.5pt on the Reel-led mix`,
+      "Views 6,973 \u2014 up 27% week-over-week",
+      `Reach ${reach.toLocaleString()} (649/day \u00d7 7) \u2014 off 8.7% as ads wound down`,
+      `${eng} account-level interactions \u2014 up 14%`,
     ],
-    impact: "Even on a quiet publishing week, the account held its engaged core.",
-    action: "Bring a doctor-led Reel back next week to reopen discovery.",
-    severity: "info",
-  });
-
-  insights.push({
-    title: "This week your followers did the watching",
-    evidence: [
-      `Followers now ${data.viewerSplit.followers}% of views \u2014 the opposite of the 30-day picture`,
-      "Over 30 days it flips to 71% non-follower",
-      "Net +7 followers on a no-Reel week",
-      "Reach 4,977 = 711/day \u00d7 7",
-    ],
-    impact: "Reach converted into the audience you already own this week.",
-    action: "Keep publishing for this engaged base, and reopen discovery with Reels.",
+    impact: "Two doctor-led Reels lifted both views and engagement in the same week.",
+    action: "Hold the two-Reels-per-week cadence through August.",
     severity: "success",
   });
 
   insights.push({
-    title: "Carousels carried the week on their own",
+    title: "The gum\u2013heart Reel is the engagement benchmark",
     evidence: [
-      `Posts took ${data.contentMix.posts}% of organic views vs Reels ${data.contentMix.reels}%`,
-      "\u201873% of Americans Fear the Dentist\u2019 led at 433 views on 198 reach",
-      "Feed posts drove 47% of account-level interactions",
-      "No Reels published \u2014 the week ran on 3 carousels + 7 Stories",
+      "73 likes, 5 comments, 8 shares on 797 reach \u2014 a 10.8% ER",
+      "16.6s average watch time \u2014 the strongest retention on record here",
+      "1,332 views and a 40.6% view rate past 3 seconds",
+      "Health-connection storytelling out-engaged the promo posts 8-to-1",
     ],
-    impact: "Carousels are the most reliable way to grow engagement here.",
-    action: "Aim for two carousels per Reel in the coming weeks.",
-    severity: "info",
+    impact: "Clinical health-connection content is the account's highest-engagement format.",
+    action: "Build a monthly \u2018oral\u2013systemic health\u2019 Reel series in this style.",
+    severity: "success",
   });
 
   insights.push({
-    title: "Doctor-led Reels continue to hold attention best",
+    title: "A double podcast milestone, promoted the same week",
     evidence: [
-      "No Reels this week \u2014 Stories and carousels carried it",
-      "Dr. Dinoi (Jul 9, 30d): 6.7s avg watch on 1,330 views",
-      "Patient-journey Reel (Jul 11): 534 views, 4.35% ER",
-      "Doctor-led Reels remain the format that holds attention longest",
+      "5,000 lifetime downloads and the 50th episode, both reached this window",
+      "68 downloads since last report \u2014 double the prior week's 33",
+      "The new episode drew 15 first-week downloads and its Reel reached 1,242 accounts",
+      "The 5K-milestone post and a thank-you Story ran alongside the episode",
     ],
-    impact: "Doctor-led storytelling is the format that holds attention longest.",
-    action: "Bring doctor-led and patient-story Reels back into the mix.",
+    impact: "The cross-channel push landed \u2014 podcast momentum doubled in the milestone week.",
+    action: "Keep the episode-Reel + milestone-post pairing for future launches.",
+    severity: "success",
+  });
+
+  insights.push({
+    title: `Reels drove ${data.contentMix.reels}% of content views this week`,
+    evidence: [
+      `Reels ${data.contentMix.reels}% \u00b7 posts ${data.contentMix.posts}% \u00b7 Stories ${data.contentMix.stories}% of content-type views`,
+      "Reels also took 86% of the week's interactions",
+      "The episode Reel out-reached every post 6-to-1 (1,242 vs ~175 avg)",
+      "Stories held a 85% completion rate across 7 frames",
+    ],
+    impact: "The format mix has flipped from carousel-led to Reel-led \u2014 and discovery followed.",
+    action: "Keep Reels as the discovery engine; use carousels for depth and saves.",
     severity: "info",
   });
 
   insights.push({
     title: "Search is highly efficient, with room to widen",
     evidence: [
-      "69 clicks on 604 impressions \u2014 11.4% CTR at position 4.6",
-      "30-day: 213 clicks at 9.30% CTR, position 5.7",
+      "54 clicks on 521 impressions \u2014 10.4% CTR at position 5.8 this week",
+      "30-day: 216 clicks at 9.33% CTR, position 5.0",
       "Top queries are all variants of \u2018Dr. El Chaar\u2019",
-      "Homepage 52 clicks; Our Doctors 17 at 5.33% CTR",
+      "Locations page: 361 impressions but 3 clicks (0.83% CTR) \u2014 a title/snippet fix",
     ],
-    impact: "Reputation search is performing well, and procedure search is the next opportunity.",
-    action: "Build procedure-question pages to widen search beyond the practice name.",
+    impact: "Reputation search performs well; procedure and location search are the open headroom.",
+    action: "Build procedure-question pages and rework the Locations title to lift its CTR.",
     severity: "info",
   });
 
   // ---------- OPPORTUNITIES ----------
   opportunities.push({
-    title: "An opportunity to bring booking links back into view",
+    title: "Booking links had their best named-link week",
     evidence: [
-      "12 booking-link clicks this week \u2014 Midtown 8, UES 4",
-      "30-day booking links climbed \u2014 Midtown 38, UES 24 on the paid push",
-      "Website link led at 52 clicks; Homepage 43",
-      "Named-link traffic totaled 107 this week",
+      "18 booking-link clicks this week \u2014 Midtown 11, UES 7",
+      "30-day booking links at 70 \u2014 Midtown 45, UES 25, up from 62",
+      "Homepage led named links at 53; booking links took every other named click but 2",
+      "Named-link traffic totaled 73 this week",
     ],
-    impact: "Visitors are arriving at the homepage, so a clearer path to booking will help.",
-    action: "Add location booking links to Stories and the bio link.",
-    severity: "info",
-  });
-
-  opportunities.push({
-    title: "Paid is delivering efficient reach at a strong cost per visit",
-    evidence: [
-      "$279.92 spend \u2192 367 landing-page views at $0.76",
-      "Quality and engagement rankings both sit at Average",
-      "Ads contributed 19% of 7-day views",
-      "\u2018Your best summer accessory\u2019 leads at $0.74 per result",
-    ],
-    impact: "The media buy is working well; the landing experience is the next lever.",
-    action: "Add a Lead/Booking event so results are fully measurable, then refine the landing page.",
-    severity: "info",
-  });
-
-  opportunities.push({
-    title: "Saves and comments are the next signal to build",
-    evidence: [
-      "Saves and comments are the one signal still to build",
-      "14 likes and 3 shares across three carousels",
-      "30-day totals: 6 saves and 3 comments across the window",
-    ],
-    impact: "Saves and comments carry the most ranking weight, so they are the highest-value next step.",
-    action: "Close each carousel with a question and a save prompt.",
-    severity: "info",
-  });
-
-  opportunities.push({
-    title: "A viral carousel is carrying the month's reach",
-    evidence: [
-      "30-day account views 54,160, with a viral carousel at ~21.1K",
-      "70% of 30-day views came from non-followers",
-      "A single carousel is doing most of the discovery this month",
-    ],
-    impact: "Evergreen carousels keep earning well beyond their posting week.",
-    action: "Identify the post that resurged and build three more in that vein.",
+    impact: "Booking intent is rising even as raw link volume gets noisier \u2014 the clean signal is strong.",
+    action: "Keep booking links in Stories and bio, and watch whether the trend outlives the ad flight.",
     severity: "success",
+  });
+
+  opportunities.push({
+    title: "July's paid campaign closed efficient \u2014 conversion is the next lever",
+    evidence: [
+      "$312.05 final spend \u2192 404 landing-page views at $0.77",
+      "39,434 impressions; quality and engagement rankings at Average",
+      "Both ads finished conversion-ranked bottom 35%",
+      "Ads drove 666 paid site sessions in the GA window (IG 454 + FB 212)",
+    ],
+    impact: "The media buy was efficient at filling the funnel; the landing experience is what capped it.",
+    action: "Before the next flight, add a Lead/Booking event and route ads to a booking-first page.",
+    severity: "info",
+  });
+
+  opportunities.push({
+    title: "Comments woke up; saves are still the open signal",
+    evidence: [
+      "5 comments this week \u2014 all on the gum\u2013heart Reel, vs 0 last week",
+      "97 likes and 14 shares \u2014 the strongest interaction week of the window",
+      "Only 2 saves this week; 6 across the full 30 days",
+    ],
+    impact: "Comment-worthy topics exist \u2014 save-worthy framing is the piece still missing.",
+    action: "Close health-connection Reels with a \u2018save this for your next check-up\u2019 prompt.",
+    severity: "info",
+  });
+
+  opportunities.push({
+    title: "The 404 page is quietly absorbing real traffic",
+    evidence: [
+      "701 views in 30 days \u2014 the #3 page title on the site",
+      "141 views this week alone; the pattern is persistent, not a spike",
+      "Locations (809 views) and Home (1,269) are the intended destinations",
+    ],
+    impact: "Something \u2014 likely an old ad, email, or profile link \u2014 is pointing at a dead URL and leaking visits.",
+    action: "Pull the 404's referrer detail, then 301 the dead URL to the matching live page.",
+    severity: "info",
   });
 
   opportunities.push({
     title: "Instagram promotion is driving podcast downloads",
     evidence: [
-      "Podcast at 4,932 all-time downloads; 164 in the last 30 days",
-      "\u2018Postgraduate Dentistry\u2019 episode promoted on IG (Jun 27, 1,524 views)",
-      "A follow-up postgraduate post ran Jul 5 (959 views)",
-      "7-day downloads at 33",
+      "Podcast crossed 5,000 all-time downloads across 50 episodes",
+      "68 downloads since last report \u2014 double the prior week",
+      "\u2018What 50 Years in Dentistry Teaches You\u2019: 15 first-week downloads",
+      "Its launch Reel reached 1,242 accounts \u2014 the widest content of the week",
     ],
-    impact: "The two channels compound when one topic runs across both.",
-    action: "Give each new episode a two-post Instagram run.",
+    impact: "The two channels compound when one topic runs across both \u2014 the milestone week proves it.",
+    action: "Give every episode the launch-Reel + milestone-post treatment.",
     severity: "success",
   });
 
@@ -240,134 +240,134 @@ export default function Dashboard() {
   const isIgEmbed = (url: string) => /instagram\.com\/(p|reel)\//i.test(url);
 
   const linkData7d = {
-    period: "July 20 – July 26, 2026", totalClicks: 107,
-    topLinks: [{ path: "Website", clicks: 52 }, { path: "Homepage", clicks: 43 }, { path: "DDS-PC Midtown", clicks: 8 }, { path: "DDS-PC UES", clicks: 4 }],
-    trafficSources: [{ source: "Named links + homepage", clicks: 107 }, { source: "Wildcard / social / filtered", clicks: 41 }],
-    topCountries: [{ country: "United States", clicks: 56 }],
-    topCities: [{ city: "New York City", clicks: 22 }],
-    devices: [{ os: "Chrome", clicks: 132 }, { os: "Mobile Safari", clicks: 37 }, { os: "Safari", clicks: 17 }, { os: "Chrome Mobile", clicks: 2 }],
+    period: "July 27 – August 2, 2026", totalClicks: 73,
+    topLinks: [{ path: "Homepage", clicks: 53 }, { path: "DDS-PC Midtown", clicks: 11 }, { path: "DDS-PC UES", clicks: 7 }, { path: "Website", clicks: 2 }],
+    trafficSources: [{ source: "Named links + homepage", clicks: 73 }, { source: "Wildcard / social / other", clicks: 1009 }],
+    topCountries: [{ country: "United States", clicks: 26 }, { country: "Canada", clicks: 4 }],
+    topCities: [{ city: "Brooklyn", clicks: 5 }, { city: "Montréal", clicks: 4 }, { city: "New York City", clicks: 1 }],
+    devices: [{ os: "Mobile Safari", clicks: 30 }, { os: "Safari", clicks: 22 }, { os: "Chrome", clicks: 14 }, { os: "Edge", clicks: 2 }],
   };
   const linkData30d = {
-    period: "June 27 – July 26, 2026", totalClicks: 259,
-    topLinks: [{ path: "Homepage", clicks: 145 }, { path: "Website", clicks: 52 }, { path: "DDS-PC Midtown", clicks: 38 }, { path: "DDS-PC UES", clicks: 24 }],
-    trafficSources: [{ source: "Named links + homepage", clicks: 259 }, { source: "Wildcard / social / filtered", clicks: 1878 }],
-    topCountries: [{ country: "United States", clicks: 293 }, { country: "United Kingdom", clicks: 31 }],
-    topCities: [{ city: "New York City", clicks: 45 }],
-    devices: [{ os: "Chrome", clicks: 185 }, { os: "Mobile Safari", clicks: 138 }, { os: "Safari", clicks: 31 }, { os: "Chrome Mobile", clicks: 10 }],
+    period: "July 4 – August 2, 2026", totalClicks: 285,
+    topLinks: [{ path: "Homepage", clicks: 161 }, { path: "Website", clicks: 54 }, { path: "DDS-PC Midtown", clicks: 45 }, { path: "DDS-PC UES", clicks: 25 }],
+    trafficSources: [{ source: "Named links + homepage", clicks: 285 }, { source: "Wildcard / social / other", clicks: 2283 }],
+    topCountries: [{ country: "United States", clicks: 251 }],
+    topCities: [{ city: "New York City", clicks: 45 }, { city: "Brooklyn", clicks: 19 }],
+    devices: [{ os: "Chrome", clicks: 184 }, { os: "Mobile Safari", clicks: 135 }, { os: "Safari", clicks: 43 }, { os: "Firefox", clicks: 8 }],
   };
   const linkData = timeRange === "7d" ? linkData7d : linkData30d;
 
   const websiteData7d = {
-    period: "July 20 – July 26, 2026",
-    sessions: 555,
+    period: "July 27 – August 2, 2026",
+    sessions: 530,
     topPages: [
-      { page: "/", label: "Home", views: 361 },
-      { page: "/locations", label: "Locations", views: 159 },
-      { page: "/our-doctors", label: "Our Doctors", views: 50 },
-      { page: "/all-on-6-dental-implants", label: "All-on-6 Implants", views: 9 },
-      { page: "/does-gum-grafting-look-natural", label: "Gum Grafting Look", views: 8 },
+      { page: "/", label: "Home", views: 299 },
+      { page: "/locations", label: "Locations", views: 78 },
+      { page: "/our-doctors", label: "Our Doctors", views: 69 },
+      { page: "/about", label: "About", views: 13 },
+      { page: "/sinus-lift-long-term-side-effects", label: "Sinus Lift Side Effects", views: 11 },
     ],
     trafficSources: [
-      { source: "Direct", sessions: 275, pct: 49.5 },
-      { source: "Google", sessions: 110, pct: 19.8 },
-      { source: "Instagram (paid)", sessions: 89, pct: 16.0 },
-      { source: "Facebook (paid)", sessions: 54, pct: 9.7 },
-      { source: "Other", sessions: 27, pct: 4.9 },
+      { source: "Direct", sessions: 345, pct: 65.1 },
+      { source: "Google", sessions: 91, pct: 17.2 },
+      { source: "Instagram (paid)", sessions: 33, pct: 6.2 },
+      { source: "Facebook (paid)", sessions: 26, pct: 4.9 },
+      { source: "Other", sessions: 35, pct: 6.6 },
     ],
     devices: [
-      { device: "Desktop", pct: 62.2 },
-      { device: "Mobile", pct: 37.4 },
+      { device: "Desktop", pct: 74.4 },
+      { device: "Mobile", pct: 25.2 },
       { device: "Tablet", pct: 0.4 },
     ],
     dailyVisitors: [
-      { date: "Jul 20", visitors: 73 },{ date: "Jul 21", visitors: 78 },
-      { date: "Jul 22", visitors: 87 },{ date: "Jul 23", visitors: 55 },
-      { date: "Jul 24", visitors: 68 },{ date: "Jul 25", visitors: 50 },
-      { date: "Jul 26", visitors: 66 },
+      { date: "Jul 27", visitors: 93 },{ date: "Jul 28", visitors: 103 },
+      { date: "Jul 29", visitors: 98 },{ date: "Jul 30", visitors: 32 },
+      { date: "Jul 31", visitors: 27 },{ date: "Aug 1", visitors: 53 },
+      { date: "Aug 2", visitors: 45 },
     ],
     search: {
-      totalClicks: 69, totalImpressions: 604, avgCTR: 11.42, avgPosition: 4.6,
-      note: "GSC Jul 19 – Jul 25 (edgardelchaar.com · one-day lag)",
+      totalClicks: 54, totalImpressions: 521, avgCTR: 10.36, avgPosition: 5.8,
+      note: "GSC totals Jul 26 – Aug 1 (edgardelchaar.com · one-day lag); query/page detail reflects the 30-day export",
       topQueries: [
-        { query: "edgard el chaar", clicks: 12, ctr: 41.38, position: 1.17 },
-        { query: "dr el chaar", clicks: 4, ctr: 16.00, position: 2.44 },
-        { query: "edgar el chaar", clicks: 3, ctr: 21.43, position: 1.07 },
-        { query: "dr el chaar nyc", clicks: 2, ctr: 50.00, position: 1.00 },
-        { query: "dr anamaria castillo", clicks: 2, ctr: 50.00, position: 4.00 },
+        { query: "edgard el chaar", clicks: 21, ctr: 16.67, position: 1.20 },
+        { query: "dr el chaar", clicks: 11, ctr: 14.10, position: 2.65 },
+        { query: "edgar el chaar", clicks: 8, ctr: 19.51, position: 1.88 },
+        { query: "el chaar", clicks: 6, ctr: 5.56, position: 2.99 },
+        { query: "dr edgard el chaar", clicks: 6, ctr: 23.08, position: 3.31 },
       ],
       topPages: [
-        { page: "Homepage", clicks: 52, impressions: 475, ctr: 10.95 },
-        { page: "Our Doctors", clicks: 17, impressions: 319, ctr: 5.33 },
-        { page: "Doctors & Periodontists (UES)", clicks: 3, impressions: 79, ctr: 3.80 },
-        { page: "Locations", clicks: 0, impressions: 86, ctr: 0.00 },
+        { page: "Homepage", clicks: 170, impressions: 1750, ctr: 9.71 },
+        { page: "Our Doctors", clicks: 38, impressions: 882, ctr: 4.31 },
+        { page: "Doctors & Periodontists (UES)", clicks: 10, impressions: 399, ctr: 2.51 },
+        { page: "Locations", clicks: 3, impressions: 361, ctr: 0.83 },
       ],
     },
   };
   const websiteData30d = {
-    period: "June 27 – July 26, 2026",
-    sessions: 2285,
+    period: "July 4 – August 2, 2026",
+    sessions: 2461,
     topPages: [
-      { page: "/", label: "Home", views: 1215 },
-      { page: "/locations", label: "Locations", views: 831 },
-      { page: "/our-doctors", label: "Our Doctors", views: 111 },
-      { page: "/doctors-and-periodontists-at-upper-east-side", label: "Doctors (UES)", views: 66 },
-      { page: "/all-on-6-dental-implants", label: "All-on-6 Implants", views: 24 },
+      { page: "/", label: "Home", views: 1269 },
+      { page: "/locations", label: "Locations", views: 809 },
+      { page: "/our-doctors", label: "Our Doctors", views: 175 },
+      { page: "/doctors-and-periodontists-at-upper-east-side", label: "Doctors (UES)", views: 55 },
+      { page: "/sinus-lift-long-term-side-effects", label: "Sinus Lift Side Effects", views: 33 },
     ],
     trafficSources: [
-      { source: "Direct", sessions: 1121, pct: 49.0 },
-      { source: "Instagram (paid)", sessions: 462, pct: 20.2 },
-      { source: "Google", sessions: 380, pct: 16.6 },
-      { source: "Facebook (paid)", sessions: 215, pct: 9.4 },
-      { source: "Other", sessions: 107, pct: 4.7 },
+      { source: "Direct", sessions: 1295, pct: 52.6 },
+      { source: "Instagram (paid)", sessions: 454, pct: 18.4 },
+      { source: "Google", sessions: 389, pct: 15.8 },
+      { source: "Facebook (paid)", sessions: 212, pct: 8.6 },
+      { source: "Other", sessions: 111, pct: 4.5 },
     ],
     devices: [
-      { device: "Desktop", pct: 58.4 },
-      { device: "Mobile", pct: 41.5 },
-      { device: "Tablet", pct: 0.1 },
+      { device: "Desktop", pct: 60.9 },
+      { device: "Mobile", pct: 38.9 },
+      { device: "Tablet", pct: 0.2 },
     ],
     dailyVisitors: [
-      { date: "Jun 27", visitors: 12 },{ date: "Jul 1", visitors: 34 },
-      { date: "Jul 5", visitors: 66 },{ date: "Jul 9", visitors: 99 },
-      { date: "Jul 13", visitors: 107 },{ date: "Jul 17", visitors: 72 },
-      { date: "Jul 21", visitors: 78 },{ date: "Jul 25", visitors: 50 },
+      { date: "Jul 4", visitors: 69 },{ date: "Jul 8", visitors: 48 },
+      { date: "Jul 12", visitors: 72 },{ date: "Jul 16", visitors: 65 },
+      { date: "Jul 20", visitors: 73 },{ date: "Jul 24", visitors: 68 },
+      { date: "Jul 28", visitors: 103 },{ date: "Aug 1", visitors: 53 },
     ],
     search: {
-      totalClicks: 213, totalImpressions: 2291, avgCTR: 9.30, avgPosition: 5.7,
-      note: "GSC Jun 26 – Jul 25 (edgardelchaar.com)",
+      totalClicks: 216, totalImpressions: 2315, avgCTR: 9.33, avgPosition: 5.0,
+      note: "GSC Jul 3 – Aug 1 (edgardelchaar.com · one-day lag); totals summed from the daily Chart export",
       topQueries: [
-        { query: "edgard el chaar", clicks: 21, ctr: 18.26, position: 1.17 },
-        { query: "dr el chaar", clicks: 16, ctr: 16.67, position: 2.47 },
-        { query: "edgar el chaar", clicks: 7, ctr: 17.50, position: 1.90 },
-        { query: "dr edgard el chaar", clicks: 5, ctr: 18.52, position: 3.22 },
-        { query: "el chaar", clicks: 4, ctr: 3.64, position: 2.95 },
+        { query: "edgard el chaar", clicks: 21, ctr: 16.67, position: 1.20 },
+        { query: "dr el chaar", clicks: 11, ctr: 14.10, position: 2.65 },
+        { query: "edgar el chaar", clicks: 8, ctr: 19.51, position: 1.88 },
+        { query: "el chaar", clicks: 6, ctr: 5.56, position: 2.99 },
+        { query: "dr edgard el chaar", clicks: 6, ctr: 23.08, position: 3.31 },
       ],
       topPages: [
-        { page: "Homepage", clicks: 175, impressions: 1733, ctr: 10.10 },
-        { page: "Our Doctors", clicks: 27, impressions: 620, ctr: 4.35 },
-        { page: "Doctors & Periodontists (UES)", clicks: 12, impressions: 403, ctr: 2.98 },
-        { page: "Locations", clicks: 1, impressions: 349, ctr: 0.29 },
+        { page: "Homepage", clicks: 170, impressions: 1750, ctr: 9.71 },
+        { page: "Our Doctors", clicks: 38, impressions: 882, ctr: 4.31 },
+        { page: "Doctors & Periodontists (UES)", clicks: 10, impressions: 399, ctr: 2.51 },
+        { page: "Locations", clicks: 3, impressions: 361, ctr: 0.83 },
       ],
     },
   };
   const websiteData = timeRange === "7d" ? websiteData7d : websiteData30d;
 
   const podcastData = {
-    period: "All Time (as of July 26, 2026)",
-    totalEpisodes: 49, totalDownloads: 4932, periodDownloads: 33,
-    last7Days: 33, last30Days: 164, last90Days: 332,
+    period: "All Time (as of August 3, 2026)",
+    totalEpisodes: 50, totalDownloads: 5000, periodDownloads: 68,
+    last7Days: 68, last30Days: 164, last90Days: 332,
     topEpisodes: [
-      { title: "Allograft & Evolution – Dr. Brad McAllister (S5 E3)", downloads: 305 },
-      { title: "Future of Dental Industry – Aurelio Sahagun, Straumann (S4 E2)", downloads: 195 },
-      { title: "Periodontal Diagnosis – Gingivitis (S1 E2)", downloads: 194 },
-      { title: "Periodontal Diagnosis – Periodontitis (S1 E3)", downloads: 185 },
-      { title: "Oral and Systemic Health (E1)", downloads: 172 },
+      { title: "Allograft & Evolution – Dr. Brad McAllister (S5 E3)", downloads: 306 },
+      { title: "Future of Dental Industry – Aurelio Sahagun, Straumann (S4 E2)", downloads: 197 },
+      { title: "Periodontal Diagnosis – Gingivitis (S1 E2)", downloads: 196 },
+      { title: "Periodontal Diagnosis – Periodontitis (S1 E3)", downloads: 187 },
+      { title: "Oral and Systemic Health (E1)", downloads: 174 },
     ],
     platforms: [
-      { name: "Spotify", downloads: 1194, pct: 24 },
-      { name: "Web Browser", downloads: 1189, pct: 24 },
-      { name: "Apple Podcasts", downloads: 1071, pct: 21 },
+      { name: "Spotify", downloads: 1246, pct: 24 },
+      { name: "Web Browser", downloads: 1191, pct: 23 },
+      { name: "Apple Podcasts", downloads: 1081, pct: 21 },
       { name: "Buzzsprout Site", downloads: 406, pct: 8 },
-      { name: "iVoox", downloads: 333, pct: 6 },
+      { name: "iVoox", downloads: 334, pct: 6 },
     ],
     topCountries: [
       { country: "United States", downloads: 3110 },
@@ -386,104 +386,108 @@ export default function Dashboard() {
   };
 
   const socialData7d = {
-    period: "July 20 – July 26, 2026",
-    followers: 3188, followerGrowth: 7, follows: 7, unfollows: 0,
-    totalViews: 5487, totalReach: 4977, reachChange: -8.8, totalInteractions: 104,
-    viewSplit: { followers: 57, nonFollowers: 43 },
-    interactionSplit: { followers: 55, nonFollowers: 45 },
-    viewsByType: { reels: 10, posts: 66, stories: 24 },
-    interactionsByType: { reels: 12, posts: 47, stories: 41 },
-    totalLikes: 14, totalComments: 0, totalSaves: 0, totalShares: 3,
-    storyViews: 678, storyCompletion: 86, storyCount: 7,
+    period: "July 27 – August 2, 2026",
+    followers: 3193, followerGrowth: 5, follows: 5, unfollows: 0,
+    totalViews: 6973, totalReach: 4543, reachChange: -8.7, totalInteractions: 119,
+    viewSplit: { followers: 45, nonFollowers: 55 },
+    interactionSplit: { followers: 40, nonFollowers: 60 },
+    viewsByType: { reels: 63, posts: 21, stories: 16 },
+    interactionsByType: { reels: 86, posts: 13, stories: 1 },
+    totalLikes: 97, totalComments: 5, totalSaves: 2, totalShares: 14,
+    storyViews: 703, storyCompletion: 85, storyCount: 7,
     dailyViews: [
-      { date: "Jul 20", views: 1280 },{ date: "Jul 21", views: 750 },
-      { date: "Jul 22", views: 380 },{ date: "Jul 23", views: 1010 },
-      { date: "Jul 24", views: 730 },{ date: "Jul 25", views: 780 },
-      { date: "Jul 26", views: 557 },
+      { date: "Jul 27", views: 620 },{ date: "Jul 28", views: 540 },
+      { date: "Jul 29", views: 1380 },{ date: "Jul 30", views: 1960 },
+      { date: "Jul 31", views: 880 },{ date: "Aug 1", views: 820 },
+      { date: "Aug 2", views: 773 },
     ],
     posts: [
-      { id: 1, title: "73% of Americans Fear the Dentist (Carousel)", type: "Post", date: "Jul 20", views: 433, reach: 198, likes: 4, comments: 0, saves: 0, shares: 1, er: 2.53, skipRate: 0, avgWatch: "—", igUrl: "https://www.instagram.com/p/DbBp3dwh-7i/", isTop: true },
-      { id: 2, title: "Gum Disease Is Often Silent Until It Isn't", type: "Post", date: "Jul 24", views: 411, reach: 172, likes: 5, comments: 0, saves: 0, shares: 1, er: 3.49, skipRate: 0, avgWatch: "—", igUrl: "https://www.instagram.com/p/DbL1akHmVPB/", isTop: false },
-      { id: 3, title: "Your Oral Health Doesn't Stop at Your Smile", type: "Post", date: "Jul 23", views: 358, reach: 135, likes: 5, comments: 0, saves: 0, shares: 1, er: 4.44, skipRate: 0, avgWatch: "—", igUrl: "https://www.instagram.com/p/DbJC2kNmb5C/", isTop: false },
+      { id: 1, title: "Gum Health & Heart Health (Reel)", type: "Reel", date: "Jul 30", views: 1332, reach: 797, likes: 73, comments: 5, saves: 0, shares: 8, er: 10.79, skipRate: 0, avgWatch: "16.6s", igUrl: "https://www.instagram.com/reel/DbbSMVEhWzx/", isTop: true },
+      { id: 2, title: "NEW EPISODE · What 50 Years in Dentistry Teaches You", type: "Reel", date: "Aug 1", views: 1512, reach: 1242, likes: 13, comments: 0, saves: 2, shares: 1, er: 1.29, skipRate: 0, avgWatch: "4.6s", igUrl: "https://www.instagram.com/reel/DbgAPneBJRm/", isTop: false },
+      { id: 3, title: "Your Gums and Your Heart May Be Connected", type: "Post", date: "Jul 29", views: 590, reach: 199, likes: 6, comments: 0, saves: 0, shares: 5, er: 5.53, skipRate: 0, avgWatch: "—", igUrl: "https://www.instagram.com/p/DbY6ZfGGYZt/", isTop: false },
+      { id: 4, title: "5,000 Downloads and Counting", type: "Post", date: "Jul 31", views: 338, reach: 150, likes: 5, comments: 0, saves: 0, shares: 0, er: 3.33, skipRate: 0, avgWatch: "—", igUrl: "https://www.instagram.com/p/DbdycB8OSsB/", isTop: false },
     ],
   };
   const socialData30d = {
-    period: "June 27 – July 26, 2026",
-    followers: 3188, followerGrowth: 40, follows: 40, unfollows: 0,
-    totalViews: 54160, totalReach: 24360, reachChange: 21.0, totalInteractions: 800,
-    viewSplit: { followers: 29, nonFollowers: 71 },
-    interactionSplit: { followers: 34, nonFollowers: 66 },
-    viewsByType: { reels: 12, posts: 79, stories: 9 },
-    interactionsByType: { reels: 13, posts: 78, stories: 9 },
-    totalLikes: 186, totalComments: 3, totalSaves: 6, totalShares: 21,
-    storyViews: 1909, storyCompletion: 86, storyCount: 21,
+    period: "July 4 – August 2, 2026",
+    followers: 3193, followerGrowth: 36, follows: 36, unfollows: 0,
+    totalViews: 33990, totalReach: 25950, reachChange: 6.5, totalInteractions: 302,
+    viewSplit: { followers: 48, nonFollowers: 52 },
+    interactionSplit: { followers: 45, nonFollowers: 55 },
+    viewsByType: { reels: 41, posts: 44, stories: 15 },
+    interactionsByType: { reels: 57, posts: 42, stories: 1 },
+    totalLikes: 257, totalComments: 6, totalSaves: 6, totalShares: 30,
+    storyViews: 2041, storyCompletion: 83, storyCount: 21,
     dailyViews: [
-      { date: "Jun 27", views: 1500 },{ date: "Jul 1", views: 3000 },
-      { date: "Jul 5", views: 1800 },{ date: "Jul 9", views: 2100 },
-      { date: "Jul 13", views: 1600 },{ date: "Jul 17", views: 1200 },
-      { date: "Jul 21", views: 900 },{ date: "Jul 25", views: 800 },
+      { date: "Jul 4", views: 800 },{ date: "Jul 8", views: 900 },
+      { date: "Jul 12", views: 1000 },{ date: "Jul 16", views: 950 },
+      { date: "Jul 20", views: 1500 },{ date: "Jul 24", views: 1100 },
+      { date: "Jul 28", views: 1150 },{ date: "Aug 1", views: 1450 },
     ],
     posts: [
-      { id: 1, title: "When a Tooth Is Worth Saving · Dr. Vitaliya Sobol", type: "Post", date: "Jul 19", views: 1734, reach: 734, likes: 39, comments: 0, saves: 0, shares: 5, er: 5.99, skipRate: 0, avgWatch: "—", igUrl: "https://www.instagram.com/p/Da-vqkPmRRE/", isTop: true },
-      { id: 2, title: "NEW EPISODE · Postgraduate Dentistry (Carousel)", type: "Post", date: "Jun 27", views: 1524, reach: 615, likes: 22, comments: 0, saves: 1, shares: 3, er: 4.23, skipRate: 0, avgWatch: "—", igUrl: "https://www.instagram.com/p/DaEBGU2Bh1J/", isTop: false },
-      { id: 3, title: "Your Smile Is Just One Part of Your Health · Dr. Dinoi", type: "Reel", date: "Jul 9", views: 1330, reach: 985, likes: 27, comments: 0, saves: 1, shares: 1, er: 2.94, skipRate: 0, avgWatch: "6.7s", igUrl: "https://www.instagram.com/reel/DalQX81hr1D/", isTop: false },
-      { id: 4, title: "When It Comes to Choosing a Postgraduate Program", type: "Post", date: "Jul 5", views: 959, reach: 483, likes: 29, comments: 1, saves: 1, shares: 3, er: 7.04, skipRate: 0, avgWatch: "—", igUrl: "https://www.instagram.com/p/DaTSj0UhvIf/", isTop: false },
-      { id: 5, title: "Are You a Walking Dental Red Flag?", type: "Post", date: "Jul 3", views: 562, reach: 220, likes: 5, comments: 0, saves: 0, shares: 2, er: 3.18, skipRate: 0, avgWatch: "—", igUrl: "https://www.instagram.com/p/DaVi6rVmbUW/", isTop: false },
-      { id: 6, title: "Not Every Patient Journey Is Straightforward", type: "Reel", date: "Jul 11", views: 534, reach: 322, likes: 13, comments: 0, saves: 0, shares: 1, er: 4.35, skipRate: 0, avgWatch: "—", igUrl: "https://www.instagram.com/reel/DaqQKdKBa-_/", isTop: false },
+      { id: 1, title: "When a Tooth Is Worth Saving · Dr. Vitaliya Sobol", type: "Post", date: "Jul 19", views: 1895, reach: 782, likes: 40, comments: 1, saves: 0, shares: 8, er: 6.27, skipRate: 0, avgWatch: "—", igUrl: "https://www.instagram.com/p/Da-vqkPmRRE/", isTop: true },
+      { id: 2, title: "NEW EPISODE · What 50 Years in Dentistry Teaches You", type: "Reel", date: "Aug 1", views: 1512, reach: 1242, likes: 13, comments: 0, saves: 2, shares: 1, er: 1.29, skipRate: 0, avgWatch: "4.6s", igUrl: "https://www.instagram.com/reel/DbgAPneBJRm/", isTop: false },
+      { id: 3, title: "Your Smile Is Just One Part of Your Health · Dr. Dinoi", type: "Reel", date: "Jul 9", views: 1344, reach: 992, likes: 27, comments: 0, saves: 2, shares: 1, er: 3.02, skipRate: 0, avgWatch: "6.8s", igUrl: "https://www.instagram.com/reel/DalQX81hr1D/", isTop: false },
+      { id: 4, title: "Gum Health & Heart Health (Reel)", type: "Reel", date: "Jul 30", views: 1332, reach: 797, likes: 73, comments: 5, saves: 0, shares: 8, er: 10.79, skipRate: 0, avgWatch: "16.6s", igUrl: "https://www.instagram.com/reel/DbbSMVEhWzx/", isTop: false },
+      { id: 5, title: "When It Comes to Choosing a Postgraduate Program", type: "Post", date: "Jul 5", views: 982, reach: 488, likes: 29, comments: 0, saves: 0, shares: 2, er: 6.35, skipRate: 0, avgWatch: "—", igUrl: "https://www.instagram.com/p/DaTSj0UhvIf/", isTop: false },
+      { id: 6, title: "Gum Disease Is Often Silent Until It Isn't", type: "Post", date: "Jul 24", views: 594, reach: 212, likes: 7, comments: 0, saves: 2, shares: 1, er: 4.72, skipRate: 0, avgWatch: "—", igUrl: "https://www.instagram.com/p/DbL1akHmVPB/", isTop: false },
     ],
   };
   const socialData = timeRange === "7d" ? socialData7d : socialData30d;
 
   const adsData = {
-    period: "June 27 – July 26, 2026",
-    campaign: "July Whitening Promo (active through Jul 31)",
-    totalSpend: 279.92,
-    impressions: 35781,
-    reach: 26041,
+    period: "July 1 – 31, 2026 (final)",
+    campaign: "July Whitening Promo (concluded Jul 31)",
+    totalSpend: 312.05,
+    impressions: 39434,
+    reach: 28804,
     activeAds: 2,
-    results: 367,
-    costPerResult: 0.76,
-    pctOfViews: 18.1,
-    pctOfInteractions: 1.4,
-    pctOfViews7d: 19.1,
-    pctOfInteractions7d: 1.0,
+    results: 404,
+    costPerResult: 0.77,
+    pctOfViews: 0,
+    pctOfInteractions: 0,
+    pctOfViews7d: 0,
+    pctOfInteractions7d: 0,
     ads: [
-      { name: "Your best summer accessory", spend: 196.21, impressions: 24797, reach: 16249, results: 264, cpr: 0.74, quality: "Quality Average · Engagement Average · Conversion rate Below average (bottom 35%)" },
-      { name: "Make it a summer to remember", spend: 83.71, impressions: 10984, reach: 9792, results: 103, cpr: 0.81, quality: "Quality Average · Engagement Average · Conversion rate Below average (bottom 35%)" },
+      { name: "Your best summer accessory", spend: 215.62, impressions: 26817, reach: 17719, results: 290, cpr: 0.74, quality: "Quality Average · Engagement Average · Conversion rate Below average (bottom 35%)" },
+      { name: "Make it a summer to remember", spend: 96.43, impressions: 12617, reach: 11085, results: 114, cpr: 0.85, quality: "Quality Average · Engagement Average · Conversion rate Below average (bottom 35%)" },
     ],
   };
 
   const emailData7d = {
-    period: "July 20 – July 26, 2026",
-    campaignCount: 1, sends: 3487, opens: 1616, openRate: 46.3,
-    clicks: 29, clickRate: 0.83, ctor: 1.79,
-    bounces: 403, bounceRate: 11.6, unsubs: 14, unsubRate: 0.40,
+    period: "July 27 – August 2, 2026",
+    campaignCount: 1, sends: 3443, opens: 1456, openRate: 42.3,
+    clicks: 46, clickRate: 1.34, ctor: 3.16,
+    bounces: 403, bounceRate: 11.7, unsubs: 9, unsubRate: 0.26,
     campaigns: [
-      { name: "DDS PC · Gum Article", date: "Jul 22", sends: 3487, opens: 1616, openRate: 52.4, clicks: 29, clickRate: 0.9, bounceRate: 11.6, mobile: 32.0 },
+      { name: "DDS PC · Summer Promo Extensions", date: "Aug 1", sends: 3443, opens: 1456, openRate: 47.9, clicks: 46, clickRate: 1.5, bounceRate: 11.7, mobile: 47.7 },
     ],
   };
   const emailData30d = {
-    period: "June 27 – July 26, 2026",
-    campaignCount: 2, sends: 7001, opens: 3315, openRate: 47.4,
-    clicks: 93, clickRate: 1.33, ctor: 2.81,
-    bounces: 824, bounceRate: 11.8, unsubs: 26, unsubRate: 0.37,
+    period: "July 4 – August 2, 2026",
+    campaignCount: 3, sends: 10444, opens: 4827, openRate: 46.2,
+    clicks: 140, clickRate: 1.34, ctor: 2.90,
+    bounces: 1240, bounceRate: 11.9, unsubs: 36, unsubRate: 0.34,
     campaigns: [
-      { name: "DDS PC · Whitening Offer", date: "Jul 6", sends: 3514, opens: 1699, openRate: 54.9, clicks: 64, clickRate: 2.1, bounceRate: 12.0, mobile: 32.0 },
-      { name: "DDS PC · Gum Article", date: "Jul 22", sends: 3487, opens: 1616, openRate: 52.4, clicks: 29, clickRate: 0.9, bounceRate: 11.6, mobile: 32.0 },
+      { name: "DDS PC · Whitening Offer", date: "Jul 6", sends: 3514, opens: 1709, openRate: 55.3, clicks: 65, clickRate: 2.1, bounceRate: 12.0, mobile: 31.5 },
+      { name: "DDS PC · Gum Article", date: "Jul 22", sends: 3487, opens: 1662, openRate: 54.1, clicks: 29, clickRate: 0.9, bounceRate: 11.9, mobile: 30.7 },
+      { name: "DDS PC · Summer Promo Extensions", date: "Aug 1", sends: 3443, opens: 1456, openRate: 47.9, clicks: 46, clickRate: 1.5, bounceRate: 11.7, mobile: 47.7 },
     ],
   };
   const emailData = timeRange === "7d" ? emailData7d : emailData30d;
   const emailLifetime = {
-    campaigns: 3, sends: 7320, opens: 3516, openRate: 48.0,
-    clicks: 93, clickRate: 1.27, ctor: 2.64, bounces: 851, bounceRate: 11.6, unsubs: 26,
+    campaigns: 4, sends: 14012, opens: 6403, openRate: 45.7,
+    clicks: 254, clickRate: 1.81, ctor: 3.97, bounces: 2311, bounceRate: 16.5, unsubs: 43,
     bestOpens: [
-      { name: "DDS PC · Podcast Newsletter", rate: 63.0 },
-      { name: "DDS PC · Whitening Offer", rate: 54.9 },
-      { name: "DDS PC · Gum Article", rate: 52.4 },
+      { name: "DDS PC · Podcast Newsletter", rate: 63.1 },
+      { name: "DDS PC · Whitening Offer", rate: 55.3 },
+      { name: "DDS PC · Gum Article", rate: 54.1 },
     ],
-    worstBounce: [
-      { name: "DDS PC · Whitening Offer", rate: 12.0, sends: 3514 },
-      { name: "DDS PC · Gum Article", rate: 11.6, sends: 3487 },
+    campaignUnsubs: [
+      { name: "DDS PC · Podcast Newsletter", rate: 0.2, sends: 3568 },
+      { name: "DDS PC · Whitening Offer", rate: 0.3, sends: 3514 },
+      { name: "DDS PC · Gum Article", rate: 0.5, sends: 3487 },
+      { name: "DDS PC · Summer Promo Extensions", rate: 0.3, sends: 3443 },
     ],
   };
 
@@ -626,33 +630,33 @@ export default function Dashboard() {
               <div className="exec-grid">
                 <ExecCard
                   eyebrow="Discovery"
-                  tone="warn"
+                  tone="pos"
                   metrics={[
-                    { val: d.kpi.reach.value.toLocaleString(), label: "Reach", delta: "8.8%", dir: "down" },
-                    { val: d.kpi.views.value.toLocaleString(), label: "Views", delta: "11%", dir: "down" },
-                    { val: `${d.viewerSplit.nonFollowers}%`, label: "Non-Follower", delta: "18pt", dir: "down" },
+                    { val: d.kpi.views.value.toLocaleString(), label: "Views", delta: "27%", dir: "up" },
+                    { val: d.kpi.reach.value.toLocaleString(), label: "Reach", delta: "8.7%", dir: "down" },
+                    { val: `${d.viewerSplit.nonFollowers}%`, label: "Non-Follower (est.)", delta: "12pt", dir: "up" },
                   ]}
                   noteLabel="Takeaway"
                   notes={[
-                    { text: "A lighter, no-Reel week of three carousels and seven Stories, with reach easing modestly.", tone: "" },
-                    { text: "This week skewed to followers \u2014 57% of views \u2014 the opposite of the 30-day picture.", tone: "pos" },
-                    { text: "Paid supplied 19% of 7-day views.", tone: "" },
+                    { text: "Reels returned \u2014 two doctor-led Reels, two posts and seven Stories lifted views 27% week-over-week.", tone: "pos" },
+                    { text: "The new-episode Reel reached 1,242 accounts \u2014 the widest single piece of the week.", tone: "pos" },
+                    { text: "Ads concluded Jul 31; content views this week were fully organic.", tone: "" },
                   ]}
                 />
                 <ExecCard
                   eyebrow="Engagement"
                   tone="pos"
                   metrics={[
-                    { val: `${d.kpi.engagementRate.value}%`, label: "Eng. Rate", delta: "0.1pt", dir: "up" },
-                    { val: d.kpi.engagements.value.toLocaleString(), label: "Interactions", delta: "6%", dir: "down" },
-                    { val: `${d.viewerSplit.followers}%`, label: "Follower Views", delta: "18pt", dir: "up" },
+                    { val: `${d.kpi.engagementRate.value}%`, label: "Eng. Rate", delta: "0.5pt", dir: "up" },
+                    { val: d.kpi.engagements.value.toLocaleString(), label: "Interactions", delta: "14%", dir: "up" },
+                    { val: `${d.viewerSplit.followers}%`, label: "Follower Views (est.)", delta: "12pt", dir: "down" },
                   ]}
                   noteLabel="Why"
                   notes={[
-                    { text: "Engagement rate held at 2.1% \u2014 a blended read across three carousels.", tone: "pos" },
-                    { text: "Follower share of views jumped to 57%, from 39% the prior week.", tone: "pos" },
-                    { text: "Posts and Stories drove the bulk of the 104 interactions.", tone: "pos" },
-                    { text: "14 likes and 3 shares; saves are the next signal to build.", tone: "" },
+                    { text: "Engagement rate rose to ~2.6% as Reels carried 86% of the 119 interactions.", tone: "pos" },
+                    { text: "The gum\u2013heart Reel earned 73 likes, 5 comments and 8 shares \u2014 a 10.8% ER on its reach.", tone: "pos" },
+                    { text: "97 likes and 14 shares this week \u2014 the strongest interaction week of the window.", tone: "pos" },
+                    { text: "Saves remain thin (2); a save prompt is still the open lever.", tone: "" },
                   ]}
                 />
                 <ExecCard
@@ -660,15 +664,15 @@ export default function Dashboard() {
                   tone="neutral"
                   hero={{
                     label: "Top Performer",
-                    title: "73% of Americans Fear the Dentist \u00b7 Carousel",
-                    stats: [{ val: "433", label: "views" }, { val: "198", label: "reach" }, { val: "4", label: "likes" }],
+                    title: "Gum Health & Heart Health \u00b7 Reel",
+                    stats: [{ val: "1,332", label: "views" }, { val: "797", label: "reach" }, { val: "73", label: "likes" }],
                   }}
                   noteLabel="Key Notes"
                   notes={[
-                    { text: `Carousels led at ${d.contentMix.posts}% of organic views; Reels ${d.contentMix.reels}%.`, tone: "pos" },
-                    { text: "No Reels this week \u2014 watch time isn't reported; doctor-led Reels reach 6.7s when live.", tone: "" },
-                    { text: "Search CTR strong at 11.4%, position 4.6 \u2014 all name-brand.", tone: "pos" },
-                    { text: "Booking-link clicks at 12 \u2014 an opportunity to raise visibility.", tone: "" },
+                    { text: `Reels led at ${d.contentMix.reels}% of content views; posts ${d.contentMix.posts}%, Stories ${d.contentMix.stories}%.`, tone: "pos" },
+                    { text: "Podcast milestone week: 5,000 lifetime downloads and the 50th episode published.", tone: "pos" },
+                    { text: "Search CTR 10.4% at position 5.8 \u2014 still all name-brand queries.", tone: "pos" },
+                    { text: "Booking-link clicks at 18 \u2014 the best named-link week behind the homepage.", tone: "pos" },
                   ]}
                 />
               </div>
@@ -703,7 +707,7 @@ export default function Dashboard() {
                       </div>
                     ))}
                     <div style={{ marginTop: 14, padding: "10px 14px", background: "rgba(113,82,98,0.10)", borderRadius: 10, border: "1px solid rgba(113,82,98,0.25)" }}>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: "#715262" }}>✦ This week flipped to followers — 57% of views came from people who already follow the practice (43% non-follower), the opposite of the 30-day picture, as reach converted into the audience you own</span>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: "#715262" }}>✦ With Reels back in the mix, discovery tilted outward — an estimated ~55% of views came from non-followers this week (split estimated from the Reel-heavy content mix; the native follower breakdown wasn't exported this cycle)</span>
                     </div>
                   </div>
                 </div>
@@ -800,7 +804,7 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="card">
-              <InsightCard title={"Link Attribution · " + linkData.period} body={timeRange === "7d" ? "107 clicks over 7 days across named destinations — Website 52, Homepage 43, DDS-PC Midtown 8, DDS-PC UES 4 (wildcard, social and filtered traffic held out separately at 41). Booking-link clicks (Midtown + UES = 12) are the conversion signal worth watching. Per-link splits are approximate — derived from the Short.io pie percentages, as exact per-path counts weren't legible in this export; the city panel reflects verified local engagement (NYC led at 22, out-of-market traffic filtered). ✓ DDS-PC merge checked: the linked domain's 7-day path statistics show no DDS-PC links, so the merge added 0 this week." : "259 clicks across named destinations over 30 days — Homepage 145, Website 52, DDS-PC Midtown 38, DDS-PC UES 24 (wildcard / social / filtered traffic held out separately at 1,878). Booking links climbed this window (Midtown + UES = 62), a clear conversion signal from the paid push. Per-link splits are approximate (Short.io pie percentages; exact per-path counts not legible). ✓ DDS-PC merge applied: one DDS-PC UES click was merged in from the linked domain (23→24); no Midtown merge (below cutoff)." } severity="info" />
+              <InsightCard title={"Link Attribution · " + linkData.period} body={timeRange === "7d" ? "73 clicks over 7 days across named destinations — Homepage 53, DDS-PC Midtown 11, DDS-PC UES 7, Website 2 (wildcard / social / other traffic held out at 1,009). Booking links (Midtown + UES = 18) led the named set behind the homepage, and the city panel reflects verified local engagement — led by Brooklyn. Per-path counts are exact this cycle (xlsx exports replaced pie estimation). ✓ DDS-PC merge applied: one Midtown click merged in from the linked NYCDS domain (10→11); UES added 0." : "285 clicks across named destinations over 30 days — Homepage 161, Website 54, DDS-PC Midtown 45, DDS-PC UES 25 (wildcard / social / other traffic held out at 2,283). Booking links climbed again (Midtown + UES = 70, up from 62 the prior window) — the strongest conversion signal in the link set. Per-path counts are exact this cycle (xlsx exports replaced pie estimation). ✓ DDS-PC merge applied: two Midtown clicks merged in from the linked NYCDS domain (43→45); UES added 0." } severity="info" />
             </div>
           </>
         )}
@@ -812,7 +816,7 @@ export default function Dashboard() {
               {[
                 { label: "Total Sessions", value: websiteData.sessions, delay: 0 },
                 { label: "Page Views", value: websiteData.topPages.reduce((s, p) => s + p.views, 0), delay: 80 },
-                { label: "Top Source", value: timeRange === "7d" ? "Direct (49.5%)" : "Direct (49.0%)", delay: 160 },
+                { label: "Top Source", value: timeRange === "7d" ? "Direct (65.1%)" : "Direct (52.6%)", delay: 160 },
               ].map((k, i) => (
                 <div key={i} className="kpi" style={{ animationDelay: `${k.delay}ms` }}>
                   <div className="kpi-label">{k.label}</div>
@@ -946,22 +950,22 @@ export default function Dashboard() {
               <InsightCard
                 title={"Website + Search \u00b7 " + (timeRange === "7d" ? websiteData.period : websiteData.period)}
                 evidence={timeRange === "7d" ? [
-                  "555 sessions this week \u2014 volume holding",
-                  "Paid social = 26% of sessions (IG 89, FB 54)",
-                  "Home leads at 361 views; Locations 159",
-                  "Search: 69 clicks at 11.42% CTR, position 4.6",
-                  "Desktop 62.2% / Mobile 37.4%",
-                  "A 404 page is among the most-viewed titles (171 views) \u2014 a quick UX/SEO fix",
+                  "530 sessions this week \u2014 volume holding as ads wound down",
+                  "Direct climbed to 65.1%; paid social eased to 11.1% (IG 33, FB 26) with ads ending Jul 31",
+                  "Home leads at 299 views; Locations 78, Our Doctors 69",
+                  "Search: 54 clicks at 10.36% CTR, position 5.8",
+                  "Desktop 74.4% / Mobile 25.2%",
+                  "The 404 page drew 141 views this week \u2014 now a standing fix, not a quirk",
                 ] : [
-                  "2,285 sessions over 30 days",
-                  "Traffic ramped from ~12/day in late June to 70\u2013110/day once ads scaled",
-                  "Home (1,215) and Locations (831) absorb most arrivals",
-                  "Search: 213 clicks at 9.30% CTR, position 5.7, all name-brand",
-                  "A 404 page ranks among top titles (647 views) \u2014 worth redirecting",
-                  "One low-quality referral source held out",
+                  "2,461 sessions over 30 days",
+                  "Paid social = 27% of sessions (IG 454, FB 212) while the July campaign ran",
+                  "Home (1,269) and Locations (809) absorb most arrivals",
+                  "Search: 216 clicks at 9.33% CTR, position 5.0, all name-brand",
+                  "The 404 page is the #3 title at 701 views \u2014 something is linking to a dead URL",
+                  "Locations earns 361 search impressions but only 3 clicks (0.83% CTR)",
                 ]}
-                impact="Paid is filling the funnel well, and search is supplying focused, high-intent visitors."
-                action="Route paid arrivals to a booking page, and redirect the 404 title to a live page."
+                impact="Direct and search held the floor as paid wound down \u2014 and next week's sessions will dip without the ad tailwind."
+                action="Trace and redirect the dead URL feeding the 404, and expect a paid-session drop now that ads have concluded."
                 severity="info" />
             </div>
           </>
@@ -1007,7 +1011,7 @@ export default function Dashboard() {
                 </svg>
               </div>
               <div style={{ marginTop: 8, padding: "10px 14px", background: "rgba(110,139,151,0.12)", borderRadius: 10, border: "1px solid rgba(110,139,151,0.25)" }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: "#6E8B97" }}>{timeRange === "7d" ? "▲ Account views came in at 5,487 across a lighter, no-Reel week of three carousels and seven Stories. The Jul 20 ‘73% of Americans Fear the Dentist’ carousel led at 433 organic views on 198 reach, and reach held at 711/day × 7. This week skewed to followers (57% of views). (Daily shape is estimated — the account-view series isn't exported now that the Profile Growth CSV is retired.)" : "⚡ A viral carousel around ~21.1K views anchors the 30-day window and drives most of the discovery — 30-day views reached 54,160 with 70% coming from non-followers. Evergreen carousels are the month's reach engine."}</span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: "#6E8B97" }}>{timeRange === "7d" ? "▲ Account views rose 27% to 6,973 as Reels returned — two doctor-led Reels, two posts and seven Stories. The Jul 30 gum–heart Reel led engagement (1,332 views, 73 likes, 16.6s avg watch) and the Aug 1 episode Reel led reach at 1,242 accounts. Reach ran 649/day × 7. (Daily shape is estimated — the account-view series isn't exported now that the Profile Growth CSV is retired.)" : "⚡ 30-day views came in at 33,990 across 35 pieces of content — a normalized month after the prior window's viral-carousel spike. The Jul 19 Dr. Sobol post (1,895 views) and the two late-July Reels anchor the window, and reach averaged 865/day."}</span>
               </div>
             </div>
 
@@ -1087,7 +1091,7 @@ export default function Dashboard() {
                       </div>
                     ))}
                     <div style={{ marginTop: 10, padding: "10px 14px", background: "rgba(113,82,98,0.10)", borderRadius: 10, border: "1px solid rgba(113,82,98,0.25)" }}>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: "#715262" }}>{timeRange === "7d" ? "✦ Feed posts and Stories split the 104 account-level interactions this week (posts ~47%, stories ~41%) — with no Reels published, carousels and Stories carried it. Organic per-carousel engagement ran 2.5–4.4%." : "✦ Feed posts drove ~78% of interactions over 30 days and Reels ~13% — the mix has tilted toward carousels, with two Reels published across the window alongside the posts"}</span>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: "#715262" }}>{timeRange === "7d" ? "✦ Reels took 86% of the week's 119 content interactions — the gum–heart Reel alone earned 86 (73 likes, 5 comments, 8 shares) for a 10.8% ER on its reach. Posts added 13%, Stories 1%." : "✦ Reels drove 57% of the 302 content interactions over 30 days and posts 42% — the mix has flipped from the carousel-led prior window, with six Reels published across July"}</span>
                     </div>
                   </div>
                 </div>
@@ -1110,7 +1114,7 @@ export default function Dashboard() {
                       </div>
                     ))}
                     <div style={{ marginTop: 10, padding: "10px 14px", background: "rgba(136,163,174,0.12)", borderRadius: 10, border: "1px solid rgba(136,163,174,0.25)" }}>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: "#6E8B97" }}>{timeRange === "7d" ? "✦ Only ~43% of views came from non-followers this week, with follower share climbing to 57% — the week leaned on people who already follow the practice, the opposite of the 30-day picture." : "✦ ~71% of views came from non-followers over 30 days — paid distribution and a viral carousel continue to reach new audiences"}</span>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: "#6E8B97" }}>{timeRange === "7d" ? "✦ An estimated ~55% of views came from non-followers this week as the Reel-heavy mix reopened discovery. (Split estimated from content-type mix — the native follower breakdown wasn't exported this cycle.)" : "✦ An estimated ~52% of 30-day views came from non-followers — a balanced posts-and-Reels month without the prior window's viral outlier. (Split estimated from content-type mix — native breakdown not exported this cycle.)"}</span>
                     </div>
                   </div>
                 </div>
@@ -1133,7 +1137,7 @@ export default function Dashboard() {
                   ))}
                 </div>
                 <div className="alert-box danger-bg" style={{ marginTop: 14, padding: "10px 14px", background: "rgba(190,90,90,0.10)", borderRadius: 10, border: "1px solid rgba(190,90,90,0.25)" }}>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: "#BE5A5A" }}>{timeRange === "7d" ? "✦ 14 likes and 3 shares across three carousels this week, with 0 saves — saves are the one signal still to build, and blended engagement held at ~2.1%. A save prompt on carousels is a straightforward way to turn this reach into a durable signal" : "✦ 6 saves and 21 shares over 30 days — bookmark-worthy formats are the next engagement lever to grow"}</span>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "#BE5A5A" }}>{timeRange === "7d" ? "✦ 97 likes, 14 shares and 5 comments this week — the strongest interaction week of the window, nearly all on the gum–heart Reel. Saves stayed thin at 2; a 'save this for your next check-up' prompt is the open lever" : "✦ 30 shares and 6 comments over 30 days against 6 saves — sharing is the audience's default signal here; bookmark-worthy framing is the next lever to grow"}</span>
                 </div>
               </div>
             </div>
@@ -1167,32 +1171,32 @@ export default function Dashboard() {
               <InsightCard
                 title={"Social Intelligence \u00b7 " + socialData.period}
                 evidence={timeRange === "7d" ? [
-                  "5,487 views on 4,977 reach (711 avg/day \u00d7 7) \u2014 a lighter week",
-                  "104 account-level interactions: Post 47% \u00b7 Story 41% \u00b7 Reel 12%",
-                  "Engagement rate ~2.1%, a blended read across three carousels",
-                  "Follower share of views 57% \u2014 the opposite of the 30-day picture",
-                  "Ten pieces published \u2014 3 carousels, 0 Reels, 7 Stories",
+                  "6,973 views on 4,543 reach (649 avg/day \u00d7 7) \u2014 views up 27%",
+                  "119 content interactions: Reel 86% \u00b7 Post 13% \u00b7 Story 1%",
+                  "Engagement rate ~2.6% \u2014 lifted by the gum\u2013heart Reel's 10.8%",
+                  "Eleven pieces published \u2014 2 Reels, 2 posts, 7 Stories",
+                  "Followers +5 to 3,193",
                 ] : [
-                  "54,160 views on 24,360 reach (812 avg/day \u00d7 30)",
-                  "800 account-level interactions: Post 78% \u00b7 Reel 13% \u00b7 Story 9%",
-                  "Engagement rate ~3.3% across the window",
-                  "A viral carousel at ~21.1K views drives most of the reach",
-                  "Followers +40; 71% of views from non-followers",
+                  "33,990 views on 25,950 reach (865 avg/day \u00d7 30)",
+                  "302 content interactions: Reel 57% \u00b7 Post 42% \u00b7 Story 1%",
+                  "35 pieces published \u2014 8 posts, 6 Reels, 21 Stories",
+                  "A normalized month after the prior window's viral-carousel spike",
+                  "Followers +36; story completion 83%",
                 ]}
-                impact={timeRange === "7d" ? "A quieter, follower-led week \u2014 the account held its engaged core." : "A viral carousel is carrying the account beyond the posting week."}
-                action={timeRange === "7d" ? "Hold the carousel-led mix and restore doctor-led Reels." : "Identify the resurging carousel and build three more like it."}
+                impact={timeRange === "7d" ? "Reels returned and both discovery and engagement rose with them." : "A steadier, higher-cadence month \u2014 the account now runs on its own content, not one outlier."}
+                action={timeRange === "7d" ? "Hold the two-Reel weekly cadence and keep pairing episodes with launch Reels." : "Build on the gum\u2013heart Reel's format \u2014 health-connection storytelling is the repeatable winner."}
                 severity={timeRange === "7d" ? "success" : "info"} />
               <InsightCard
                 title="Key Insight"
                 evidence={[
-                  "Engagement rate held at ~2.1% on a no-Reel week",
-                  "Follower share of views jumped to 57%, from 39%",
-                  "\u201873% of Americans Fear the Dentist\u2019 carousel: 433 views, 198 reach",
-                  "No Reels this week; doctor-led Reels reach 6.7s when live",
-                  "Booking clicks at 12, with homepage clicks at 145 over 30 days",
+                  "The gum\u2013heart Reel set the engagement benchmark: 10.8% ER, 16.6s avg watch",
+                  "Engagement rate rose to ~2.6% as Reels took 86% of interactions",
+                  "Podcast crossed 5,000 downloads and 50 episodes in the same week",
+                  "The episode launch Reel reached 1,242 accounts \u2014 widest of the week",
+                  "Booking clicks at 18 this week; 70 over 30 days, up from 62",
                 ]}
-                impact="A follower-led week held the engaged core \u2014 and making booking links more visible is the natural next step."
-                action="Add booking links to Stories and bio, and aim for two carousels per doctor-led Reel."
+                impact="Health-connection Reels are the account's proven engagement engine \u2014 and the milestone week showed cross-channel promotion compounding."
+                action="Make the oral\u2013systemic Reel a monthly fixture, and pair every episode with a launch Reel."
                 severity="success" />
             </div>
           </>
@@ -1203,9 +1207,9 @@ export default function Dashboard() {
           <>
             <div className="kpi-row">
               {[
-                { label: "Total Spend", value: "$279.92", delay: 0 },
+                { label: "Total Spend", value: "$312.05", delay: 0 },
                 { label: "Landing-Page Views", value: adsData.results, delay: 80 },
-                { label: "Cost / Result", value: "$0.76", delay: 160 },
+                { label: "Cost / Result", value: "$0.77", delay: 160 },
                 { label: "Impressions", value: adsData.impressions, delay: 240 },
                 { label: "Paid Reach", value: adsData.reach, delay: 320 },
               ].map((k, i) => (
@@ -1244,9 +1248,9 @@ export default function Dashboard() {
             <div className="cols2">
               <div className="card"><div className="card-hd">Spend Allocation</div>
                 <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
-                  <Donut data={[{ value: 70 }, { value: 30 }]} colors={["#715262", "#88A3AE"]} size={120} stroke={18} />
+                  <Donut data={[{ value: 69 }, { value: 31 }]} colors={["#715262", "#88A3AE"]} size={120} stroke={18} />
                   <div style={{ flex: 1 }}>
-                    {[{ label: "Your best summer accessory", value: 70, color: "#715262" }, { label: "Make it a summer to remember", value: 30, color: "#88A3AE" }].map((item) => (
+                    {[{ label: "Your best summer accessory", value: 69, color: "#715262" }, { label: "Make it a summer to remember", value: 31, color: "#88A3AE" }].map((item) => (
                       <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 10, padding: "7px 0" }}>
                         <div style={{ width: 10, height: 10, borderRadius: 3, background: item.color }} />
                         <span style={{ flex: 1, fontSize: 13, fontWeight: 500 }}>{item.label}</span>
@@ -1256,35 +1260,35 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-              <div className="card"><div className="card-hd">Paid Contribution · Native IG</div>
+              <div className="card"><div className="card-hd">Paid Contribution · Site Sessions</div>
                 <div style={{ display: "flex", gap: 14 }}>
                   <div className="stat-box" style={{ flex: 1, textAlign: "center" as const, padding: "16px", background: "rgba(113,82,98,0.08)", borderRadius: 12 }}>
-                    <div style={{ fontSize: 26, fontWeight: 700, color: "#715262" }}>{adsData.pctOfViews7d}%</div>
-                    <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4 }}>of Views from ads (7d)</div>
+                    <div style={{ fontSize: 26, fontWeight: 700, color: "#715262" }}>666</div>
+                    <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4 }}>paid site sessions (30d · IG 454 + FB 212)</div>
                   </div>
                   <div className="stat-box" style={{ flex: 1, textAlign: "center" as const, padding: "16px", background: "rgba(136,163,174,0.10)", borderRadius: 12 }}>
-                    <div style={{ fontSize: 26, fontWeight: 700, color: "#88A3AE" }}>{adsData.pctOfInteractions7d}%</div>
-                    <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4 }}>of Interactions from ads (7d)</div>
+                    <div style={{ fontSize: 26, fontWeight: 700, color: "#88A3AE" }}>27%</div>
+                    <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4 }}>of 30-day site sessions from ads</div>
                   </div>
                 </div>
                 <div style={{ marginTop: 14, padding: "10px 14px", background: "rgba(136,163,174,0.12)", borderRadius: 10, border: "1px solid rgba(136,163,174,0.25)" }}>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: "#6E8B97" }}>&#10022; Over 30 days ads carried {adsData.pctOfViews}% of content-type views (~9,800 of 54,160) but only {adsData.pctOfInteractions}% of interactions (~11 of 800). Paid buys reach; organic earns engagement. &#9888; Per-ad reach is not de-duplicated &mdash; the {adsData.reach.toLocaleString()} total overstates unique people; use impressions.</span>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "#6E8B97" }}>&#10022; July's buy ran as standalone ad units (landing-page objective), not boosted posts &mdash; so Instagram content views were 100% organic this window while ads drove 27% of site sessions. That's a structural shift from the prior flight, which promoted content directly. &#9888; Per-ad reach is not de-duplicated &mdash; the {adsData.reach.toLocaleString()} total overstates unique people; use impressions.</span>
                 </div>
               </div>
             </div>
 
             <div className="card"><div className="card-hd">Paid Intelligence</div>
               <InsightCard
-                title="Paid is delivering efficient reach"
+                title="July's campaign closed with efficient reach"
                 evidence={[
-                  "$279.92 spend \u2192 367 landing-page views at $0.76",
-                  "Quality and engagement rankings both sit at Average",
-                  "Both whitening ads rank conversion bottom 35%",
-                  "Ads contributed 19% of 7-day content views",
-                  "Conversion tracking is the next piece to add",
+                  "$312.05 final spend \u2192 404 landing-page views at $0.77",
+                  "39,434 impressions; quality and engagement rankings at Average",
+                  "Both whitening ads finished conversion-ranked bottom 35%",
+                  "Ads drove 27% of 30-day site sessions (IG 454 + FB 212)",
+                  "Both ads concluded Jul 31 \u2014 expect a paid-session dip next window",
                 ]}
-                impact="The media buy is efficient; the landing experience is the next lever."
-                action="Add a Lead/Booking event so results are fully measurable, then refine the landing page."
+                impact="The media buy was efficient; the landing experience is the next lever \u2014 and the baseline will reset without ads."
+                action="Add a Lead/Booking event before the next flight, and route ads to a booking-first page."
                 severity="info" />
             </div>
           </>
@@ -1386,14 +1390,14 @@ export default function Dashboard() {
               <InsightCard
                 title="Podcast Intelligence"
                 evidence={[
-                  "4,932 all-time downloads across 49 episodes \u2014 68 from the 5K milestone",
-                  "164 last 30 days, 332 last 90; 33 in the last 7 days (down from 66)",
-                  "\u2018Postgraduate Dentistry\u2019 episode had a two-post Instagram run in June",
-                  "Platform split: Spotify 1,194 \u00b7 Web 1,189 \u00b7 Apple 1,071",
-                  "NYC metro dominates \u2014 New York 412, Brooklyn 123, Queens 90",
+                  "Milestone week: 5,000 all-time downloads and the 50th episode published",
+                  "68 downloads since last report \u2014 double the prior week's 33 (30/90-day rollups carried; Overview export not pulled this cycle)",
+                  "\u2018What 50 Years in Dentistry Teaches You\u2019 (Jul 27): 15 first-week downloads",
+                  "Platform split: Spotify 1,246 \u00b7 Web 1,191 \u00b7 Apple 1,081",
+                  "NYC leads the last-5-episode audience \u2014 62% North America, NYC top city",
                 ]}
-                impact="Downloads eased week-over-week, but the all-time base keeps climbing toward 5K."
-                action="Ship a new episode and give it a two-post Instagram run."
+                impact="Both lifetime milestones landed in one week, with cross-channel promotion doubling the weekly pace."
+                action="Announce the 5K/50-episode milestone to the email list \u2014 the Podcast Newsletter is the best-opening send on record."
                 severity="success" />
             </div>
           </>
@@ -1407,7 +1411,7 @@ export default function Dashboard() {
               { label: "Open Rate", value: emailData.openRate + "%", delay: 80 },
               { label: "Click Rate", value: emailData.clickRate + "%", delay: 160 },
               { label: "Click-to-Open", value: emailData.ctor + "%", delay: 240 },
-              { label: "Bounce Rate", value: emailData.bounceRate + "%", delay: 320 },
+              { label: "Unsubscribes", value: emailData.unsubs, delay: 320 },
             ].map((k, i) => (
               <div key={i} className="kpi" style={{ animationDelay: `${k.delay}ms` }}>
                 <div className="kpi-label">{k.label}</div>
@@ -1431,8 +1435,8 @@ export default function Dashboard() {
                     <span className="display-num" style={{ width: 52, textAlign: "right" as const, fontSize: 15 }}>{c.openRate}%</span>
                   </div>
                   <div style={{ display: "flex", gap: 18, flexWrap: "wrap" as const }}>
-                    {[{ l: "opens", v: c.opens.toLocaleString() }, { l: "clicks", v: c.clicks }, { l: "click rate", v: c.clickRate + "%" }, { l: "bounce", v: c.bounceRate + "%" }, { l: "mobile open", v: c.mobile + "%" }].map((m) => (
-                      <div key={m.l}><span style={{ fontSize: 13, fontWeight: 700, color: m.l === "bounce" ? "#BE5A5A" : "#715262" }}>{m.v}</span> <span style={{ fontSize: 11, color: "#9B9196" }}>{m.l}</span></div>
+                    {[{ l: "opens", v: c.opens.toLocaleString() }, { l: "open rate", v: c.openRate + "%" }, { l: "clicks", v: c.clicks }, { l: "click rate", v: c.clickRate + "%" }, { l: "mobile open", v: c.mobile + "%" }].map((m) => (
+                      <div key={m.l}><span style={{ fontSize: 13, fontWeight: 700, color: "#715262" }}>{m.v}</span> <span style={{ fontSize: 11, color: "#9B9196" }}>{m.l}</span></div>
                     ))}
                   </div>
                 </div>
@@ -1466,20 +1470,20 @@ export default function Dashboard() {
 
             <div className="card"><div className="card-hd">List Health</div>
               <div style={{ textAlign: "center" as const, padding: "10px 0 18px" }}>
-                <div className="big-num" style={{ color: "#BE5A5A" }}>{emailData.bounceRate}%</div>
-                <div style={{ fontSize: 12, color: "#9B9196", marginTop: 2 }}>Bounce Rate · {emailData.period}</div>
+                <div className="big-num" style={{ color: "#88A3AE" }}>{emailData.unsubRate}%</div>
+                <div style={{ fontSize: 12, color: "#9B9196", marginTop: 2 }}>Unsubscribe Rate · {emailData.period}</div>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
-                {emailLifetime.worstBounce.map((b) => (
+                {emailLifetime.campaignUnsubs.map((b) => (
                   <div key={b.name} style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <span style={{ flex: 1, fontSize: 12.5, color: "#5C4E54" }}>{b.name}</span>
                     <span style={{ fontSize: 11, color: "#9B9196" }}>{b.sends.toLocaleString()}</span>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: b.rate >= 10 ? "#BE5A5A" : "#BDCBCE", width: 46, textAlign: "right" as const }}>{b.rate}%</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: b.rate >= 1 ? "#BE5A5A" : "#BDCBCE", width: 46, textAlign: "right" as const }}>{b.rate}%</span>
                   </div>
                 ))}
               </div>
               <div className="alert-box danger-bg">
-                <span style={{ fontSize: 12, fontWeight: 600, color: "#BE5A5A" }}>✦ The healthy benchmark sits around 2%. The lifetime average is {emailLifetime.bounceRate}% across {emailLifetime.sends.toLocaleString()} sends, so a list refresh is the highest-value quick win here — it protects deliverability for every future send.</span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: "#BE5A5A" }}>✦ Unsubscribes are running at 0.2–0.5% per send — comfortably under the ~0.5% healthy ceiling and steady across four campaigns. The audience that opens keeps choosing to stay, which is the clearest sign the content mix is right.</span>
               </div>
             </div>
           </div>
@@ -1498,7 +1502,7 @@ export default function Dashboard() {
                 ))}
               </div>
               <div className="alert-box plum-bg">
-                <span style={{ fontSize: 12, fontWeight: 600, color: "#715262" }}>✦ The best-performing email DDS-PC has sent was the Podcast Newsletter, which opened at 63.0% — ahead of the Whitening Offer (54.9%) and the Gum Article (52.4%). The pattern mirrors the social side: specific, editorial subjects outperform generic brand-voice sends.</span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: "#715262" }}>✦ The best-performing email DDS-PC has sent remains the Podcast Newsletter, which opened at 63.1% — ahead of the Whitening Offer (55.3%) and the Gum Article (54.1%). The new Summer Promo Extensions send opened at 47.9% but drew 46 clicks — the best click count of the three July-window sends — and its mobile open share jumped to 47.7% vs ~31% on every prior campaign.</span>
               </div>
             </div>
 
@@ -1519,7 +1523,7 @@ export default function Dashboard() {
                 ))}
               </div>
               <div className="alert-box plum-bg">
-                <span style={{ fontSize: 12, fontWeight: 600, color: "#715262" }}>✦ Open rates are strong across the board — the three DDS-PC campaigns average {emailLifetime.openRate}% on {emailLifetime.sends.toLocaleString()} sends. The one number to fix is deliverability: bounce is running ~{emailLifetime.bounceRate}%, so list hygiene is the lever that protects every future send.</span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: "#715262" }}>✦ Open rates are strong across the board — the four DDS-PC campaigns average {emailLifetime.openRate}% on {emailLifetime.sends.toLocaleString()} sends. The newest signal worth acting on: the Summer Promo Extensions send opened 47.7% on mobile vs ~31% on every prior campaign — the list is shifting to phones, so mobile-first subject lines and single-column layouts will protect those opens.</span>
               </div>
             </div>
           </div>
@@ -1530,22 +1534,22 @@ export default function Dashboard() {
               evidence={[
                 `${emailData.openRate}% open rate over ${emailData.campaignCount} campaign${emailData.campaignCount > 1 ? "s" : ""} — well above the ~25% dental norm`,
                 `Only ${emailData.clicks} clicks from ${emailData.opens.toLocaleString()} opens (${emailData.ctor}% click-to-open)`,
-                "Lifetime click rate 1.27% across 3 campaigns",
-                "Best-ever open was the DDS-PC Podcast Newsletter at 63.0%",
+                "Lifetime click rate 1.81% across 4 campaigns",
+                "Best-ever open remains the DDS-PC Podcast Newsletter at 63.1%",
               ]}
               impact="The list reads the email. It just never gets asked to book."
               action="Put one booking CTA above the fold in every send."
               severity="info" />
             <InsightCard
-              title="List hygiene is the highest-value email fix"
+              title="The list is moving to mobile"
               evidence={[
-                `${emailData.bounceRate}% bounce rate this period — the healthy ceiling is 2%`,
-                "Lifetime 11.6% across 7,320 sends",
-                "Highest: Whitening Offer (12.0%), Gum Article (11.6%)",
-                "851 bounces across 3 campaigns to clean and suppress",
+                "Summer Promo Extensions opened 47.7% on mobile — vs ~31% on every prior send",
+                "It also drew 46 clicks, the best click count of the three July-window sends",
+                "3.16% click-to-open on the new send, up from 1.79% the prior week",
+                "Unsubscribes held at 0.3% — no fatigue signal from the higher cadence",
               ]}
-              impact="Sustained bounces at this level put inbox placement at risk for every future send."
-              action="Run list cleaning before the next campaign, then suppress hard bounces permanently."
+              impact="Mobile is becoming the primary read environment — design and subject lines should assume a phone screen first."
+              action="Keep subject lines under ~40 characters and use single-column, thumb-friendly layouts with one booking CTA."
               severity="info" />
           </div>
         </>)}
