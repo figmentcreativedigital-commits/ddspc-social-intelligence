@@ -777,6 +777,24 @@ export default function Dashboard() {
             <div className="card">
               <InsightCard title={"Link Attribution · " + linkData.period} body={"363 clicks across named destinations in July — Homepage 171, Website 54, DDS-PC Midtown 47, the gum-disease article 44, DDS-PC UES 24 and Locations 23. Booking links (Midtown + UES = 71) are the clearest intent signal in the set, and the article link at 44 shows educational content pulling its own traffic. ✓ Bot filtering applied — Short.io logged 2,708 raw clicks against 432 human, and the 2,271 clicks that landed on no named path account for nearly all of the difference, so the named totals above are effectively clean. Standard datacenter geo removals applied (Ashburn, Santa Clara, Amsterdam, Singapore, Brussels, Columbus) along with 41 clicks from Bulgaria. New York City (45) and Brooklyn (19) lead the verified city panel. ✓ DDS-PC merge applied — Midtown includes 2 clicks carried from the NYCDS link set; UES had none."} severity="info" />
             </div>
+          </>
+        )}
+
+        {/* WEBSITE */}
+        {tab === "website" && (
+          <>
+            <div className="kpi-row">
+              {[
+                { label: "Total Sessions", value: websiteData.sessions, delay: 0 },
+                { label: "Page Views", value: websiteData.topPages.reduce((s, p) => s + p.views, 0), delay: 80 },
+                { label: "Top Source", value: "Direct (50.0%)", delay: 160 },
+              ].map((k, i) => (
+                <div key={i} className="kpi" style={{ animationDelay: `${k.delay}ms` }}>
+                  <div className="kpi-label">{k.label}</div>
+                  <div className="kpi-val">{typeof k.value === "number" ? <AnimatedNumber value={k.value} /> : <span>{k.value}</span>}</div>
+                </div>
+              ))}
+            </div>
             <div className="card"><div className="card-hd">Visitors Over Time · {websiteData.period}</div>
               <div style={{ position: "relative", height: 180 }}>
                 <svg viewBox="0 0 700 160" style={{ width: "100%", height: "100%" }}>
