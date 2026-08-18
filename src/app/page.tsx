@@ -1,1616 +1,991 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
-// Fallback data — used while loading or if Sheets API fails
-const FALLBACK_DATA = {
-  client: { name: "EEC", fullName: "Edgard El Chaar, DDS, PC", period: "July 27 – August 2, 2026" },
-  kpi: {
-    followers: { value: 3193, change: 5, label: "Followers" },
-    reach: { value: 4543, label: "Reach" },
-    views: { value: 6973, label: "Total Views" },
-    engagementRate: { value: 2.6, label: "Engagement Rate", suffix: "%" },
-    engagements: { value: 119, label: "Engagements" },
-    watchTime: { value: "16.6s", label: "Watch Time" },
-  },
-  posts: [
-    { id: 1, title: "Gum Health & Heart Health (Reel)", type: "Reel", views: 1332, reach: 797, likes: 73, comments: 5, saves: 0, shares: 8, isTop: true, igPostUrl: "https://www.instagram.com/reel/DbbSMVEhWzx/" },
-    { id: 2, title: "NEW EPISODE · What 50 Years in Dentistry Teaches You (Reel)", type: "Reel", views: 1512, reach: 1242, likes: 13, comments: 0, saves: 2, shares: 1, isTop: false, igPostUrl: "https://www.instagram.com/reel/DbgAPneBJRm/" },
-    { id: 3, title: "Your Gums and Your Heart May Be Connected", type: "Post", views: 590, reach: 199, likes: 6, comments: 0, saves: 0, shares: 5, isTop: false, igPostUrl: "https://www.instagram.com/p/DbY6ZfGGYZt/" },
-  ] as any[],
-  contentMix: { posts: 21, reels: 63, stories: 16 },
-  audience: {
-    gender: { male: 52, female: 48 },
-    age: [
-      { range: "18-24", pct: 1.6 }, { range: "25-34", pct: 21.1 }, { range: "35-44", pct: 36.6 },
-      { range: "45-54", pct: 21.3 }, { range: "55-64", pct: 12.8 }, { range: "65+", pct: 6.5 },
+/* ==========================================================================
+   VARIANT
+   Set per Vercel project, never in this file. Unset falls back to "client",
+   so a missing or misspelt variable can only ever produce the client report.
+   ========================================================================== */
+type Variant = "client" | "internal";
+const VARIANT: Variant =
+  process.env.NEXT_PUBLIC_REPORT_VARIANT === "internal" ? "internal" : "client";
+const IS_INTERNAL: boolean = VARIANT === "internal";
+
+/* Sections present in this build, in order. Numbering and the nav rail both
+   derive from this array, so removing one never leaves a gap in the sequence. */
+const ALL_SECTIONS = [
+  { id: "brief", label: "The brief" },
+  { id: "period", label: "The period" },
+  { id: "scoreboard", label: "Scoreboard" },
+  { id: "worked", label: "What worked" },
+  { id: "attention", label: "Needs attention", internalOnly: true },
+  { id: "learned", label: "What we learned" },
+  { id: "moves", label: "Next moves", internalOnly: true },
+  { id: "plan", label: "What we do next", clientOnly: true },
+  { id: "detail", label: "Detail" },
+] as { id: string; label: string; internalOnly?: boolean; clientOnly?: boolean }[];
+
+const NAV = ALL_SECTIONS.filter((x) => (IS_INTERNAL ? !x.clientOnly : !x.internalOnly));
+const ORDINALS = ["One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight"];
+const numOf = (id: string) => ORDINALS[NAV.findIndex((n) => n.id === id)] ?? "";
+const has = (id: string) => NAV.some((n) => n.id === id);
+
+/* ==========================================================================
+   REPORT
+   Every figure below traces to a source export. Nothing is estimated.
+   Each cycle: edit numbers and narrative strings here. Do not touch the JSX.
+   ========================================================================== */
+const R = {
+  client: "Edgard El Chaar, DDS, PC",
+  studio: "Figment Creative",
+  period: "August 3 \u2013 16, 2026",
+  context: "Thirty-day context: July 18 \u2013 August 16, 2026",
+
+  /* ----------------------------------------------------------------- BRIEF */
+  brief: {
+    title: "The brief",
+    lede: "If you read nothing else, read this. It is the whole period in four lines.",
+    items: [
+      {
+        role: "Headline",
+        text: "No advertising ran this period, and search still grew. Google sent 19.6% more visits per day than in the two weeks before, and the share of people who clicked improved by 1.3 points.",
+        client: {
+          role: "Headline",
+          text: "Search grew this period without any advertising behind it. Google sent 19.6% more visits per day than in the two weeks before, and a higher share of the people who saw the practice chose to click through.",
+        },
+      },
+      {
+        role: "What worked",
+        text: "Doctor-led editorial content. The three reels and three posts published were all clinical or professional in tone, and they earned 268 interactions against a reach of roughly 2,600 \u2014 an engagement rate of 10.3%.",
+      },
+      {
+        role: "Primary concern",
+        text: "Reach fell 74% per day once the paid flight ended on August 2. Engagement rate rose only because the denominator shrank faster than the numerator. Interactions themselves were down 22% per day.",
+        client: {
+          role: "What we are watching",
+          text: "The advertising flight concluded on August 2, so fewer people saw the practice this period than in the two weeks before. The people who did see it engaged more closely than they had while the ads were running.",
+        },
+      },
+      {
+        role: "The number that matters",
+        text: "48 people clicked a booking link in fourteen days \u2014 26 for Midtown, 22 for the Upper East Side. Every other figure in this report measures attention. This one measures intent.",
+      },
     ],
   },
-  viewerSplit: { followers: 45, nonFollowers: 55 },
+
+  /* ---------------------------------------------------------------- PERIOD */
+  period_: {
+    lede: "Daily website visitors across the full thirty days. The shaded band is the advertising flight, which concluded on August 2. The reporting period is everything after it.",
+    paidLabel: "Advertising flight",
+    windowLabel: "Reporting period",
+    daily: [
+      { d: "Jul 18", v: 53, paid: true }, { d: "Jul 19", v: 51, paid: true },
+      { d: "Jul 20", v: 73, paid: true }, { d: "Jul 21", v: 78, paid: true },
+      { d: "Jul 22", v: 87, paid: true }, { d: "Jul 23", v: 55, paid: true },
+      { d: "Jul 24", v: 68, paid: true }, { d: "Jul 25", v: 50, paid: true },
+      { d: "Jul 26", v: 66, paid: true }, { d: "Jul 27", v: 93, paid: true },
+      { d: "Jul 28", v: 103, paid: true }, { d: "Jul 29", v: 98, paid: true },
+      { d: "Jul 30", v: 32, paid: true }, { d: "Jul 31", v: 27, paid: true },
+      { d: "Aug 1", v: 53, paid: true }, { d: "Aug 2", v: 46, paid: true },
+      { d: "Aug 3", v: 74 }, { d: "Aug 4", v: 40 }, { d: "Aug 5", v: 40 },
+      { d: "Aug 6", v: 46 }, { d: "Aug 7", v: 34 }, { d: "Aug 8", v: 29 },
+      { d: "Aug 9", v: 39 }, { d: "Aug 10", v: 62 }, { d: "Aug 11", v: 58 },
+      { d: "Aug 12", v: 63 }, { d: "Aug 13", v: 59 }, { d: "Aug 14", v: 28 },
+      { d: "Aug 15", v: 12 }, { d: "Aug 16", v: 18 },
+    ],
+    note: "Website visitors ran at 64.6 a day while the flight was live and 43.0 a day after it ended. The practice did not become less visible; the spend stopped.",
+    noteClient: "Website visitors ran at 64.6 a day while the advertising was live and 43.0 a day after it concluded on August 2.",
+  },
+
+  /* ------------------------------------------------------------ SCOREBOARD */
+  scoreboard: {
+    lede: "Every number here covers August 3 to 16 and comes from a platform export. Where a comparison is shown, it is against the sixteen days before.",
+    rows: [
+      { k: "Website sessions", v: "763", c: "\u221233% per day", dir: "down", note: "Advertising concluded August 2" },
+      { k: "New website visitors", v: "602", c: "43.0 a day", dir: "flat", note: "64.6 a day in the prior period" },
+      { k: "Search clicks", v: "134", c: "+19.6% per day", dir: "up", note: "Best-performing channel this period" },
+      { k: "Search impressions", v: "1,102", c: "+6.5% per day", dir: "up", note: "78.7 a day" },
+      { k: "Search click rate", v: "12.16%", c: "+1.3 points", dir: "up", note: "10.82% in the prior period" },
+      { k: "Instagram interactions", v: "268", c: "\u221222% per day", dir: "down", note: "Account-level total" },
+      { k: "Instagram engagement rate", v: "10.3%", c: "+6.9 points", dir: "up", note: "Interactions divided by reach" },
+      { k: "Content published", v: "12", c: "0.86 a day", dir: "flat", note: "3 posts, 3 reels, 6 stories" },
+      { k: "Short link clicks", v: "246", c: "\u22125.2%", dir: "flat", note: "Broadly level with the prior period" },
+      { k: "Booking link clicks", v: "48", c: "Midtown 26 \u00b7 UES 22", dir: "up", note: "The clearest signal of intent" },
+      { k: "Podcast downloads", v: "175", c: "No new episode", dir: "flat", note: "Back catalogue and residual traffic" },
+    ],
+  },
+
+  /* ---------------------------------------------------------------- WORKED */
+  worked: {
+    lede: "Six pieces went out on the feed this period. All six were clinical or professional in tone, and that is the pattern worth keeping.",
+    ledeClient: "Six pieces went out on the feed this period. All six were clinical or professional in tone, and that is the pattern worth keeping.",
+    hero: {
+      url: "https://www.instagram.com/reel/DcBsXFChBmd/",
+      title: "Oral health is closely connected to your overall health",
+      date: "August 14",
+      format: "Reel",
+      stats: [
+        { v: "875", l: "Views" }, { v: "572", l: "Reach" },
+        { v: "51", l: "Interactions" }, { v: "33.4%", l: "Watched past 3s" },
+      ],
+      why: "The strongest piece of the period on every measure. It held attention for nine seconds on average, and a third of everyone served it stayed past the opening three. Systemic-health framing is doing real work for this account.",
+    },
+    gallery: [
+      { url: "https://www.instagram.com/p/Dbln3Q-B2e7/", title: "Now published in the International Journal of Periodontics & Restorative Dentistry", date: "August 3", format: "Post", views: 514, reach: 229, interactions: 14 },
+      { url: "https://www.instagram.com/reel/DboRAFaBy0n/", title: "What does it mean to be the \u201cMayo Clinic of dentistry\u201d?", date: "August 4", format: "Reel", views: 657, reach: 403, interactions: 17 },
+      { url: "https://www.instagram.com/reel/Dbvqv7RBep2/", title: "When business decisions start driving patient care", date: "August 10", format: "Reel", views: 651, reach: 474, interactions: 17 },
+      { url: "https://www.instagram.com/p/Dbv-de3hqzI/", title: "Dr. El Chaar\u2019s latest editorial on periodontal and peri-implant disease", date: "August 7", format: "Post", views: 513, reach: 177, interactions: 8 },
+      { url: "https://www.instagram.com/p/DbwH5LsBUMd/", title: "Earning the trust of our patients through compassionate care", date: "August 12", format: "Post", views: 310, reach: 132, interactions: 6 },
+    ],
+    galleryNote: "Ranked by views. Post-level figures compare content against content; they are never summed to build a total.",
+  },
+
+  /* ------------------------------------------------- ATTENTION (internal)  */
+  attention: {
+    lede: "Five things worth an owner and a decision before the next cycle.",
+    items: [
+      {
+        tag: "Real gap",
+        title: "The email list is not reaching one address in eight",
+        body: "Both July sends bounced at 11.9% and 12.1% \u2014 roughly 415 undeliverable addresses each time. A healthy list runs under 2%. Sustained at this level it also puts inbox placement at risk for the addresses that are valid.",
+      },
+      {
+        tag: "Real gap",
+        title: "The podcast has been quiet since July 27",
+        body: "No episode published in the reporting period, and the gap since the last one is now the longest of 2026. That episode is performing well \u2014 24 downloads, 5 of them in the last seven days, the strongest recent-week figure of any episode. The format works; the cadence is the constraint.",
+      },
+      {
+        tag: "Ceiling",
+        title: "Search only works for people who already know the name",
+        body: "Across thirty days, 39 brand queries earned 102 of 103 visible clicks. Sixty-three non-brand queries earned one, and it was somebody searching a different dentist. Every /dental-service/ page sits at zero clicks.",
+      },
+      {
+        tag: "Opportunity",
+        title: "People search the practice address and do not arrive",
+        body: "\u201c933 5th avenue nyc\u201d and \u201c933 fifth avenue nyc\u201d together drew 45 impressions and zero clicks across thirty days, both ranking around position 9.5. This is the most fixable item in the report.",
+      },
+      {
+        tag: "Watch",
+        title: "Mobile ranks better and converts worse",
+        body: "Mobile draws more impressions than desktop (575 against 525) at nearly four positions better placement, yet converts at 9.39% against desktop's 15.24%. The pattern holds across both windows, so it is structural rather than noise.",
+      },
+    ],
+  },
+
+  /* --------------------------------------------------------------- LEARNED */
+  learned: {
+    lede: "Six things this period taught us that we did not know a fortnight ago.",
+    items: [
+      {
+        title: "Editorial content is this account\u2019s strongest register",
+        body: "Every piece published was clinical or professional \u2014 a journal publication, an editorial, two conversations about the profession, a systemic-health explainer. Posts and reels performed almost identically (120 and 115 interactions from three pieces each), which does not usually happen. When a post carries genuine professional substance it holds its own against video.",
+      },
+      {
+        title: "The advertising bought reach and nothing else",
+        body: "Across thirty days, 1,850 advertising views produced two interactions. The flight moved people to the site \u2014 245 sessions \u2014 but it did not produce engagement, follows or participation. That is worth knowing before the next flight is planned.",
+        client: {
+          title: "Advertising and organic content do different jobs",
+          body: "The July flight brought 245 visits to the website. The organic content over the same stretch is what produced the conversation \u2014 the follows, comments and shares. The two are worth planning as complements rather than substitutes.",
+        },
+      },
+      {
+        title: "One recording served two channels",
+        body: "The July 27 podcast episode became the August 1 reel, which drew 1,324 reach \u2014 the widest of any reel in the thirty days. The episode itself is the fastest-moving in the recent catalogue. One conversation, two channels, both performing.",
+      },
+      {
+        title: "A globally distributed podcast has a local audience",
+        body: "The podcast reaches 115 countries and 1,055 cities. New York State alone accounts for 981 lifetime downloads across 91 cities \u2014 19.2% of everything. A show made for the profession is being heard in the practice\u2019s own catchment.",
+      },
+      {
+        title: "Carousels outperform single images",
+        body: "Across thirty days the four carousels averaged 1,014 views; six single images averaged 548. The strongest post of the month by a wide margin was the Dr. Vitaliya Sobol carousel on July 19, at 2,042 views.",
+      },
+      {
+        title: "Booking links are the only direct measure of intent",
+        body: "48 clicks in fourteen days, split almost evenly between Midtown and the Upper East Side. Reach and views measure who noticed; this measures who acted. It deserves a permanent place at the top of the scoreboard.",
+      },
+    ],
+  },
+
+  /* ---------------------------------------------------- MOVES (internal)   */
+  moves: {
+    lede: "Five actions, each with an owner and the number that will judge it.",
+    items: [
+      {
+        action: "Clean the email list before the next send",
+        owner: "Figment",
+        metric: "Bounce rate under 5% on the next campaign",
+        body: "Run the list through verification and suppress hard bounces. At 12% the practice is paying to send to roughly 415 addresses that do not exist, and risking placement for the ones that do.",
+      },
+      {
+        action: "Get the podcast back on a monthly cadence",
+        owner: "Practice \u00b7 Figment to schedule",
+        metric: "One episode published before the next report",
+        body: "The July 27 episode is the strongest recent performer and it fed the widest-reaching reel of the month. The asset works; it needs feeding.",
+      },
+      {
+        action: "Claim the address searches",
+        owner: "Figment",
+        metric: "First click from an address query",
+        body: "45 impressions and zero clicks on \u201c933 5th avenue\u201d variants. Add the address in structured data, confirm the Google Business Profile matches, and give the locations page a title that names the street.",
+      },
+      {
+        action: "Put a booking link on every doctor page",
+        owner: "Figment",
+        metric: "Booking clicks above 48 next cycle",
+        body: "The doctor pages draw 21 search clicks and 588 impressions, and booking links are already the strongest intent signal we have. Shorten the path between the two.",
+      },
+      {
+        action: "Publish two more systemic-health pieces",
+        owner: "Figment",
+        metric: "Match or beat 33.4% three-second view rate",
+        body: "The August 14 reel outperformed everything on watch time and view rate. Find out whether the framing repeats before drawing conclusions from one result.",
+      },
+    ],
+  },
+
+  /* ------------------------------------------------------- PLAN (client)   */
+  plan: {
+    lede: "Five things we will do next, and why each one follows from what this period showed.",
+    items: [
+      {
+        action: "Review the email list before the next send",
+        body: "A share of the list is no longer reaching people. We will verify the addresses so that every send lands with the patients it is meant for, which also protects delivery for everyone else on the list.",
+      },
+      {
+        action: "Return the podcast to a monthly rhythm",
+        body: "The July episode is among the strongest in the catalogue and it became the widest-reaching reel of the month. Publishing on a regular cadence gives both channels something to work with.",
+      },
+      {
+        action: "Make the practice easier to find by address",
+        body: "People search for the practice by street address and the site currently appears too far down for them to reach it. We will make the address explicit for search engines and confirm the listings match.",
+      },
+      {
+        action: "Put a booking link at the top of every doctor page",
+        body: "The doctor pages are among the strongest performers in search, and booking links are already the clearest sign of patient intent. Shortening the path between the two builds on a strength.",
+      },
+      {
+        action: "Publish more on the link between oral and overall health",
+        body: "The August 14 reel on systemic health held attention longer than anything else this period. We will publish two more in that register to learn whether the result repeats.",
+      },
+    ],
+  },
+
+  /* ---------------------------------------------------------------- DETAIL */
+  detail: {
+    lede: "Supporting figures, and how each was derived.",
+    panels: [
+      {
+        id: "website",
+        title: "Website",
+        rows: [
+          ["Sessions", "763"],
+          ["New visitors", "602"],
+          ["Landing-page views", "1,068"],
+          ["Desktop / mobile", "84% / 16%"],
+          ["Direct", "470 sessions \u00b7 61.7%"],
+          ["Google organic", "223 sessions \u00b7 29.3%"],
+          ["Paid", "None this period"],
+        ],
+        note: "Google Analytics 4, August 3 to 16. Two referral domains with no human traffic were removed before totals were taken. The desktop share is unusually high and follows the end of the advertising flight, which skewed mobile; it is worth reading across one more period before drawing a conclusion.",
+      },
+      {
+        id: "search",
+        title: "Search",
+        rows: [
+          ["Clicks", "134"],
+          ["Impressions", "1,102"],
+          ["Click rate", "12.16%"],
+          ["Average position", "5.74"],
+          ["Homepage", "95 clicks \u00b7 781 impressions"],
+          ["Our Doctors", "21 clicks \u00b7 588 impressions"],
+          ["Doctors, Upper East Side", "9 clicks \u00b7 154 impressions"],
+          ["Locations", "8 clicks \u00b7 209 impressions"],
+        ],
+        note: "Google Search Console, August 3 to 16, fourteen complete days. Totals are summed from the daily chart export rather than the query export, which withholds 57% of clicks and 68% of impressions as low-volume queries. Average position is the impression-weighted figure for United States traffic. The page table cannot be used for totals, as one impression may be attributed to several pages.",
+      },
+      {
+        id: "instagram",
+        title: "Instagram",
+        rows: [
+          ["Followers", "3,208 \u00b7 up 15"],
+          ["Interactions", "268"],
+          ["Reach", "\u2248 2,600 \u00b7 186 a day"],
+          ["Engagement rate", "10.3%"],
+          ["Published", "3 posts \u00b7 3 reels \u00b7 6 stories"],
+          ["Interactions by format", "Posts 120 \u00b7 Reels 115 \u00b7 Stories 33"],
+          ["Likes / comments / shares", "201 / 15 / 32"],
+          ["Advertising", "None in period"],
+        ],
+        note: "Account-level figures reported by Metricool for August 3 to 16, not a sum of the individual posts. Post-level figures are used only to rank content against content, never to build a total. Engagement rate is interactions divided by reach.",
+        noteClient: "Account-level figures reported by Metricool for August 3 to 16, rather than a sum of the individual posts. Post-level figures are used only to rank content against content. Engagement rate is interactions divided by reach.",
+      },
+      {
+        id: "links",
+        title: "Short links",
+        rows: [
+          ["Clicks", "246"],
+          ["Homepage", "147"],
+          ["Booking \u00b7 Midtown", "26"],
+          ["Booking \u00b7 Upper East Side", "22"],
+          ["Instagram", "4"],
+          ["Website", "3"],
+          ["Locations", "1"],
+          ["Unattributed", "39"],
+        ],
+        note: "Short.io, August 3 to 16, filtered to human traffic. City-level figures are dominated by hosting infrastructure rather than readers and are not reported. New York, Brooklyn and Montr\u00e9al account for the identifiable local traffic.",
+      },
+      {
+        id: "email",
+        title: "Email",
+        rows: [
+          ["Campaigns in period", "None"],
+          ["Gum Article \u00b7 July 22", "3,487 sent \u00b7 55.3% opened"],
+          ["Summer Promo \u00b7 August 1", "3,443 sent \u00b7 53.5% opened"],
+          ["Clicks", "30 and 53"],
+          ["Click-to-open", "1.8% and 3.3%"],
+        ],
+        note: "No campaign was sent between August 3 and 16. The two most recent sends fall inside the thirty-day context and are shown for reference only. Open rates well above the healthcare benchmark of roughly 25%; the click-through is where the room to grow sits.",
+      },
+      {
+        id: "podcast",
+        title: "Podcast",
+        rows: [
+          ["Downloads in period", "175"],
+          ["Lifetime downloads", "5,118"],
+          ["Episodes published", "50"],
+          ["Published in period", "None"],
+          ["Most recent episode", "July 27"],
+          ["Top app", "Spotify 25.4%"],
+          ["Mobile share", "60%"],
+          ["New York State", "981 lifetime \u00b7 19.2%"],
+        ],
+        note: "Buzzsprout, July 18 to August 16. No episode was published inside the reporting period, so the downloads are back catalogue and residual traffic from the July 27 episode. All figures comply with IAB Podcast Measurement Technical Guidelines 2.2.",
+      },
+      {
+        id: "facebook",
+        title: "Facebook",
+        rows: [
+          ["Followers", "1,334"],
+          ["Posts published", "None"],
+          ["Reactions", "0"],
+          ["Followers gained", "0"],
+        ],
+        note: "The page is currently inactive. Nothing was published in the reporting period and no engagement was recorded. Meta also retired the metric behind the page views figure in June 2026, so what remains is not comparable with earlier periods.",
+      },
+      {
+        id: "method",
+        title: "How this was measured",
+        rows: [],
+        faq: [
+          { q: "What the reporting period covers", a: "August 3 to 16, 2026 \u2014 fourteen whole calendar days. Where a comparison is shown, it is against July 18 to August 2, the sixteen days immediately before." },
+          { q: "Why reach fell and engagement rate rose", a: "The advertising flight concluded on August 2. Interactions fell 22% per day; reach fell 74%. Engagement rate is interactions divided by reach, so the rate rose because the denominator contracted faster. It reflects a smaller, more invested audience rather than better content.", internalOnly: true },
+          { q: "Why engagement rate rose", a: "Engagement rate is interactions divided by reach. Fewer people saw the practice this period, and a higher share of those who did chose to respond.", clientOnly: true },
+          { q: "Where the search totals come from", a: "The daily chart export, not the query export. Google withholds low-volume queries from the query table \u2014 57% of clicks and 68% of impressions this period \u2014 so summing it would understate the channel substantially." },
+          { q: "Where the Instagram totals come from", a: "Account-level figures reported by Metricool. Instagram\u2019s own native export was unavailable this cycle, and the two sources can differ. Post-level figures rank content against content and are never summed into a total.", internalOnly: true },
+          { q: "Where the Instagram totals come from", a: "Account-level figures reported by Metricool for the period, rather than a sum of the individual posts. Post-level figures are used only to rank content against content." , clientOnly: true },
+          { q: "How short link traffic is filtered", a: "Only human clicks are reported. Automated traffic is excluded from every figure, and city-level breakdowns are omitted because they reflect hosting infrastructure rather than readers." },
+          { q: "What is missing this period", a: "No advertising ran, no email campaign was sent, no podcast episode was published, and nothing was posted to Facebook. Those sections are reported here rather than shown as empty views." },
+        ] as { q: string; a: string; internalOnly?: boolean; clientOnly?: boolean }[],
+        note: "",
+      },
+    ],
+  },
 };
 
-type ReportData = typeof FALLBACK_DATA;
+/* ==========================================================================
+   STYLE
+   Tokens taken from edgardelchaar.com so the report reads as the practice's
+   own, not as a dashboard. Three faces: Prata display, Marcellus subhead,
+   Glacial Indifference body (self-hosted, SIL Open Font License).
+   ========================================================================== */
+const CSS = `
+@import url('https://fonts.googleapis.com/css2?family=Prata&family=Marcellus&display=swap');
 
-type Insight = { title: string; evidence: string[]; impact: string; action: string; severity: string };
-
-function generateInsights(data: ReportData) {
-  const insights: Insight[] = [];
-  const opportunities: Insight[] = [];
-  const alerts: Insight[] = [];
-
-  const er = data.kpi.engagementRate.value;
-  const reach = data.kpi.reach.value;
-  const eng = data.kpi.engagements.value;
-
-  // ---------- KEY INSIGHTS ----------
-  insights.push({
-    title: "Reels returned and views followed",
-    evidence: [
-      `Engagement rate ${er}% \u2014 up 0.5pt on the Reel-led mix`,
-      "Views 6,973 \u2014 up 27% week-over-week",
-      `Reach ${reach.toLocaleString()} (649/day \u00d7 7) \u2014 off 8.7% as ads wound down`,
-      `${eng} account-level interactions \u2014 up 14%`,
-    ],
-    impact: "Two doctor-led Reels lifted both views and engagement in the same week.",
-    action: "Hold the two-Reels-per-week cadence through August.",
-    severity: "success",
-  });
-
-  insights.push({
-    title: "The gum\u2013heart Reel is the engagement benchmark",
-    evidence: [
-      "73 likes, 5 comments, 8 shares on 797 reach \u2014 a 10.8% ER",
-      "16.6s average watch time \u2014 the strongest retention on record here",
-      "1,332 views and a 40.6% view rate past 3 seconds",
-      "Health-connection storytelling out-engaged the promo posts 8-to-1",
-    ],
-    impact: "Clinical health-connection content is the account's highest-engagement format.",
-    action: "Build a monthly \u2018oral\u2013systemic health\u2019 Reel series in this style.",
-    severity: "success",
-  });
-
-  insights.push({
-    title: "A double podcast milestone, promoted the same week",
-    evidence: [
-      "5,000 lifetime downloads and the 50th episode, both reached this window",
-      "68 downloads since last report \u2014 double the prior week's 33",
-      "The new episode drew 15 first-week downloads and its Reel reached 1,242 accounts",
-      "The 5K-milestone post and a thank-you Story ran alongside the episode",
-    ],
-    impact: "The cross-channel push landed \u2014 podcast momentum doubled in the milestone week.",
-    action: "Keep the episode-Reel + milestone-post pairing for future launches.",
-    severity: "success",
-  });
-
-  insights.push({
-    title: `Reels drove ${data.contentMix.reels}% of content views this week`,
-    evidence: [
-      `Reels ${data.contentMix.reels}% \u00b7 posts ${data.contentMix.posts}% \u00b7 Stories ${data.contentMix.stories}% of content-type views`,
-      "Reels also took 86% of the week's interactions",
-      "The episode Reel out-reached every post 6-to-1 (1,242 vs ~175 avg)",
-      "Stories held a 85% completion rate across 7 frames",
-    ],
-    impact: "The format mix has flipped from carousel-led to Reel-led \u2014 and discovery followed.",
-    action: "Keep Reels as the discovery engine; use carousels for depth and saves.",
-    severity: "info",
-  });
-
-  insights.push({
-    title: "Search is highly efficient, with room to widen",
-    evidence: [
-      "54 clicks on 521 impressions \u2014 10.4% CTR at position 5.8 this week",
-      "30-day: 216 clicks at 9.33% CTR, position 5.0",
-      "Top queries are all variants of \u2018Dr. El Chaar\u2019",
-      "Locations page: 361 impressions but 3 clicks (0.83% CTR) \u2014 a title/snippet fix",
-    ],
-    impact: "Reputation search performs well; procedure and location search are the open headroom.",
-    action: "Build procedure-question pages and rework the Locations title to lift its CTR.",
-    severity: "info",
-  });
-
-  // ---------- OPPORTUNITIES ----------
-  opportunities.push({
-    title: "Booking links had their best named-link week",
-    evidence: [
-      "18 booking-link clicks this week \u2014 Midtown 11, UES 7",
-      "30-day booking links at 70 \u2014 Midtown 45, UES 25, up from 62",
-      "Homepage led named links at 53; booking links took every other named click but 2",
-      "Named-link traffic totaled 73 this week",
-    ],
-    impact: "Booking intent is rising even as raw link volume gets noisier \u2014 the clean signal is strong.",
-    action: "Keep booking links in Stories and bio, and watch whether the trend outlives the ad flight.",
-    severity: "success",
-  });
-
-  opportunities.push({
-    title: "July's paid campaign closed efficient \u2014 conversion is the next lever",
-    evidence: [
-      "$312.05 final spend \u2192 404 landing-page views at $0.77",
-      "39,434 impressions; quality and engagement rankings at Average",
-      "Both ads finished conversion-ranked bottom 35%",
-      "Ads drove 666 paid site sessions in the GA window (IG 454 + FB 212)",
-    ],
-    impact: "The media buy was efficient at filling the funnel; the landing experience is what capped it.",
-    action: "Before the next flight, add a Lead/Booking event and route ads to a booking-first page.",
-    severity: "info",
-  });
-
-  opportunities.push({
-    title: "Comments woke up; saves are still the open signal",
-    evidence: [
-      "5 comments this week \u2014 all on the gum\u2013heart Reel, vs 0 last week",
-      "97 likes and 14 shares \u2014 the strongest interaction week of the window",
-      "Only 2 saves this week; 6 across the full 30 days",
-    ],
-    impact: "Comment-worthy topics exist \u2014 save-worthy framing is the piece still missing.",
-    action: "Close health-connection Reels with a \u2018save this for your next check-up\u2019 prompt.",
-    severity: "info",
-  });
-
-  opportunities.push({
-    title: "The 404 page is quietly absorbing real traffic",
-    evidence: [
-      "701 views in 30 days \u2014 the #3 page title on the site",
-      "141 views this week alone; the pattern is persistent, not a spike",
-      "Locations (809 views) and Home (1,269) are the intended destinations",
-    ],
-    impact: "Something \u2014 likely an old ad, email, or profile link \u2014 is pointing at a dead URL and leaking visits.",
-    action: "Pull the 404's referrer detail, then 301 the dead URL to the matching live page.",
-    severity: "info",
-  });
-
-  opportunities.push({
-    title: "Instagram promotion is driving podcast downloads",
-    evidence: [
-      "Podcast crossed 5,000 all-time downloads across 50 episodes",
-      "68 downloads since last report \u2014 double the prior week",
-      "\u2018What 50 Years in Dentistry Teaches You\u2019: 15 first-week downloads",
-      "Its launch Reel reached 1,242 accounts \u2014 the widest content of the week",
-    ],
-    impact: "The two channels compound when one topic runs across both \u2014 the milestone week proves it.",
-    action: "Give every episode the launch-Reel + milestone-post treatment.",
-    severity: "success",
-  });
-
-  return { insights, opportunities, alerts };
+@font-face {
+  font-family: 'Glacial Indifference';
+  src: url('/fonts/GlacialIndifference-Regular.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Glacial Indifference';
+  src: url('/fonts/GlacialIndifference-Bold.woff2') format('woff2');
+  font-weight: 700; font-style: normal; font-display: swap;
 }
 
-function AnimatedNumber({ value, suffix = "" }: { value: number | string; suffix?: string }) {
-  const [display, setDisplay] = useState(0);
+:root {
+  --plum: #68505D;
+  --plum-dark: #574250;
+  --plum-light: #7D6570;
+  --nav: #88A3AE;
+  --nav-dark: #7494A1;
+  --band-blue: #BFCBCE;
+  --band-light: #F2EAE6;
+  --band-warm: #E8E3DE;
+  --rule: #C5BDB5;
+  --rule-soft: rgba(104,80,93,0.16);
+  --ink: #151515;
+  --body: #2A2A2A;
+  --muted: #777777;
+  --white: #FFFFFF;
+  --display: 'Prata', Georgia, serif;
+  --sub: 'Marcellus', Georgia, serif;
+  --text: 'Glacial Indifference', 'Helvetica Neue', Arial, sans-serif;
+  --max: 1500px;
+  --gut: clamp(20px, 5vw, 80px);
+  --sec: clamp(56px, 8vw, 120px);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--text); font-size: 17px; line-height: 1.6;
+  color: var(--body); background: var(--white);
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+}
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 400; line-height: 1.25; color: var(--plum); text-wrap: balance; }
+a { color: inherit; text-decoration: none; }
+::selection { background: var(--band-blue); color: var(--ink); }
+
+/* ---------- reveal ----------
+   The hidden state is the CSS default and a <noscript> block reverses it.
+   Nothing mutates <html>: doing so before React hydrates causes a real
+   hydration mismatch in Next.js, where RootLayout owns that element. */
+.rv { opacity: 0; transform: translateY(16px); transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1); }
+.rv.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .rv, .rv.in { opacity: 1 !important; transform: none !important; transition: none !important; }
+}
+
+/* ---------- layout ---------- */
+.wrap { max-width: var(--max); margin: 0 auto; padding-left: var(--gut); padding-right: var(--gut); }
+.band { padding-top: var(--sec); padding-bottom: var(--sec); }
+.band-white { background: var(--white); }
+.band-light { background: var(--band-light); }
+.band-warm { background: var(--band-warm); }
+.band-blue { background: var(--band-blue); }
+.band-plum { background: var(--plum); }
+.band-plum h2, .band-plum h3 { color: var(--white); }
+.band-plum .sec-lede, .band-plum .sec-num { color: rgba(255,255,255,.78); }
+
+/* ---------- masthead ---------- */
+.mast { background: var(--nav); color: var(--white); padding: 46px 0 40px; }
+.mast h1 { color: var(--white); font-size: clamp(30px, 4.2vw, 54px); line-height: 1.14; margin-bottom: 14px; }
+.mast-kicker { font-family: var(--text); font-size: 12px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: rgba(255,255,255,.82); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.mast-badge { display: inline-block; background: var(--plum); color: var(--white); padding: 4px 12px; border-radius: 30px; letter-spacing: .12em; font-size: 10.5px; }
+.mast-sub { font-family: var(--sub); font-size: clamp(17px, 1.6vw, 21px); color: var(--white); letter-spacing: .01em; }
+.mast-meta { margin-top: 26px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,.28); display: flex; gap: 40px; flex-wrap: wrap; font-size: 14px; color: rgba(255,255,255,.9); }
+.mast-meta b { display: block; font-weight: 700; font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: rgba(255,255,255,.7); margin-bottom: 5px; }
+
+/* ---------- nav rail ---------- */
+.rail { position: sticky; top: 0; z-index: 90; background: var(--white); border-bottom: 1px solid var(--rule); }
+/* Longhand only: this element also carries .wrap, and a padding shorthand
+   here would reset the horizontal gutter that .wrap sets. */
+.rail-in { display: flex; gap: 26px; overflow-x: auto; padding-top: 14px; padding-bottom: 14px; scrollbar-width: none; }
+.rail-in::-webkit-scrollbar { display: none; }
+.rail a { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); white-space: nowrap; padding-bottom: 3px; border-bottom: 2px solid transparent; transition: color .25s, border-color .25s; }
+.rail a:hover, .rail a:focus-visible { color: var(--plum); border-bottom-color: var(--plum); }
+
+/* ---------- section furniture ---------- */
+.sec-head { max-width: 62ch; margin-bottom: 46px; }
+.sec-num { font-family: var(--text); font-size: 11px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--nav-dark); display: block; margin-bottom: 14px; }
+.sec-t { font-size: clamp(26px, 3.2vw, 42px); margin-bottom: 16px; }
+.sec-lede { font-family: var(--sub); font-size: clamp(17px, 1.5vw, 20px); line-height: 1.55; color: var(--body); }
+
+/* ---------- brief ---------- */
+.brief-i { display: grid; grid-template-columns: minmax(150px, 210px) 1fr; gap: 32px; padding: 30px 0; border-top: 1px solid var(--rule); }
+.brief-i:last-child { border-bottom: 1px solid var(--rule); }
+.brief-role { font-family: var(--text); font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--plum); padding-top: 5px; }
+.brief-text { font-family: var(--sub); font-size: clamp(18px, 1.7vw, 23px); line-height: 1.5; color: var(--ink); max-width: 46ch; }
+@media (max-width: 760px) { .brief-i { grid-template-columns: 1fr; gap: 10px; } }
+
+/* ---------- period chart ---------- */
+.chart { margin-top: 8px; }
+.chart-key { display: flex; gap: 26px; flex-wrap: wrap; margin-bottom: 22px; font-size: 12.5px; color: var(--body); }
+.chart-key span { display: flex; align-items: center; gap: 8px; }
+.chart-key i { width: 13px; height: 13px; display: inline-block; border-radius: 2px; }
+.bars { display: flex; align-items: flex-end; gap: 2px; height: 230px; padding-bottom: 2px; border-bottom: 1px solid var(--plum); }
+.bar { flex: 1; min-width: 0; position: relative; background: var(--plum); transition: opacity .25s; }
+.bar.paid { background: var(--nav); }
+.bar:hover { opacity: .72; }
+.bar-cap { position: absolute; inset: auto 0 100% 0; text-align: center; font-size: 10px; color: var(--muted); padding-bottom: 3px; opacity: 0; transition: opacity .2s; }
+.bar:hover .bar-cap { opacity: 1; }
+.axis { display: flex; justify-content: space-between; margin-top: 10px; font-size: 11.5px; color: var(--muted); letter-spacing: .04em; }
+.chart-note { margin-top: 26px; font-size: 15px; line-height: 1.6; color: var(--body); max-width: 62ch; padding-left: 16px; border-left: 2px solid var(--nav); }
+
+/* ---------- scoreboard ---------- */
+.score { border-top: 1px solid var(--rule); }
+.score-r { display: grid; grid-template-columns: 1.5fr auto 1fr; gap: 24px; align-items: baseline; padding: 20px 0; border-bottom: 1px solid var(--rule); }
+.score-k { font-family: var(--sub); font-size: 18px; color: var(--ink); }
+.score-v { font-family: var(--display); font-size: clamp(24px, 2.6vw, 34px); color: var(--plum); text-align: right; letter-spacing: .01em; }
+.score-m { text-align: right; }
+.score-c { font-size: 13px; font-weight: 700; letter-spacing: .04em; }
+.score-c.up { color: #3F6B54; }
+.score-c.down { color: #9A5F5F; }
+.score-c.flat { color: var(--muted); }
+.score-n { font-size: 12.5px; color: var(--muted); margin-top: 3px; }
+@media (max-width: 760px) {
+  .score-r { grid-template-columns: 1fr auto; gap: 8px 16px; }
+  .score-m { grid-column: 1 / -1; text-align: left; }
+}
+
+/* ---------- instagram frames ---------- */
+.hero-card { display: grid; grid-template-columns: 440px 1fr; gap: 52px; align-items: start; }
+@media (max-width: 980px) { .hero-card { grid-template-columns: 1fr; gap: 30px; } }
+/* The site rounds one edge of its hero imagery into a lozenge. At 3:4 a full
+   999px radius collapses into a half-circle and eats the picture, so the
+   reference is kept at a restrained 150px on the leading edge only. */
+.ig-frame { position: relative; width: 100%; max-width: 440px; aspect-ratio: 3/4; overflow: hidden; background: #0a0809; border-radius: 150px 0 0 150px; }
+.ig-frame iframe { position: absolute; top: -64px; left: -1px; width: calc(100% + 2px); height: calc(100% + 140px); border: none; pointer-events: none; }
+.ig-frame:hover iframe { pointer-events: auto; }
+.hero-fmt { font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--nav-dark); margin-bottom: 12px; }
+.hero-t { font-family: var(--display); font-size: clamp(22px, 2.3vw, 31px); line-height: 1.3; color: var(--plum); margin-bottom: 22px; max-width: 22ch; }
+.hero-stats { display: flex; gap: 40px; flex-wrap: wrap; padding: 22px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); margin-bottom: 22px; }
+.hero-s-v { font-family: var(--display); font-size: 28px; color: var(--plum); display: block; }
+.hero-s-l { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-top: 4px; display: block; }
+.hero-why { font-size: 16px; line-height: 1.65; max-width: 48ch; }
+
+.gal { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 30px; margin-top: 56px; }
+.gal-i .ig-frame { max-width: none; border-radius: 0; aspect-ratio: 3/4; }
+.gal-m { margin-top: 14px; }
+.gal-fmt { font-size: 10.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--nav-dark); }
+.gal-t { font-family: var(--sub); font-size: 15.5px; line-height: 1.4; color: var(--ink); margin: 6px 0 10px; }
+.gal-s { font-size: 12.5px; color: var(--muted); }
+.gal-note { margin-top: 34px; font-size: 13.5px; color: var(--muted); max-width: 62ch; }
+
+/* ---------- attention ---------- */
+.att-i { padding: 30px 0; border-top: 1px solid var(--rule-soft); }
+.att-i:last-child { border-bottom: 1px solid var(--rule-soft); }
+.att-tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--white); background: var(--plum); padding: 4px 11px; border-radius: 30px; margin-bottom: 14px; }
+.att-t { font-family: var(--display); font-size: clamp(19px, 1.9vw, 25px); line-height: 1.35; margin-bottom: 12px; max-width: 34ch; }
+.att-b { font-size: 15.5px; line-height: 1.65; max-width: 62ch; }
+
+/* ---------- learned ---------- */
+.learn { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 44px 56px; }
+.learn-t { font-family: var(--display); font-size: 21px; line-height: 1.35; color: var(--plum); margin-bottom: 12px; padding-top: 18px; border-top: 2px solid var(--nav); }
+.learn-b { font-size: 15.5px; line-height: 1.65; }
+
+/* ---------- moves / plan ---------- */
+.mv-i { display: grid; grid-template-columns: 1fr 260px; gap: 40px; padding: 30px 0; border-top: 1px solid var(--rule); }
+.mv-i:last-child { border-bottom: 1px solid var(--rule); }
+.mv-t { font-family: var(--display); font-size: clamp(19px, 1.9vw, 24px); line-height: 1.35; color: var(--plum); margin-bottom: 12px; max-width: 26ch; }
+.mv-b { font-size: 15.5px; line-height: 1.65; max-width: 54ch; }
+.mv-meta b { display: block; font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+.mv-meta p { font-size: 14.5px; margin-bottom: 16px; color: var(--ink); }
+@media (max-width: 860px) { .mv-i { grid-template-columns: 1fr; gap: 18px; } }
+
+.plan-i { display: grid; grid-template-columns: 10px 1fr; gap: 24px; padding: 28px 0; border-top: 1px solid var(--rule); }
+.plan-i:last-child { border-bottom: 1px solid var(--rule); }
+.plan-m { width: 10px; height: 10px; border-radius: 999px; background: var(--nav); margin-top: 13px; }
+.plan-t { font-family: var(--display); font-size: clamp(19px, 1.9vw, 24px); line-height: 1.35; color: var(--plum); max-width: 30ch; }
+.plan-b { font-size: 15.5px; line-height: 1.65; margin-top: 10px; max-width: 60ch; }
+
+/* ---------- detail ---------- */
+.disc { border-top: 1px solid var(--rule); }
+.disc-btn { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 22px 0; background: none; border: none; border-bottom: 1px solid var(--rule); cursor: pointer; font-family: var(--sub); font-size: 19px; color: var(--plum); text-align: left; }
+.disc-btn:hover { color: var(--plum-dark); }
+.disc-btn:focus-visible { outline: 2px solid var(--plum); outline-offset: 3px; }
+.disc-x { font-family: var(--text); font-size: 22px; line-height: 1; color: var(--nav-dark); flex-shrink: 0; }
+.disc-p { padding: 26px 0 34px; border-bottom: 1px solid var(--rule); }
+.disc-p[hidden] { display: none; }
+.t { width: 100%; border-collapse: collapse; max-width: 640px; margin-bottom: 20px; }
+.t td { padding: 9px 0; border-bottom: 1px solid var(--rule-soft); font-size: 15px; vertical-align: top; }
+.t td:first-child { color: var(--muted); padding-right: 26px; }
+.t td:last-child { text-align: right; font-weight: 700; color: var(--ink); white-space: nowrap; }
+.d-note { font-size: 13.5px; line-height: 1.65; color: var(--muted); max-width: 68ch; }
+.faq-i { padding: 16px 0; border-bottom: 1px solid var(--rule-soft); max-width: 68ch; }
+.faq-q { font-family: var(--sub); font-size: 16px; color: var(--ink); margin-bottom: 5px; }
+.faq-a { font-size: 14.5px; line-height: 1.65; color: var(--muted); }
+
+/* ---------- footer ---------- */
+.foot { background: var(--plum); color: rgba(255,255,255,.8); padding: 44px 0; font-size: 13.5px; }
+.foot-in { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+
+/* ---------- print ---------- */
+.print-only { display: none; }
+@media print {
+  .rv { opacity: 1 !important; transform: none !important; }
+  .rail, .mast-meta { display: none; }
+  .ig-frame { display: none; }
+  .print-only { display: block; border: 1px solid var(--rule); padding: 16px; font-size: 13px; }
+  .print-only b { display: block; font-family: var(--sub); font-size: 15px; color: var(--plum); margin-bottom: 4px; }
+  .disc-p[hidden] { display: block !important; }
+  .band { padding-top: 34px; padding-bottom: 34px; break-inside: avoid; }
+  .band-plum, .mast { background: var(--white) !important; color: var(--ink) !important; }
+  .mast h1, .mast-sub, .mast-kicker { color: var(--plum) !important; }
+  .foot { background: var(--white) !important; color: var(--muted) !important; border-top: 1px solid var(--rule); }
+}
+`;
+
+/* ==========================================================================
+   PRIMITIVES
+   ========================================================================== */
+
+/* Scroll reveal. The hidden state is the CSS default and a <noscript> block
+   reverses it, so the report still reads with JavaScript off. Nothing touches
+   <html>: mutating it before hydration is a real mismatch in Next.js, where
+   RootLayout owns that element. */
+function Reveal({ children }: { children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [seen, setSeen] = useState(false);
   useEffect(() => {
-    if (typeof value !== "number") return;
-    let start = 0;
-    const duration = 1400;
-    const step = (ts: number) => {
-      if (!start) start = ts;
-      const p = Math.min((ts - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - p, 4);
-      setDisplay(Math.floor(eased * value));
-      if (p < 1) requestAnimationFrame(step);
-      else setDisplay(value);
-    };
-    requestAnimationFrame(step);
-  }, [value]);
-  if (typeof value !== "number") return <span>{value}{suffix}</span>;
-  return <span>{display.toLocaleString()}{suffix}</span>;
+    const el = ref.current;
+    if (!el || seen) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) { setSeen(true); io.disconnect(); }
+        });
+      },
+      { rootMargin: "0px 0px -8% 0px", threshold: 0.05 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [seen]);
+  return <div ref={ref} className={`rv${seen ? " in" : ""}`}>{children}</div>;
 }
 
-function Donut({ data, size = 130, stroke = 18, colors }: { data: { value: number }[]; size?: number; stroke?: number; colors: string[] }) {
-  const r = (size - stroke) / 2;
-  const C = 2 * Math.PI * r;
-  let off = 0;
+function Section({
+  id, num, title, lede, band = "white", children,
+}: {
+  id: string; num: string; title: string; lede?: string;
+  band?: "white" | "light" | "warm" | "blue" | "plum";
+  children: React.ReactNode;
+}) {
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ transform: "rotate(-90deg)" }}>
-      {data.map((d, i) => {
-        const dash = (d.value / 100) * C;
-        const gap = C - dash;
-        const o = off;
-        off += dash;
-        return <circle key={i} cx={size / 2} cy={size / 2} r={r} fill="none" stroke={colors[i]} strokeWidth={stroke} strokeDasharray={`${dash} ${gap}`} strokeDashoffset={-o} strokeLinecap="round" style={{ transition: "all 1.2s cubic-bezier(.4,0,.2,1)" }} />;
-      })}
-    </svg>
+    <section id={id} className={`band band-${band}`}>
+      <div className="wrap">
+        <Reveal>
+          <div className="sec-head">
+            <span className="sec-num">Section {num}</span>
+            <h2 className="sec-t">{title}</h2>
+            {lede ? <p className="sec-lede">{lede}</p> : null}
+          </div>
+        </Reveal>
+        {children}
+      </div>
+    </section>
   );
 }
 
-export default function Dashboard() {
-  const [tab, setTab] = useState("overview");
-  const [loaded, setLoaded] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [timeRange, setTimeRange] = useState<"7d" | "30d">("7d");
-  const d = FALLBACK_DATA;
-  const [mediaUrls, setMediaUrls] = useState<Record<number, string>>(() => {
-    const urls: Record<number, string> = {};
-    FALLBACK_DATA.posts.forEach((p: any) => { if (p.igPostUrl) urls[p.id] = p.igPostUrl; });
-    return urls;
-  });
-  const [editingMedia, setEditingMedia] = useState<number | null>(null);
-  const [mediaInput, setMediaInput] = useState("");
-  const engine = generateInsights(d);
-
-  useEffect(() => { setTimeout(() => setLoaded(true), 80); }, []);
-
-  const handleMediaSave = (postId: number) => {
-    if (mediaInput.trim()) setMediaUrls((prev) => ({ ...prev, [postId]: mediaInput.trim() }));
-    setEditingMedia(null);
-    setMediaInput("");
-  };
-  const handleMediaRemove = (postId: number) => {
-    setMediaUrls((prev) => { const n = { ...prev }; delete n[postId]; return n; });
-  };
-  const isVideo = (url: string) => /\.(mp4|webm|mov|ogg)(\?|$)/i.test(url);
-  const isIgEmbed = (url: string) => /instagram\.com\/(p|reel)\//i.test(url);
-
-  const linkData7d = {
-    period: "July 27 – August 2, 2026", totalClicks: 73,
-    topLinks: [{ path: "Homepage", clicks: 53 }, { path: "DDS-PC Midtown", clicks: 11 }, { path: "DDS-PC UES", clicks: 7 }, { path: "Website", clicks: 2 }],
-    trafficSources: [{ source: "Named links + homepage", clicks: 73 }, { source: "Wildcard / social / other", clicks: 1009 }],
-    topCountries: [{ country: "United States", clicks: 26 }, { country: "Canada", clicks: 4 }],
-    topCities: [{ city: "Brooklyn", clicks: 5 }, { city: "Montréal", clicks: 4 }, { city: "New York City", clicks: 1 }],
-    devices: [{ os: "Mobile Safari", clicks: 30 }, { os: "Safari", clicks: 22 }, { os: "Chrome", clicks: 14 }, { os: "Edge", clicks: 2 }],
-  };
-  const linkData30d = {
-    period: "July 4 – August 2, 2026", totalClicks: 285,
-    topLinks: [{ path: "Homepage", clicks: 161 }, { path: "Website", clicks: 54 }, { path: "DDS-PC Midtown", clicks: 45 }, { path: "DDS-PC UES", clicks: 25 }],
-    trafficSources: [{ source: "Named links + homepage", clicks: 285 }, { source: "Wildcard / social / other", clicks: 2283 }],
-    topCountries: [{ country: "United States", clicks: 251 }],
-    topCities: [{ city: "New York City", clicks: 45 }, { city: "Brooklyn", clicks: 19 }],
-    devices: [{ os: "Chrome", clicks: 184 }, { os: "Mobile Safari", clicks: 135 }, { os: "Safari", clicks: 43 }, { os: "Firefox", clicks: 8 }],
-  };
-  const linkData = timeRange === "7d" ? linkData7d : linkData30d;
-
-  const websiteData7d = {
-    period: "July 27 – August 2, 2026",
-    sessions: 530,
-    topPages: [
-      { page: "/", label: "Home", views: 299 },
-      { page: "/locations", label: "Locations", views: 78 },
-      { page: "/our-doctors", label: "Our Doctors", views: 69 },
-      { page: "/about", label: "About", views: 13 },
-      { page: "/sinus-lift-long-term-side-effects", label: "Sinus Lift Side Effects", views: 11 },
-    ],
-    trafficSources: [
-      { source: "Direct", sessions: 345, pct: 65.1 },
-      { source: "Google", sessions: 91, pct: 17.2 },
-      { source: "Instagram (paid)", sessions: 33, pct: 6.2 },
-      { source: "Facebook (paid)", sessions: 26, pct: 4.9 },
-      { source: "Other", sessions: 35, pct: 6.6 },
-    ],
-    devices: [
-      { device: "Desktop", pct: 74.4 },
-      { device: "Mobile", pct: 25.2 },
-      { device: "Tablet", pct: 0.4 },
-    ],
-    dailyVisitors: [
-      { date: "Jul 27", visitors: 93 },{ date: "Jul 28", visitors: 103 },
-      { date: "Jul 29", visitors: 98 },{ date: "Jul 30", visitors: 32 },
-      { date: "Jul 31", visitors: 27 },{ date: "Aug 1", visitors: 53 },
-      { date: "Aug 2", visitors: 45 },
-    ],
-    search: {
-      totalClicks: 54, totalImpressions: 521, avgCTR: 10.36, avgPosition: 5.8,
-      note: "GSC totals Jul 26 – Aug 1 (edgardelchaar.com · one-day lag); query/page detail reflects the 30-day export",
-      topQueries: [
-        { query: "edgard el chaar", clicks: 21, ctr: 16.67, position: 1.20 },
-        { query: "dr el chaar", clicks: 11, ctr: 14.10, position: 2.65 },
-        { query: "edgar el chaar", clicks: 8, ctr: 19.51, position: 1.88 },
-        { query: "el chaar", clicks: 6, ctr: 5.56, position: 2.99 },
-        { query: "dr edgard el chaar", clicks: 6, ctr: 23.08, position: 3.31 },
-      ],
-      topPages: [
-        { page: "Homepage", clicks: 170, impressions: 1750, ctr: 9.71 },
-        { page: "Our Doctors", clicks: 38, impressions: 882, ctr: 4.31 },
-        { page: "Doctors & Periodontists (UES)", clicks: 10, impressions: 399, ctr: 2.51 },
-        { page: "Locations", clicks: 3, impressions: 361, ctr: 0.83 },
-      ],
-    },
-  };
-  const websiteData30d = {
-    period: "July 4 – August 2, 2026",
-    sessions: 2461,
-    topPages: [
-      { page: "/", label: "Home", views: 1269 },
-      { page: "/locations", label: "Locations", views: 809 },
-      { page: "/our-doctors", label: "Our Doctors", views: 175 },
-      { page: "/doctors-and-periodontists-at-upper-east-side", label: "Doctors (UES)", views: 55 },
-      { page: "/sinus-lift-long-term-side-effects", label: "Sinus Lift Side Effects", views: 33 },
-    ],
-    trafficSources: [
-      { source: "Direct", sessions: 1295, pct: 52.6 },
-      { source: "Instagram (paid)", sessions: 454, pct: 18.4 },
-      { source: "Google", sessions: 389, pct: 15.8 },
-      { source: "Facebook (paid)", sessions: 212, pct: 8.6 },
-      { source: "Other", sessions: 111, pct: 4.5 },
-    ],
-    devices: [
-      { device: "Desktop", pct: 60.9 },
-      { device: "Mobile", pct: 38.9 },
-      { device: "Tablet", pct: 0.2 },
-    ],
-    dailyVisitors: [
-      { date: "Jul 4", visitors: 69 },{ date: "Jul 8", visitors: 48 },
-      { date: "Jul 12", visitors: 72 },{ date: "Jul 16", visitors: 65 },
-      { date: "Jul 20", visitors: 73 },{ date: "Jul 24", visitors: 68 },
-      { date: "Jul 28", visitors: 103 },{ date: "Aug 1", visitors: 53 },
-    ],
-    search: {
-      totalClicks: 216, totalImpressions: 2315, avgCTR: 9.33, avgPosition: 5.0,
-      note: "GSC Jul 3 – Aug 1 (edgardelchaar.com · one-day lag); totals summed from the daily Chart export",
-      topQueries: [
-        { query: "edgard el chaar", clicks: 21, ctr: 16.67, position: 1.20 },
-        { query: "dr el chaar", clicks: 11, ctr: 14.10, position: 2.65 },
-        { query: "edgar el chaar", clicks: 8, ctr: 19.51, position: 1.88 },
-        { query: "el chaar", clicks: 6, ctr: 5.56, position: 2.99 },
-        { query: "dr edgard el chaar", clicks: 6, ctr: 23.08, position: 3.31 },
-      ],
-      topPages: [
-        { page: "Homepage", clicks: 170, impressions: 1750, ctr: 9.71 },
-        { page: "Our Doctors", clicks: 38, impressions: 882, ctr: 4.31 },
-        { page: "Doctors & Periodontists (UES)", clicks: 10, impressions: 399, ctr: 2.51 },
-        { page: "Locations", clicks: 3, impressions: 361, ctr: 0.83 },
-      ],
-    },
-  };
-  const websiteData = timeRange === "7d" ? websiteData7d : websiteData30d;
-
-  const podcastData = {
-    period: "All Time (as of August 3, 2026)",
-    totalEpisodes: 50, totalDownloads: 5000, periodDownloads: 68,
-    last7Days: 68, last30Days: 164, last90Days: 332,
-    topEpisodes: [
-      { title: "Allograft & Evolution – Dr. Brad McAllister (S5 E3)", downloads: 306 },
-      { title: "Future of Dental Industry – Aurelio Sahagun, Straumann (S4 E2)", downloads: 197 },
-      { title: "Periodontal Diagnosis – Gingivitis (S1 E2)", downloads: 196 },
-      { title: "Periodontal Diagnosis – Periodontitis (S1 E3)", downloads: 187 },
-      { title: "Oral and Systemic Health (E1)", downloads: 174 },
-    ],
-    platforms: [
-      { name: "Spotify", downloads: 1246, pct: 24 },
-      { name: "Web Browser", downloads: 1191, pct: 23 },
-      { name: "Apple Podcasts", downloads: 1081, pct: 21 },
-      { name: "Buzzsprout Site", downloads: 406, pct: 8 },
-      { name: "iVoox", downloads: 334, pct: 6 },
-    ],
-    topCountries: [
-      { country: "United States", downloads: 3110 },
-      { country: "India", downloads: 146 },
-      { country: "Canada", downloads: 144 },
-      { country: "Germany", downloads: 127 },
-      { country: "Russian Federation", downloads: 113 },
-    ],
-    topCities: [
-      { city: "New York", downloads: 412 },
-      { city: "Brooklyn", downloads: 123 },
-      { city: "Queens", downloads: 90 },
-      { city: "Frankfurt am Main", downloads: 88 },
-      { city: "Philadelphia", downloads: 64 },
-    ],
-  };
-
-  const socialData7d = {
-    period: "July 27 – August 2, 2026",
-    followers: 3193, followerGrowth: 5, follows: 5, unfollows: 0,
-    totalViews: 6973, totalReach: 4543, reachChange: -8.7, totalInteractions: 119,
-    viewSplit: { followers: 45, nonFollowers: 55 },
-    interactionSplit: { followers: 40, nonFollowers: 60 },
-    viewsByType: { reels: 63, posts: 21, stories: 16 },
-    interactionsByType: { reels: 86, posts: 13, stories: 1 },
-    totalLikes: 97, totalComments: 5, totalSaves: 2, totalShares: 14,
-    storyViews: 703, storyCompletion: 85, storyCount: 7,
-    dailyViews: [
-      { date: "Jul 27", views: 620 },{ date: "Jul 28", views: 540 },
-      { date: "Jul 29", views: 1380 },{ date: "Jul 30", views: 1960 },
-      { date: "Jul 31", views: 880 },{ date: "Aug 1", views: 820 },
-      { date: "Aug 2", views: 773 },
-    ],
-    posts: [
-      { id: 1, title: "Gum Health & Heart Health (Reel)", type: "Reel", date: "Jul 30", views: 1332, reach: 797, likes: 73, comments: 5, saves: 0, shares: 8, er: 10.79, skipRate: 0, avgWatch: "16.6s", igUrl: "https://www.instagram.com/reel/DbbSMVEhWzx/", isTop: true },
-      { id: 2, title: "NEW EPISODE · What 50 Years in Dentistry Teaches You", type: "Reel", date: "Aug 1", views: 1512, reach: 1242, likes: 13, comments: 0, saves: 2, shares: 1, er: 1.29, skipRate: 0, avgWatch: "4.6s", igUrl: "https://www.instagram.com/reel/DbgAPneBJRm/", isTop: false },
-      { id: 3, title: "Your Gums and Your Heart May Be Connected", type: "Post", date: "Jul 29", views: 590, reach: 199, likes: 6, comments: 0, saves: 0, shares: 5, er: 5.53, skipRate: 0, avgWatch: "—", igUrl: "https://www.instagram.com/p/DbY6ZfGGYZt/", isTop: false },
-      { id: 4, title: "5,000 Downloads and Counting", type: "Post", date: "Jul 31", views: 338, reach: 150, likes: 5, comments: 0, saves: 0, shares: 0, er: 3.33, skipRate: 0, avgWatch: "—", igUrl: "https://www.instagram.com/p/DbdycB8OSsB/", isTop: false },
-    ],
-  };
-  const socialData30d = {
-    period: "July 4 – August 2, 2026",
-    followers: 3193, followerGrowth: 36, follows: 36, unfollows: 0,
-    totalViews: 33990, totalReach: 25950, reachChange: 6.5, totalInteractions: 302,
-    viewSplit: { followers: 48, nonFollowers: 52 },
-    interactionSplit: { followers: 45, nonFollowers: 55 },
-    viewsByType: { reels: 41, posts: 44, stories: 15 },
-    interactionsByType: { reels: 57, posts: 42, stories: 1 },
-    totalLikes: 257, totalComments: 6, totalSaves: 6, totalShares: 30,
-    storyViews: 2041, storyCompletion: 83, storyCount: 21,
-    dailyViews: [
-      { date: "Jul 4", views: 800 },{ date: "Jul 8", views: 900 },
-      { date: "Jul 12", views: 1000 },{ date: "Jul 16", views: 950 },
-      { date: "Jul 20", views: 1500 },{ date: "Jul 24", views: 1100 },
-      { date: "Jul 28", views: 1150 },{ date: "Aug 1", views: 1450 },
-    ],
-    posts: [
-      { id: 1, title: "When a Tooth Is Worth Saving · Dr. Vitaliya Sobol", type: "Post", date: "Jul 19", views: 1895, reach: 782, likes: 40, comments: 1, saves: 0, shares: 8, er: 6.27, skipRate: 0, avgWatch: "—", igUrl: "https://www.instagram.com/p/Da-vqkPmRRE/", isTop: true },
-      { id: 2, title: "NEW EPISODE · What 50 Years in Dentistry Teaches You", type: "Reel", date: "Aug 1", views: 1512, reach: 1242, likes: 13, comments: 0, saves: 2, shares: 1, er: 1.29, skipRate: 0, avgWatch: "4.6s", igUrl: "https://www.instagram.com/reel/DbgAPneBJRm/", isTop: false },
-      { id: 3, title: "Your Smile Is Just One Part of Your Health · Dr. Dinoi", type: "Reel", date: "Jul 9", views: 1344, reach: 992, likes: 27, comments: 0, saves: 2, shares: 1, er: 3.02, skipRate: 0, avgWatch: "6.8s", igUrl: "https://www.instagram.com/reel/DalQX81hr1D/", isTop: false },
-      { id: 4, title: "Gum Health & Heart Health (Reel)", type: "Reel", date: "Jul 30", views: 1332, reach: 797, likes: 73, comments: 5, saves: 0, shares: 8, er: 10.79, skipRate: 0, avgWatch: "16.6s", igUrl: "https://www.instagram.com/reel/DbbSMVEhWzx/", isTop: false },
-      { id: 5, title: "When It Comes to Choosing a Postgraduate Program", type: "Post", date: "Jul 5", views: 982, reach: 488, likes: 29, comments: 0, saves: 0, shares: 2, er: 6.35, skipRate: 0, avgWatch: "—", igUrl: "https://www.instagram.com/p/DaTSj0UhvIf/", isTop: false },
-      { id: 6, title: "Gum Disease Is Often Silent Until It Isn't", type: "Post", date: "Jul 24", views: 594, reach: 212, likes: 7, comments: 0, saves: 2, shares: 1, er: 4.72, skipRate: 0, avgWatch: "—", igUrl: "https://www.instagram.com/p/DbL1akHmVPB/", isTop: false },
-    ],
-  };
-  const socialData = timeRange === "7d" ? socialData7d : socialData30d;
-
-  const adsData = {
-    period: "July 1 – 31, 2026 (final)",
-    campaign: "July Whitening Promo (concluded Jul 31)",
-    totalSpend: 312.05,
-    impressions: 39434,
-    reach: 28804,
-    activeAds: 2,
-    results: 404,
-    costPerResult: 0.77,
-    pctOfViews: 0,
-    pctOfInteractions: 0,
-    pctOfViews7d: 0,
-    pctOfInteractions7d: 0,
-    ads: [
-      { name: "Your best summer accessory", spend: 215.62, impressions: 26817, reach: 17719, results: 290, cpr: 0.74, quality: "Quality Average · Engagement Average · Conversion rate Below average (bottom 35%)" },
-      { name: "Make it a summer to remember", spend: 96.43, impressions: 12617, reach: 11085, results: 114, cpr: 0.85, quality: "Quality Average · Engagement Average · Conversion rate Below average (bottom 35%)" },
-    ],
-  };
-
-  const emailData7d = {
-    period: "July 27 – August 2, 2026",
-    campaignCount: 1, sends: 3443, opens: 1456, openRate: 42.3,
-    clicks: 46, clickRate: 1.34, ctor: 3.16,
-    bounces: 403, bounceRate: 11.7, unsubs: 9, unsubRate: 0.26,
-    campaigns: [
-      { name: "DDS PC · Summer Promo Extensions", date: "Aug 1", sends: 3443, opens: 1456, openRate: 47.9, clicks: 46, clickRate: 1.5, bounceRate: 11.7, mobile: 47.7 },
-    ],
-  };
-  const emailData30d = {
-    period: "July 4 – August 2, 2026",
-    campaignCount: 3, sends: 10444, opens: 4827, openRate: 46.2,
-    clicks: 140, clickRate: 1.34, ctor: 2.90,
-    bounces: 1240, bounceRate: 11.9, unsubs: 36, unsubRate: 0.34,
-    campaigns: [
-      { name: "DDS PC · Whitening Offer", date: "Jul 6", sends: 3514, opens: 1709, openRate: 55.3, clicks: 65, clickRate: 2.1, bounceRate: 12.0, mobile: 31.5 },
-      { name: "DDS PC · Gum Article", date: "Jul 22", sends: 3487, opens: 1662, openRate: 54.1, clicks: 29, clickRate: 0.9, bounceRate: 11.9, mobile: 30.7 },
-      { name: "DDS PC · Summer Promo Extensions", date: "Aug 1", sends: 3443, opens: 1456, openRate: 47.9, clicks: 46, clickRate: 1.5, bounceRate: 11.7, mobile: 47.7 },
-    ],
-  };
-  const emailData = timeRange === "7d" ? emailData7d : emailData30d;
-  const emailLifetime = {
-    campaigns: 4, sends: 14012, opens: 6403, openRate: 45.7,
-    clicks: 254, clickRate: 1.81, ctor: 3.97, bounces: 2311, bounceRate: 16.5, unsubs: 43,
-    bestOpens: [
-      { name: "DDS PC · Podcast Newsletter", rate: 63.1 },
-      { name: "DDS PC · Whitening Offer", rate: 55.3 },
-      { name: "DDS PC · Gum Article", rate: 54.1 },
-    ],
-    campaignUnsubs: [
-      { name: "DDS PC · Podcast Newsletter", rate: 0.2, sends: 3568 },
-      { name: "DDS PC · Whitening Offer", rate: 0.3, sends: 3514 },
-      { name: "DDS PC · Gum Article", rate: 0.5, sends: 3487 },
-      { name: "DDS PC · Summer Promo Extensions", rate: 0.3, sends: 3443 },
-    ],
-  };
-
-  const tabs = [
-    { id: "overview", label: "Overview", icon: "◉" },
-    { id: "social", label: "Social", icon: "◍" },
-    { id: "links", label: "Links", icon: "⊞" },
-    { id: "website", label: "Website", icon: "◈" },
-    { id: "ads", label: "Paid Ads", icon: "◐" },
-    { id: "podcast", label: "Podcast", icon: "◉" },
-    { id: "email", label: "Email", icon: "✉" },
-    { id: "audience", label: "Audience", icon: "◎" },
-    { id: "insights", label: "Insights", icon: "✦" },
-  ];
-
-  const severityStyle: Record<string, { bg: string; border: string; dot: string }> = {
-    success: { bg: "rgba(136,163,174,0.12)", border: "rgba(136,163,174,0.35)", dot: "#88A3AE" },
-    warning: { bg: "rgba(113,82,98,0.10)", border: "rgba(113,82,98,0.30)", dot: "#715262" },
-    danger: { bg: "rgba(190,90,90,0.10)", border: "rgba(190,90,90,0.30)", dot: "#BE5A5A" },
-    info: { bg: "rgba(189,203,206,0.15)", border: "rgba(189,203,206,0.35)", dot: "#88A3AE" },
-  };
-
-  const sevMark: Record<string, string> = { success: "\u25B2", warning: "\u25BC", danger: "\u25CF", info: "\u25C6" };
-  const sevColor: Record<string, string> = { success: "#88A3AE", warning: "#715262", danger: "#BE5A5A", info: "#BDCBCE" };
-
-  function InsightCard({ title, body, evidence, impact, action, severity }: { title: string; body?: string; evidence?: string[]; impact?: string; action?: string; severity: string }) {
-    const sv = severity || "info";
-    if (!evidence) {
-      const s2 = severityStyle[sv] || severityStyle.info;
-      return (
-        <div style={{ background: s2.bg, border: `1px solid ${s2.border}`, borderRadius: 14, padding: "18px 22px", marginBottom: 12 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 8 }}>
-            <div style={{ width: 8, height: 8, borderRadius: 99, background: s2.dot, flexShrink: 0 }} />
-            <span style={{ fontWeight: 700, fontSize: 13, color: "#715262", letterSpacing: "0.01em" }}>{title}</span>
-          </div>
-          <div style={{ fontSize: 13, lineHeight: 1.7, color: "#5C4A53" }}>{body}</div>
-        </div>
-      );
-    }
-    return (
-      <div className={`ins sev-${sv}`}>
-        <div className="ins-title"><span className="ins-mark" style={{ color: sevColor[sv] }}>{sevMark[sv]}</span><span>{title}</span></div>
-        <div className="ins-label">Evidence</div>
-        <ul className="ins-ev">{evidence.map((e, i) => <li key={i}>{e}</li>)}</ul>
-        {impact && <><div className="ins-label">Business Impact</div><div className="ins-impact">{impact}</div></>}
-        {action && <><div className="ins-label">Recommended Action</div><div className="ins-action">{action}</div></>}
-      </div>
-    );
-  }
-
-  function ExecCard({ eyebrow, tone, metrics, hero, noteLabel, notes }: { eyebrow: string; tone: string; metrics?: { val: string; label: string; delta?: string; dir?: string }[]; hero?: { label: string; title: string; stats: { val: string; label: string }[] }; noteLabel: string; notes: { text: string; tone?: string }[] }) {
-    return (
-      <div className={`exec-card tone-${tone}`}>
-        <div className="exec-eyebrow">{eyebrow}</div>
-        {metrics && (<div className="exec-metrics">{metrics.map((m, i) => (
-          <div key={i} className="exec-metric">
-            <div className="exec-metric-val">{m.val}</div>
-            <div className="exec-metric-label">{m.label}</div>
-            {m.delta && <div className={`exec-metric-delta ${m.dir || "flat"}`}>{m.dir === "up" ? "\u25B2" : m.dir === "down" ? "\u25BC" : "\u2014"} {m.delta}</div>}
-          </div>))}
-        </div>)}
-        {hero && (<div className="exec-hero">
-          <div className="exec-hero-label">{hero.label}</div>
-          <div className="exec-hero-title">{hero.title}</div>
-          <div className="exec-hero-stats">{hero.stats.map((h, i) => <div key={i} className="exec-hero-stat">{h.val} <span>{h.label}</span></div>)}</div>
-        </div>)}
-        <div className="exec-note-label">{noteLabel}</div>
-        <ul className="exec-list">{notes.map((n, i) => <li key={i} className={n.tone || ""}>{n.text}</li>)}</ul>
-      </div>
-    );
-  }
-
-  if (loading) {
-    return (
-      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#FAF6F3", fontFamily: "'Cinzel', serif" }}>
-        <div style={{ width: 40, height: 40, border: "3px solid #F1E4DC", borderTopColor: "#715262", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
-        <div style={{ marginTop: 16, fontSize: 12, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase" as const, color: "#9B8E94" }}>Loading report...</div>
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-      </div>
-    );
-  }
-
+/* Signature chart: daily visitors across the full thirty days, with the
+   advertising flight shaded so the reporting period reads in context. */
+function PeriodChart({ data }: { data: { d: string; v: number; paid?: boolean }[] }) {
+  if (!data.length) return null;
+  const top = Math.max(...data.map((x) => x.v)) || 1;
   return (
-    <div className={`root ${loaded ? "on" : ""}`}>
-      {/* HEADER */}
-      <div className="hdr">
-        <div className="hdr-top">
-          <div>
-            <div className="hdr-brand">Figment Creative · Social Intelligence</div>
-            <div className="hdr-title">{d.client.fullName}</div>
-            <div className="hdr-sub">Social Media Performance · {d.client.period}</div>
-          </div>
-          <div className="hdr-badge"><div className="hdr-pulse" />Weekly Report</div>
-        </div>
+    <div className="chart">
+      <div className="chart-key">
+        <span><i style={{ background: "var(--nav)" }} />{R.period_.paidLabel} &middot; Jul 18 &ndash; Aug 2</span>
+        <span><i style={{ background: "var(--plum)" }} />{R.period_.windowLabel} &middot; Aug 3 &ndash; 16</span>
       </div>
-
-      {/* TABS */}
-      {(tab === "links" || tab === "social" || tab === "website" || tab === "email") && <div style={{ display: "flex", justifyContent: "center", gap: 6, margin: "12px 0 4px" }}>
-        {(["7d", "30d"] as const).map((r) => (
-          <button key={r} onClick={() => setTimeRange(r)} style={{ padding: "6px 18px", borderRadius: 99, border: `1.5px solid ${timeRange === r ? "#715262" : "#D9CCC1"}`, background: timeRange === r ? "#715262" : "transparent", color: timeRange === r ? "#fff" : "#715262", fontWeight: 700, fontSize: 13, cursor: "pointer", transition: "all 0.2s" }}>{r === "7d" ? "Last 7 Days" : "Last 30 Days"}</button>
-        ))}
-      </div>}
-      <div className="tabs">
-        {tabs.map((t) => (
-          <button key={t.id} className={`tab ${tab === t.id ? "on" : ""}`} onClick={() => setTab(t.id)}>
-            <span style={{ fontSize: 15 }}>{t.icon}</span> {t.label}
-          </button>
+      <div className="bars">
+        {data.map((x) => (
+          <div
+            key={x.d}
+            className={`bar${x.paid ? " paid" : ""}`}
+            style={{ height: `${Math.max((x.v / top) * 100, 2)}%` }}
+          >
+            <span className="bar-cap">{x.v}</span>
+          </div>
         ))}
       </div>
-
-      {/* CONTENT */}
-      <div className="grid">
-        {/* OVERVIEW */}
-        {tab === "overview" && (
-          <>
-            <div className="kpi-row">
-              {[
-                { ...d.kpi.followers, delay: 0 },
-                { ...d.kpi.reach, delay: 80 },
-                { ...d.kpi.engagementRate, delay: 240 },
-                { ...d.kpi.engagements, delay: 320 }
-              ].map((k, i) => (
-                <div key={i} className="kpi" style={{ animationDelay: `${k.delay}ms` }}>
-                  <div className="kpi-label">{k.label}</div>
-                  <div className="kpi-val">
-                    {typeof k.value === "number" ? <AnimatedNumber value={k.value} suffix={"suffix" in k ? (k as { suffix: string }).suffix : ""} /> : <span>{k.value}</span>}
-                  </div>
-                  {"change" in k && k.change != null && (
-                    <div className="kpi-delta">
-                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2L12 8H2L7 2Z" fill="#88A3AE" /></svg>
-                      +{k.change} this week
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            <div className="exec">
-              <div className="card-hd">Executive Summary</div>
-              <div className="exec-grid">
-                <ExecCard
-                  eyebrow="Discovery"
-                  tone="pos"
-                  metrics={[
-                    { val: d.kpi.views.value.toLocaleString(), label: "Views", delta: "27%", dir: "up" },
-                    { val: d.kpi.reach.value.toLocaleString(), label: "Reach", delta: "8.7%", dir: "down" },
-                    { val: `${d.viewerSplit.nonFollowers}%`, label: "Non-Follower (est.)", delta: "12pt", dir: "up" },
-                  ]}
-                  noteLabel="Takeaway"
-                  notes={[
-                    { text: "Reels returned \u2014 two doctor-led Reels, two posts and seven Stories lifted views 27% week-over-week.", tone: "pos" },
-                    { text: "The new-episode Reel reached 1,242 accounts \u2014 the widest single piece of the week.", tone: "pos" },
-                    { text: "Ads concluded Jul 31; content views this week were fully organic.", tone: "" },
-                  ]}
-                />
-                <ExecCard
-                  eyebrow="Engagement"
-                  tone="pos"
-                  metrics={[
-                    { val: `${d.kpi.engagementRate.value}%`, label: "Eng. Rate", delta: "0.5pt", dir: "up" },
-                    { val: d.kpi.engagements.value.toLocaleString(), label: "Interactions", delta: "14%", dir: "up" },
-                    { val: `${d.viewerSplit.followers}%`, label: "Follower Views (est.)", delta: "12pt", dir: "down" },
-                  ]}
-                  noteLabel="Why"
-                  notes={[
-                    { text: "Engagement rate rose to ~2.6% as Reels carried 86% of the 119 interactions.", tone: "pos" },
-                    { text: "The gum\u2013heart Reel earned 73 likes, 5 comments and 8 shares \u2014 a 10.8% ER on its reach.", tone: "pos" },
-                    { text: "97 likes and 14 shares this week \u2014 the strongest interaction week of the window.", tone: "pos" },
-                    { text: "Saves remain thin (2); a save prompt is still the open lever.", tone: "" },
-                  ]}
-                />
-                <ExecCard
-                  eyebrow="Content"
-                  tone="neutral"
-                  hero={{
-                    label: "Top Performer",
-                    title: "Gum Health & Heart Health \u00b7 Reel",
-                    stats: [{ val: "1,332", label: "views" }, { val: "797", label: "reach" }, { val: "73", label: "likes" }],
-                  }}
-                  noteLabel="Key Notes"
-                  notes={[
-                    { text: `Reels led at ${d.contentMix.reels}% of content views; posts ${d.contentMix.posts}%, Stories ${d.contentMix.stories}%.`, tone: "pos" },
-                    { text: "Podcast milestone week: 5,000 lifetime downloads and the 50th episode published.", tone: "pos" },
-                    { text: "Search CTR 10.4% at position 5.8 \u2014 still all name-brand queries.", tone: "pos" },
-                    { text: "Booking-link clicks at 18 \u2014 the best named-link week behind the homepage.", tone: "pos" },
-                  ]}
-                />
-              </div>
-            </div>
-
-            <div className="cols2">
-              <div className="card">
-                <div className="card-hd">Content Mix</div>
-                <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
-                  <Donut data={[{ value: d.contentMix.posts }, { value: d.contentMix.reels }, { value: d.contentMix.stories }]} colors={["#715262", "#88A3AE", "#BDCBCE"]} size={120} stroke={18} />
-                  <div style={{ flex: 1 }}>
-                    {[{ label: "Posts", value: d.contentMix.posts, color: "#715262" }, { label: "Reels", value: d.contentMix.reels, color: "#88A3AE" }, { label: "Stories", value: d.contentMix.stories, color: "#BDCBCE" }].map((item) => (
-                      <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 10, padding: "7px 0" }}>
-                        <div style={{ width: 10, height: 10, borderRadius: 3, background: item.color }} />
-                        <span style={{ flex: 1, fontSize: 14, fontWeight: 500 }}>{item.label}</span>
-                        <span className="display-num">{item.value}%</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="card">
-                <div className="card-hd">Viewer Composition</div>
-                <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
-                  <Donut data={[{ value: d.viewerSplit.followers }, { value: d.viewerSplit.nonFollowers }]} colors={["#715262", "#E4CCC2"]} size={120} stroke={18} />
-                  <div style={{ flex: 1 }}>
-                    {[{ label: "Followers", value: d.viewerSplit.followers, color: "#715262" }, { label: "Non-Followers", value: d.viewerSplit.nonFollowers, color: "#E4CCC2" }].map((item) => (
-                      <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 10, padding: "7px 0" }}>
-                        <div style={{ width: 10, height: 10, borderRadius: 3, background: item.color }} />
-                        <span style={{ flex: 1, fontSize: 14, fontWeight: 500 }}>{item.label}</span>
-                        <span className="display-num">{item.value}%</span>
-                      </div>
-                    ))}
-                    <div style={{ marginTop: 14, padding: "10px 14px", background: "rgba(113,82,98,0.10)", borderRadius: 10, border: "1px solid rgba(113,82,98,0.25)" }}>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: "#715262" }}>✦ With Reels back in the mix, discovery tilted outward — an estimated ~55% of views came from non-followers this week (split estimated from the Reel-heavy content mix; the native follower breakdown wasn't exported this cycle)</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {engine.alerts.length > 0 && <div>{engine.alerts.map((a, i) => <InsightCard key={i} {...a} />)}</div>}
-          </>
-        )}
-
-        {/* LINKS */}
-        {tab === "links" && (
-          <>
-            <div className="kpi-row">
-              {[
-                { label: "Total Clicks", value: linkData.totalClicks, delay: 0 },
-              ].map((k, i) => (
-                <div key={i} className="kpi" style={{ animationDelay: `${k.delay}ms` }}>
-                  <div className="kpi-label">{k.label}</div>
-                  <div className="kpi-val">{typeof k.value === "number" ? <AnimatedNumber value={k.value} /> : <span>{k.value}</span>}</div>
-                </div>
-              ))}
-            </div>
-            <div className="card"><div className="card-hd">Top Links · {linkData.period}</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                {linkData.topLinks.map((l, i) => {
-                  const maxClicks = Math.max(...linkData.topLinks.map(x => x.clicks));
-                  return (
-                    <div key={i} style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                      <div style={{ width: 22, height: 22, borderRadius: 99, background: "#715262", color: "#fff", fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{i + 1}</div>
-                      <div style={{ width: 140, fontSize: 13, fontWeight: 500, flexShrink: 0 }}>{l.path}</div>
-                      <div style={{ flex: 1, height: 10, background: "#F1E4DC", borderRadius: 99, overflow: "hidden" }}>
-                        <div style={{ width: `${(l.clicks / maxClicks) * 100}%`, height: "100%", background: i === 0 ? "#715262" : "#88A3AE", borderRadius: 99, transition: "width 1.2s ease" }} />
-                      </div>
-                      <div className="display-num" style={{ width: 40, textAlign: "right" as const }}>{l.clicks}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-            <div className="cols2">
-              <div className="card"><div className="card-hd">Traffic Sources</div>
-                <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
-                  <Donut data={linkData.trafficSources.map(s => ({ value: Math.round((s.clicks / linkData.trafficSources.reduce((a, b) => a + b.clicks, 0)) * 100) }))} colors={["#715262", "#88A3AE"]} size={120} stroke={18} />
-                  <div style={{ flex: 1 }}>
-                    {linkData.trafficSources.map((s, i) => (
-                      <div key={s.source} style={{ display: "flex", alignItems: "center", gap: 10, padding: "7px 0" }}>
-                        <div style={{ width: 10, height: 10, borderRadius: 3, background: ["#715262", "#88A3AE"][i] }} />
-                        <span style={{ flex: 1, fontSize: 14, fontWeight: 500 }}>{s.source}</span>
-                        <span className="display-num">{s.clicks}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="card"><div className="card-hd">Device Breakdown</div>
-                <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
-                  <Donut data={linkData.devices.map(dv => ({ value: Math.round((dv.clicks / linkData.devices.reduce((a, b) => a + b.clicks, 0)) * 100) }))} colors={["#715262", "#88A3AE", "#BDCBCE"]} size={120} stroke={18} />
-                  <div style={{ flex: 1 }}>
-                    {linkData.devices.map((dv, i) => (
-                      <div key={dv.os} style={{ display: "flex", alignItems: "center", gap: 10, padding: "7px 0" }}>
-                        <div style={{ width: 10, height: 10, borderRadius: 3, background: ["#715262", "#88A3AE", "#BDCBCE"][i] }} />
-                        <span style={{ flex: 1, fontSize: 14, fontWeight: 500 }}>{dv.os}</span>
-                        <span className="display-num">{dv.clicks}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="cols2">
-              <div className="card"><div className="card-hd">Top Countries</div>
-                {linkData.topCountries.map((c) => {
-                  const max = Math.max(...linkData.topCountries.map(x => x.clicks));
-                  return (
-                    <div key={c.country} className="age-row">
-                      <div className="age-label" style={{ width: 110 }}>{c.country}</div>
-                      <div className="age-track"><div className="age-fill" style={{ width: `${(c.clicks / max) * 100}%`, background: c.clicks === max ? "#715262" : "#88A3AE" }} /></div>
-                      <div className="age-pct">{c.clicks}</div>
-                    </div>
-                  );
-                })}
-              </div>
-              <div className="card"><div className="card-hd">Top Cities</div>
-                {linkData.topCities.map((c) => {
-                  const max = Math.max(...linkData.topCities.map(x => x.clicks));
-                  return (
-                    <div key={c.city} className="age-row">
-                      <div className="age-label" style={{ width: 110 }}>{c.city}</div>
-                      <div className="age-track"><div className="age-fill" style={{ width: `${(c.clicks / max) * 100}%`, background: c.clicks === max ? "#715262" : "#88A3AE" }} /></div>
-                      <div className="age-pct">{c.clicks}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-            <div className="card">
-              <InsightCard title={"Link Attribution · " + linkData.period} body={timeRange === "7d" ? "73 clicks over 7 days across named destinations — Homepage 53, DDS-PC Midtown 11, DDS-PC UES 7, Website 2 (wildcard / social / other traffic held out at 1,009). Booking links (Midtown + UES = 18) led the named set behind the homepage, and the city panel reflects verified local engagement — led by Brooklyn. Per-path counts are exact this cycle (xlsx exports replaced pie estimation). ✓ DDS-PC merge applied: one Midtown click merged in from the linked NYCDS domain (10→11); UES added 0." : "285 clicks across named destinations over 30 days — Homepage 161, Website 54, DDS-PC Midtown 45, DDS-PC UES 25 (wildcard / social / other traffic held out at 2,283). Booking links climbed again (Midtown + UES = 70, up from 62 the prior window) — the strongest conversion signal in the link set. Per-path counts are exact this cycle (xlsx exports replaced pie estimation). ✓ DDS-PC merge applied: two Midtown clicks merged in from the linked NYCDS domain (43→45); UES added 0." } severity="info" />
-            </div>
-          </>
-        )}
-
-        {/* WEBSITE */}
-        {tab === "website" && (
-          <>
-            <div className="kpi-row">
-              {[
-                { label: "Total Sessions", value: websiteData.sessions, delay: 0 },
-                { label: "Page Views", value: websiteData.topPages.reduce((s, p) => s + p.views, 0), delay: 80 },
-                { label: "Top Source", value: timeRange === "7d" ? "Direct (65.1%)" : "Direct (52.6%)", delay: 160 },
-              ].map((k, i) => (
-                <div key={i} className="kpi" style={{ animationDelay: `${k.delay}ms` }}>
-                  <div className="kpi-label">{k.label}</div>
-                  <div className="kpi-val">{typeof k.value === "number" ? <AnimatedNumber value={k.value} /> : <span>{k.value}</span>}</div>
-                </div>
-              ))}
-            </div>
-            <div className="card"><div className="card-hd">Visitors Over Time · {websiteData.period}</div>
-              <div style={{ position: "relative", height: 180 }}>
-                <svg viewBox="0 0 700 160" style={{ width: "100%", height: "100%" }}>
-                  <defs><linearGradient id="vg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#715262" stopOpacity="0.18" /><stop offset="100%" stopColor="#715262" stopOpacity="0" /></linearGradient></defs>
-                  {(() => {
-                    const pts = websiteData.dailyVisitors;
-                    const maxV = Math.max(...pts.map(p => p.visitors));
-                    const coords = pts.map((p, i) => ({ x: 30 + (i / (pts.length - 1)) * 640, y: 145 - (p.visitors / maxV) * 130 }));
-                    const line = coords.map((c, i) => `${i === 0 ? "M" : "L"}${c.x},${c.y}`).join(" ");
-                    const area = `${line} L${coords[coords.length-1].x},150 L${coords[0].x},150 Z`;
-                    return (<>
-                      {[0, 0.25, 0.5, 0.75, 1].map(f => { const y = 145 - f * 130; return <line key={f} x1="30" x2="670" y1={y} y2={y} stroke="#F1E4DC" strokeWidth="0.5" strokeDasharray="4,4" />; })}
-                      <path d={area} fill="url(#vg)" />
-                      <path d={line} fill="none" stroke="#715262" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                      {coords.map((c, i) => <circle key={i} cx={c.x} cy={c.y} r="3" fill="#715262" stroke="#FAF6F3" strokeWidth="1.5" />)}
-                      {pts.map((p, i) => <text key={`l${i}`} x={coords[i].x} y="158" textAnchor="middle" fontSize="8" fill="#9B8E94">{p.date.replace("Apr ", "4/").replace("Mar ", "3/")}</text>)}
-                    </>);
-                  })()}
-                </svg>
-              </div>
-            </div>
-            <div className="card"><div className="card-hd">Top Pages</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                {websiteData.topPages.map((p, i) => {
-                  const maxViews = websiteData.topPages[0].views;
-                  return (
-                    <div key={i} style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                      <div style={{ width: 22, height: 22, borderRadius: 99, background: i === 0 ? "#715262" : i < 3 ? "#88A3AE" : "#BDCBCE", color: "#fff", fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{i + 1}</div>
-                      <div style={{ width: 150, fontSize: 13, fontWeight: 500, flexShrink: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>{p.label}</div>
-                      <div style={{ flex: 1, height: 10, background: "#F1E4DC", borderRadius: 99, overflow: "hidden" }}>
-                        <div style={{ width: `${(p.views / maxViews) * 100}%`, height: "100%", background: i === 0 ? "#715262" : i < 3 ? "#88A3AE" : "#BDCBCE", borderRadius: 99, transition: "width 1.2s ease" }} />
-                      </div>
-                      <div className="display-num" style={{ width: 40, textAlign: "right" as const }}>{p.views}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-            <div className="cols2">
-              <div className="card"><div className="card-hd">Traffic Sources</div>
-                <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
-                  <Donut data={websiteData.trafficSources.map(s => ({ value: Math.round(s.pct) }))} colors={["#715262", "#88A3AE", "#BDCBCE", "#E4CCC2", "#F1E4DC"]} size={120} stroke={18} />
-                  <div style={{ flex: 1 }}>
-                    {websiteData.trafficSources.map((s, i) => (
-                      <div key={s.source} style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 0" }}>
-                        <div style={{ width: 10, height: 10, borderRadius: 3, background: ["#715262", "#88A3AE", "#BDCBCE", "#E4CCC2", "#F1E4DC"][i] }} />
-                        <span style={{ flex: 1, fontSize: 13, fontWeight: 500 }}>{s.source}</span>
-                        <span className="display-num">{s.sessions}</span>
-                        <span style={{ fontSize: 11, color: "#9B8E94", width: 44, textAlign: "right" as const }}>{s.pct}%</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="card"><div className="card-hd">Device Breakdown</div>
-                <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
-                  <Donut data={websiteData.devices.map(dv => ({ value: Math.round(dv.pct) }))} colors={["#715262", "#88A3AE", "#BDCBCE"]} size={120} stroke={18} />
-                  <div style={{ flex: 1 }}>
-                    {websiteData.devices.map((dv, i) => (
-                      <div key={dv.device} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 0" }}>
-                        <div style={{ width: 10, height: 10, borderRadius: 3, background: ["#715262", "#88A3AE", "#BDCBCE"][i] }} />
-                        <span style={{ flex: 1, fontSize: 15, fontWeight: 500 }}>{dv.device}</span>
-                        <span className="display-num-lg">{dv.pct}%</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div style={{ marginTop: 14, padding: "10px 14px", background: "rgba(136,163,174,0.12)", borderRadius: 10, border: "1px solid rgba(136,163,174,0.25)" }}>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: "#6E8B97" }}>✦ Desktop-led ({websiteData.devices[0].pct}% / {websiteData.devices[1].pct}%) — worth optimising both, and keeping mobile booking CTAs thumb-reachable</span>
-                </div>
-              </div>
-            </div>
-            <div className="card"><div className="card-hd">Google Search Performance · {websiteData.period}</div>
-              <div className="kpi-row" style={{ marginBottom: 18 }}>
-                {[
-                  { label: "Search Clicks", value: websiteData.search.totalClicks },
-                  { label: "Impressions", value: websiteData.search.totalImpressions.toLocaleString() },
-                  { label: "Avg CTR", value: `${websiteData.search.avgCTR}%` },
-                  { label: "Avg Position", value: websiteData.search.avgPosition.toFixed(0) },
-                ].map((k, i) => (
-                  <div key={i} className="kpi" style={{ animationDelay: `${i * 80}ms` }}>
-                    <div className="kpi-label">{k.label}</div>
-                    <div className="kpi-val">{typeof k.value === "number" ? <AnimatedNumber value={k.value} /> : <span>{k.value}</span>}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="cols2">
-              <div className="card"><div className="card-hd">Top Search Queries</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  {websiteData.search.topQueries.map((q, i) => (
-                    <div key={i} style={{ display: "flex", alignItems: "center", gap: 14, padding: "8px 12px", background: i === 0 ? "rgba(113,82,98,0.08)" : "rgba(136,163,174,0.06)", borderRadius: 10 }}>
-                      <div style={{ width: 22, height: 22, borderRadius: 99, background: i === 0 ? "#715262" : "#88A3AE", color: "#fff", fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{i + 1}</div>
-                      <div style={{ flex: 1, fontSize: 12, fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>{q.query}</div>
-                      <div style={{ display: "flex", gap: 12, flexShrink: 0 }}>
-                        <div style={{ textAlign: "center" as const }}><div className="display-num">{q.clicks}</div><div style={{ fontSize: 9, color: "#9B8E94" }}>clicks</div></div>
-                        <div style={{ textAlign: "center" as const }}><div className="display-num">{q.ctr}%</div><div style={{ fontSize: 9, color: "#9B8E94" }}>CTR</div></div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="card"><div className="card-hd">Top Pages in Search</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  {websiteData.search.topPages.map((p, i) => {
-                    const maxClicks = websiteData.search.topPages[0].clicks;
-                    return (
-                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                        <div style={{ width: 130, fontSize: 12, fontWeight: 500, flexShrink: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>{p.page}</div>
-                        <div style={{ flex: 1, height: 10, background: "#F1E4DC", borderRadius: 99, overflow: "hidden" }}>
-                          <div style={{ width: `${(p.clicks / maxClicks) * 100}%`, height: "100%", background: i === 0 ? "#715262" : "#88A3AE", borderRadius: 99, transition: "width 1.2s ease" }} />
-                        </div>
-                        <div style={{ display: "flex", gap: 12, flexShrink: 0 }}>
-                          <div style={{ textAlign: "center" as const }}><div className="display-num">{p.clicks}</div><div style={{ fontSize: 9, color: "#9B8E94" }}>clicks</div></div>
-                          <div style={{ textAlign: "center" as const }}><div className="display-num">{p.ctr}%</div><div style={{ fontSize: 9, color: "#9B8E94" }}>CTR</div></div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-            <div className="card">
-              <InsightCard
-                title={"Website + Search \u00b7 " + (timeRange === "7d" ? websiteData.period : websiteData.period)}
-                evidence={timeRange === "7d" ? [
-                  "530 sessions this week \u2014 volume holding as ads wound down",
-                  "Direct climbed to 65.1%; paid social eased to 11.1% (IG 33, FB 26) with ads ending Jul 31",
-                  "Home leads at 299 views; Locations 78, Our Doctors 69",
-                  "Search: 54 clicks at 10.36% CTR, position 5.8",
-                  "Desktop 74.4% / Mobile 25.2%",
-                  "The 404 page drew 141 views this week \u2014 now a standing fix, not a quirk",
-                ] : [
-                  "2,461 sessions over 30 days",
-                  "Paid social = 27% of sessions (IG 454, FB 212) while the July campaign ran",
-                  "Home (1,269) and Locations (809) absorb most arrivals",
-                  "Search: 216 clicks at 9.33% CTR, position 5.0, all name-brand",
-                  "The 404 page is the #3 title at 701 views \u2014 something is linking to a dead URL",
-                  "Locations earns 361 search impressions but only 3 clicks (0.83% CTR)",
-                ]}
-                impact="Direct and search held the floor as paid wound down \u2014 and next week's sessions will dip without the ad tailwind."
-                action="Trace and redirect the dead URL feeding the 404, and expect a paid-session drop now that ads have concluded."
-                severity="info" />
-            </div>
-          </>
-        )}
-
-        {/* SOCIAL */}
-        {tab === "social" && (
-          <>
-            <div className="kpi-row">
-              {[
-                { label: "Total Views", value: socialData.totalViews, delay: 0 },
-                { label: "Accounts Reached", value: socialData.totalReach, delay: 80 },
-                { label: "Total Interactions", value: socialData.totalInteractions, delay: 160 },
-                { label: "Followers", value: socialData.followers, delay: 240 },
-                { label: "Net Growth", value: `+${socialData.followerGrowth}`, delay: 320 },
-              ].map((k, i) => (
-                <div key={i} className="kpi" style={{ animationDelay: `${k.delay}ms` }}>
-                  <div className="kpi-label">{k.label}</div>
-                  <div className="kpi-val">{typeof k.value === "number" ? <AnimatedNumber value={k.value} /> : <span>{k.value}</span>}</div>
-                </div>
-              ))}
-            </div>
-
-            <div className="card"><div className="card-hd">Performance Over Time · {socialData.period}</div>
-              <div style={{ position: "relative", height: 180 }}>
-                <svg viewBox="0 0 700 160" style={{ width: "100%", height: "100%" }}>
-                  <defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#715262" stopOpacity="0.18" /><stop offset="100%" stopColor="#715262" stopOpacity="0" /></linearGradient></defs>
-                  {(() => {
-                    const pts = socialData.dailyViews;
-                    const maxV = Math.max(...pts.map(p => p.views));
-                    const coords = pts.map((p, i) => ({ x: 30 + (i / (pts.length - 1)) * 640, y: 145 - (p.views / maxV) * 130 }));
-                    const line = coords.map((c, i) => `${i === 0 ? "M" : "L"}${c.x},${c.y}`).join(" ");
-                    const area = `${line} L${coords[coords.length-1].x},150 L${coords[0].x},150 Z`;
-                    return (<>
-                      {[0, 0.25, 0.5, 0.75, 1].map(f => { const y = 145 - f * 130; return <line key={f} x1="30" x2="670" y1={y} y2={y} stroke="#F1E4DC" strokeWidth="0.5" strokeDasharray="4,4" />; })}
-                      <path d={area} fill="url(#sg)" />
-                      <path d={line} fill="none" stroke="#715262" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                      {coords.map((c, i) => <circle key={i} cx={c.x} cy={c.y} r={pts[i].views >= 1400 ? 5 : 3} fill={pts[i].views >= 1400 ? "#715262" : "#88A3AE"} stroke="#FAF6F3" strokeWidth="1.5" />)}
-                      {pts.map((p, i) => <text key={`l${i}`} x={coords[i].x} y="158" textAnchor="middle" fontSize="8" fill="#9B8E94">{p.date.replace("Apr ", "4/").replace("Mar ", "3/")}</text>)}
-                      {pts.filter(p => p.views >= 1400).map((p, idx) => { const i = pts.indexOf(p); return <text key={`v${idx}`} x={coords[i].x} y={coords[i].y - 10} textAnchor="middle" fontSize="9" fontWeight="700" fill="#715262">{p.views.toLocaleString()}</text>; })}
-                    </>);
-                  })()}
-                </svg>
-              </div>
-              <div style={{ marginTop: 8, padding: "10px 14px", background: "rgba(110,139,151,0.12)", borderRadius: 10, border: "1px solid rgba(110,139,151,0.25)" }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: "#6E8B97" }}>{timeRange === "7d" ? "▲ Account views rose 27% to 6,973 as Reels returned — two doctor-led Reels, two posts and seven Stories. The Jul 30 gum–heart Reel led engagement (1,332 views, 73 likes, 16.6s avg watch) and the Aug 1 episode Reel led reach at 1,242 accounts. Reach ran 649/day × 7. (Daily shape is estimated — the account-view series isn't exported now that the Profile Growth CSV is retired.)" : "⚡ 30-day views came in at 33,990 across 35 pieces of content — a normalized month after the prior window's viral-carousel spike. The Jul 19 Dr. Sobol post (1,895 views) and the two late-July Reels anchor the window, and reach averaged 865/day."}</span>
-              </div>
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 18 }}>
-              {d.posts.map((p: any) => { const url = mediaUrls[p.id]; const isEditing = editingMedia === p.id; const maxViews = Math.max(...d.posts.map((x: any) => x.views), 1); return (
-                <div key={p.id} className={`postcard ${p.isTop ? "postcard-top" : ""}`}>
-                  <div className="postcard-header"><div className="postcard-type-badge">{p.type}</div>{p.isTop && <div className="postcard-top-badge">★ Top Post</div>}{(p as any).isCollab && <div className="postcard-top-badge" style={{background: "rgba(88,130,220,0.15)", color: "#5882DC"}}>⚡ Collab</div>}</div>
-                  <div className="postcard-title">{p.title}</div>
-                  <div className={`postcard-media ${url ? "has-media" : ""}`}>
-                    {!url && !isEditing && (<div className="postcard-media-empty" onClick={() => { setEditingMedia(p.id); setMediaInput(""); }}><div className="postcard-empty-inner"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#BDCBCE" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="4"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span className="postcard-empty-label">Add Post Visual</span><span className="postcard-empty-hint">Image, video, or Instagram link</span></div></div>)}
-                    {isEditing && (<div className="postcard-media-input"><input className="media-input" type="text" placeholder="Paste image, video, or Instagram URL..." value={mediaInput} onChange={(e) => setMediaInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") handleMediaSave(p.id); if (e.key === "Escape") { setEditingMedia(null); setMediaInput(""); } }} autoFocus /><div style={{ display: "flex", gap: 6 }}><button className="media-btn secondary" onClick={() => { setEditingMedia(null); setMediaInput(""); }}>Cancel</button><button className="media-btn primary" onClick={() => handleMediaSave(p.id)}>Save</button></div></div>)}
-                    {url && !isEditing && (<div className="postcard-media-filled">{isIgEmbed(url) ? (<div className="postcard-ig-crop"><iframe src={url.replace(/\/?(\?.*)?$/, "/embed")} title={p.title} scrolling="no" allowFullScreen /></div>) : isVideo(url) ? (<video controls playsInline preload="metadata"><source src={url} /></video>) : (<img src={url} alt={p.title} />)}<div className="postcard-media-actions"><button onClick={() => { setEditingMedia(p.id); setMediaInput(url); }}>✎</button><button onClick={() => handleMediaRemove(p.id)}>✕</button></div></div>)}
-                  </div>
-                  <div className="postcard-primary"><div className="postcard-hero-metric"><span className="postcard-hero-val">{p.views?.toLocaleString()}</span><span className="postcard-hero-label">Views</span></div><div className="postcard-hero-divider" /><div className="postcard-hero-metric"><span className="postcard-hero-val">{p.reach?.toLocaleString()}</span><span className="postcard-hero-label">Reach</span></div></div>
-                  <div className="postcard-perf-bar"><div className="postcard-perf-fill" style={{ width: `${(p.views / maxViews) * 100}%` }} /></div>
-                  <div className="postcard-secondary">{[{ icon: "♡", val: p.likes, label: "Likes" }, { icon: "↗", val: p.shares, label: "Shares" }, { icon: "💬", val: p.comments, label: "Comments" }, { icon: "⊕", val: p.saves, label: "Saves" }].map((m) => (<div key={m.label} className={`postcard-sec-item ${m.val === 0 ? "zero" : ""}`}><span className="postcard-sec-val">{m.val}</span><span className="postcard-sec-label">{m.label}</span></div>))}</div>
-                </div>); })}
-            </div>
-
-            <div className="card"><div className="card-hd">Content Performance · {socialData.period}</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                {socialData.posts.map((p, i) => {
-                  const maxV = socialData.posts[0].views;
-                  return (
-                    <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                      <div style={{ width: 22, height: 22, borderRadius: 99, background: p.isTop ? "#715262" : i < 3 ? "#88A3AE" : "#BDCBCE", color: "#fff", fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{i + 1}</div>
-                      <div style={{ minWidth: 0, flex: "0 0 200px" }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>{p.title}</div>
-                        <div style={{ fontSize: 11, color: "#9B8E94", marginTop: 2 }}>{p.type} · {p.date}{p.isTop ? " · ★ Top Post" : ""}{(p as any).isCollab ? " · ⚡ Collab" : ""}</div>
-                      </div>
-                      <div style={{ flex: 1, height: 10, background: "#F1E4DC", borderRadius: 99, overflow: "hidden" }}>
-                        <div style={{ width: `${(p.views / maxV) * 100}%`, height: "100%", background: p.isTop ? "#715262" : i < 3 ? "#88A3AE" : "#BDCBCE", borderRadius: 99, transition: "width 1.2s ease" }} />
-                      </div>
-                      <div style={{ display: "flex", gap: 16, flexShrink: 0 }}>
-                        <div style={{ textAlign: "center" as const }}><div className="display-num">{p.views.toLocaleString()}</div><div style={{ fontSize: 9, color: "#9B8E94" }}>views</div></div>
-                        <div style={{ textAlign: "center" as const }}><div className="display-num">{p.reach.toLocaleString()}</div><div style={{ fontSize: 9, color: "#9B8E94" }}>reach</div></div>
-                        <div style={{ textAlign: "center" as const }}><div className="display-num">{p.er}%</div><div style={{ fontSize: 9, color: "#9B8E94" }}>ER</div></div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="cols2">
-              <div className="card"><div className="card-hd">Views by Content Type</div>
-                <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
-                  <Donut data={[{ value: Math.round(socialData.viewsByType.reels) }, { value: Math.round(socialData.viewsByType.posts) }, { value: Math.round(socialData.viewsByType.stories) }]} colors={["#715262", "#88A3AE", "#BDCBCE"]} size={120} stroke={18} />
-                  <div style={{ flex: 1 }}>
-                    {[
-                      { label: "Reels", value: socialData.viewsByType.reels, color: "#715262" },
-                      { label: "Posts", value: socialData.viewsByType.posts, color: "#88A3AE" },
-                      { label: "Stories", value: socialData.viewsByType.stories, color: "#BDCBCE" },
-                    ].map((item) => (
-                      <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 10, padding: "7px 0" }}>
-                        <div style={{ width: 10, height: 10, borderRadius: 3, background: item.color }} />
-                        <span style={{ flex: 1, fontSize: 14, fontWeight: 500 }}>{item.label}</span>
-                        <span className="display-num">{item.value}%</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="card"><div className="card-hd">Interactions by Type</div>
-                <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
-                  <Donut data={[{ value: Math.round(socialData.interactionsByType.reels) }, { value: Math.round(socialData.interactionsByType.posts) }, { value: Math.round(socialData.interactionsByType.stories) }]} colors={["#715262", "#88A3AE", "#BDCBCE"]} size={120} stroke={18} />
-                  <div style={{ flex: 1 }}>
-                    {[
-                      { label: "Reels", value: socialData.interactionsByType.reels, color: "#715262" },
-                      { label: "Posts", value: socialData.interactionsByType.posts, color: "#88A3AE" },
-                      { label: "Stories", value: socialData.interactionsByType.stories, color: "#BDCBCE" },
-                    ].map((item) => (
-                      <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 10, padding: "7px 0" }}>
-                        <div style={{ width: 10, height: 10, borderRadius: 3, background: item.color }} />
-                        <span style={{ flex: 1, fontSize: 14, fontWeight: 500 }}>{item.label}</span>
-                        <span className="display-num">{item.value}%</span>
-                      </div>
-                    ))}
-                    <div style={{ marginTop: 10, padding: "10px 14px", background: "rgba(113,82,98,0.10)", borderRadius: 10, border: "1px solid rgba(113,82,98,0.25)" }}>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: "#715262" }}>{timeRange === "7d" ? "✦ Reels took 86% of the week's 119 content interactions — the gum–heart Reel alone earned 86 (73 likes, 5 comments, 8 shares) for a 10.8% ER on its reach. Posts added 13%, Stories 1%." : "✦ Reels drove 57% of the 302 content interactions over 30 days and posts 42% — the mix has flipped from the carousel-led prior window, with six Reels published across July"}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="cols2">
-              <div className="card"><div className="card-hd">Discovery Funnel</div>
-                <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
-                  <Donut data={[{ value: Math.round(socialData.viewSplit.nonFollowers) }, { value: Math.round(socialData.viewSplit.followers) }]} colors={["#715262", "#E4CCC2"]} size={120} stroke={18} />
-                  <div style={{ flex: 1 }}>
-                    {[
-                      { label: "Non-Followers", value: socialData.viewSplit.nonFollowers, color: "#715262" },
-                      { label: "Followers", value: socialData.viewSplit.followers, color: "#E4CCC2" },
-                    ].map((item) => (
-                      <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 0" }}>
-                        <div style={{ width: 10, height: 10, borderRadius: 3, background: item.color }} />
-                        <span style={{ flex: 1, fontSize: 14, fontWeight: 500 }}>{item.label} (views)</span>
-                        <span className="display-num-lg">{item.value}%</span>
-                      </div>
-                    ))}
-                    <div style={{ marginTop: 10, padding: "10px 14px", background: "rgba(136,163,174,0.12)", borderRadius: 10, border: "1px solid rgba(136,163,174,0.25)" }}>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: "#6E8B97" }}>{timeRange === "7d" ? "✦ An estimated ~55% of views came from non-followers this week as the Reel-heavy mix reopened discovery. (Split estimated from content-type mix — the native follower breakdown wasn't exported this cycle.)" : "✦ An estimated ~52% of 30-day views came from non-followers — a balanced posts-and-Reels month without the prior window's viral outlier. (Split estimated from content-type mix — native breakdown not exported this cycle.)"}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="card"><div className="card-hd">Engagement Breakdown</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                  {[
-                    { label: "Likes", value: socialData.totalLikes, max: 200, color: "#715262" },
-                    { label: "Shares", value: socialData.totalShares, max: 200, color: "#88A3AE" },
-                    { label: "Comments", value: socialData.totalComments, max: 200, color: "#BDCBCE" },
-                    { label: "Saves", value: socialData.totalSaves, max: 200, color: "#BE5A5A" },
-                  ].map((m) => (
-                    <div key={m.label} style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                      <div style={{ width: 72, fontSize: 13, fontWeight: 500 }}>{m.label}</div>
-                      <div style={{ flex: 1, height: 10, background: "#F1E4DC", borderRadius: 99, overflow: "hidden" }}>
-                        <div style={{ width: `${(Math.max(m.value, 0.5) / m.max) * 100}%`, height: "100%", background: m.color, borderRadius: 99, transition: "width 1.2s ease" }} />
-                      </div>
-                      <div className="display-num" style={{ width: 36, textAlign: "right" as const }}>{m.value}</div>
-                    </div>
-                  ))}
-                </div>
-                <div className="alert-box danger-bg" style={{ marginTop: 14, padding: "10px 14px", background: "rgba(190,90,90,0.10)", borderRadius: 10, border: "1px solid rgba(190,90,90,0.25)" }}>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: "#BE5A5A" }}>{timeRange === "7d" ? "✦ 97 likes, 14 shares and 5 comments this week — the strongest interaction week of the window, nearly all on the gum–heart Reel. Saves stayed thin at 2; a 'save this for your next check-up' prompt is the open lever" : "✦ 30 shares and 6 comments over 30 days against 6 saves — sharing is the audience's default signal here; bookmark-worthy framing is the next lever to grow"}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="card"><div className="card-hd">Reel-by-Reel Performance</div>
-              {socialData.posts.filter(p => p.type === "Reel").length === 0 ? (
-                <div style={{ padding: "20px 16px", background: "rgba(190,90,90,0.08)", borderRadius: 12, border: "1px solid rgba(190,90,90,0.20)", textAlign: "center" }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "#BE5A5A", marginBottom: 4 }}>No Reels published this window</div>
-                  <div style={{ fontSize: 12, color: "#9B8E94" }}>Posts and Stories carried the week. Toggle to 30-day to see the doctor-led Reels (Dr. Dinoi, Jul 9; patient journey, Jul 11) that anchor the broader window.</div>
-                </div>
-              ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {socialData.posts.filter(p => p.type === "Reel").map((p) => (
-                  <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 14, padding: "12px 16px", background: p.isTop ? "rgba(113,82,98,0.10)" : "rgba(136,163,174,0.08)", borderRadius: 12, border: p.isTop ? "1px solid rgba(113,82,98,0.25)" : "1px solid transparent" }}>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 13, fontWeight: 600 }}>{p.title}{p.isTop ? " ★" : ""}</div>
-                      <div style={{ fontSize: 11, color: "#9B8E94", marginTop: 2 }}>{p.date} · {p.shares} shares{p.skipRate ? ` · ${p.skipRate}% skip rate` : ""}</div>
-                    </div>
-                    <div style={{ display: "flex", gap: 18, flexShrink: 0 }}>
-                      <div style={{ textAlign: "center" as const }}><div style={{ fontSize: 18, fontWeight: 700, color: "#715262" }}>{p.views.toLocaleString()}</div><div style={{ fontSize: 9, color: "#9B8E94" }}>views</div></div>
-                      <div style={{ textAlign: "center" as const }}><div style={{ fontSize: 18, fontWeight: 700, color: "#88A3AE" }}>{p.reach.toLocaleString()}</div><div style={{ fontSize: 9, color: "#9B8E94" }}>reach</div></div>
-                      <div style={{ textAlign: "center" as const }}><div style={{ fontSize: 18, fontWeight: 700, color: p.er >= 10 ? "#715262" : "#BDCBCE" }}>{p.er}%</div><div style={{ fontSize: 9, color: "#9B8E94" }}>ER</div></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              )}
-            </div>
-
-            <div className="card">
-              <InsightCard
-                title={"Social Intelligence \u00b7 " + socialData.period}
-                evidence={timeRange === "7d" ? [
-                  "6,973 views on 4,543 reach (649 avg/day \u00d7 7) \u2014 views up 27%",
-                  "119 content interactions: Reel 86% \u00b7 Post 13% \u00b7 Story 1%",
-                  "Engagement rate ~2.6% \u2014 lifted by the gum\u2013heart Reel's 10.8%",
-                  "Eleven pieces published \u2014 2 Reels, 2 posts, 7 Stories",
-                  "Followers +5 to 3,193",
-                ] : [
-                  "33,990 views on 25,950 reach (865 avg/day \u00d7 30)",
-                  "302 content interactions: Reel 57% \u00b7 Post 42% \u00b7 Story 1%",
-                  "35 pieces published \u2014 8 posts, 6 Reels, 21 Stories",
-                  "A normalized month after the prior window's viral-carousel spike",
-                  "Followers +36; story completion 83%",
-                ]}
-                impact={timeRange === "7d" ? "Reels returned and both discovery and engagement rose with them." : "A steadier, higher-cadence month \u2014 the account now runs on its own content, not one outlier."}
-                action={timeRange === "7d" ? "Hold the two-Reel weekly cadence and keep pairing episodes with launch Reels." : "Build on the gum\u2013heart Reel's format \u2014 health-connection storytelling is the repeatable winner."}
-                severity={timeRange === "7d" ? "success" : "info"} />
-              <InsightCard
-                title="Key Insight"
-                evidence={[
-                  "The gum\u2013heart Reel set the engagement benchmark: 10.8% ER, 16.6s avg watch",
-                  "Engagement rate rose to ~2.6% as Reels took 86% of interactions",
-                  "Podcast crossed 5,000 downloads and 50 episodes in the same week",
-                  "The episode launch Reel reached 1,242 accounts \u2014 widest of the week",
-                  "Booking clicks at 18 this week; 70 over 30 days, up from 62",
-                ]}
-                impact="Health-connection Reels are the account's proven engagement engine \u2014 and the milestone week showed cross-channel promotion compounding."
-                action="Make the oral\u2013systemic Reel a monthly fixture, and pair every episode with a launch Reel."
-                severity="success" />
-            </div>
-          </>
-        )}
-
-        {/* PODCAST */}
-        {tab === "ads" && (
-          <>
-            <div className="kpi-row">
-              {[
-                { label: "Total Spend", value: "$312.05", delay: 0 },
-                { label: "Landing-Page Views", value: adsData.results, delay: 80 },
-                { label: "Cost / Result", value: "$0.77", delay: 160 },
-                { label: "Impressions", value: adsData.impressions, delay: 240 },
-                { label: "Paid Reach", value: adsData.reach, delay: 320 },
-              ].map((k, i) => (
-                <div key={i} className="kpi" style={{ animationDelay: `${k.delay}ms` }}>
-                  <div className="kpi-label">{k.label}</div>
-                  <div className="kpi-val">{typeof k.value === "number" ? <AnimatedNumber value={k.value} /> : <span>{k.value}</span>}</div>
-                </div>
-              ))}
-            </div>
-
-            <div className="card"><div className="card-hd">Ad Performance · {adsData.campaign} · {adsData.period}</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-                {adsData.ads.map((a, i) => {
-                  const maxImp = Math.max(...adsData.ads.map(x => x.impressions));
-                  return (
-                    <div key={i} style={{ paddingBottom: 16, borderBottom: i < adsData.ads.length - 1 ? "1px solid var(--border)" : "none" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8, gap: 12 }}>
-                        <span style={{ fontSize: 14, fontWeight: 700, color: "var(--text-heading)" }}>{a.name}</span>
-                        <span className="display-num">${a.spend.toFixed(2)}</span>
-                      </div>
-                      <div style={{ height: 8, background: "var(--bg-warm)", borderRadius: 99, overflow: "hidden", marginBottom: 8 }}>
-                        <div style={{ width: `${(a.impressions / maxImp) * 100}%`, height: "100%", background: i === 0 ? "var(--plum)" : "var(--steel)", borderRadius: 99, transition: "width 1.2s ease" }} />
-                      </div>
-                      <div style={{ display: "flex", gap: 18, flexWrap: "wrap" as const, marginBottom: 6 }}>
-                        {[{ l: "Impressions", v: a.impressions.toLocaleString() }, { l: "Reach", v: a.reach.toLocaleString() }, { l: "Results", v: a.results.toLocaleString() }, { l: "Cost / result", v: "$" + a.cpr.toFixed(2) }].map((m) => (
-                          <div key={m.l}><span style={{ fontSize: 13, fontWeight: 700, color: "var(--plum)" }}>{m.v}</span> <span style={{ fontSize: 11, color: "var(--text-muted)" }}>{m.l}</span></div>
-                        ))}
-                      </div>
-                      <div style={{ fontSize: 11.5, color: "var(--text-muted)", lineHeight: 1.5 }}>{a.quality}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="cols2">
-              <div className="card"><div className="card-hd">Spend Allocation</div>
-                <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
-                  <Donut data={[{ value: 69 }, { value: 31 }]} colors={["#715262", "#88A3AE"]} size={120} stroke={18} />
-                  <div style={{ flex: 1 }}>
-                    {[{ label: "Your best summer accessory", value: 69, color: "#715262" }, { label: "Make it a summer to remember", value: 31, color: "#88A3AE" }].map((item) => (
-                      <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 10, padding: "7px 0" }}>
-                        <div style={{ width: 10, height: 10, borderRadius: 3, background: item.color }} />
-                        <span style={{ flex: 1, fontSize: 13, fontWeight: 500 }}>{item.label}</span>
-                        <span className="display-num">{item.value}%</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="card"><div className="card-hd">Paid Contribution · Site Sessions</div>
-                <div style={{ display: "flex", gap: 14 }}>
-                  <div className="stat-box" style={{ flex: 1, textAlign: "center" as const, padding: "16px", background: "rgba(113,82,98,0.08)", borderRadius: 12 }}>
-                    <div style={{ fontSize: 26, fontWeight: 700, color: "#715262" }}>666</div>
-                    <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4 }}>paid site sessions (30d · IG 454 + FB 212)</div>
-                  </div>
-                  <div className="stat-box" style={{ flex: 1, textAlign: "center" as const, padding: "16px", background: "rgba(136,163,174,0.10)", borderRadius: 12 }}>
-                    <div style={{ fontSize: 26, fontWeight: 700, color: "#88A3AE" }}>27%</div>
-                    <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4 }}>of 30-day site sessions from ads</div>
-                  </div>
-                </div>
-                <div style={{ marginTop: 14, padding: "10px 14px", background: "rgba(136,163,174,0.12)", borderRadius: 10, border: "1px solid rgba(136,163,174,0.25)" }}>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: "#6E8B97" }}>&#10022; July's buy ran as standalone ad units (landing-page objective), not boosted posts &mdash; so Instagram content views were 100% organic this window while ads drove 27% of site sessions. That's a structural shift from the prior flight, which promoted content directly. &#9888; Per-ad reach is not de-duplicated &mdash; the {adsData.reach.toLocaleString()} total overstates unique people; use impressions.</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="card"><div className="card-hd">Paid Intelligence</div>
-              <InsightCard
-                title="July's campaign closed with efficient reach"
-                evidence={[
-                  "$312.05 final spend \u2192 404 landing-page views at $0.77",
-                  "39,434 impressions; quality and engagement rankings at Average",
-                  "Both whitening ads finished conversion-ranked bottom 35%",
-                  "Ads drove 27% of 30-day site sessions (IG 454 + FB 212)",
-                  "Both ads concluded Jul 31 \u2014 expect a paid-session dip next window",
-                ]}
-                impact="The media buy was efficient; the landing experience is the next lever \u2014 and the baseline will reset without ads."
-                action="Add a Lead/Booking event before the next flight, and route ads to a booking-first page."
-                severity="info" />
-            </div>
-          </>
-        )}
-
-        {tab === "podcast" && (
-          <>
-            <div className="kpi-row">
-              {[
-                { label: "Total Episodes", value: podcastData.totalEpisodes, delay: 0 },
-                { label: "All-Time Downloads", value: podcastData.totalDownloads, delay: 80 },
-                { label: "Last 30 Days", value: podcastData.last30Days, delay: 160 },
-                { label: "Last 7 Days", value: podcastData.last7Days, delay: 240 },
-              ].map((k, i) => (
-                <div key={i} className="kpi" style={{ animationDelay: `${k.delay}ms` }}>
-                  <div className="kpi-label">{k.label}</div>
-                  <div className="kpi-val"><AnimatedNumber value={k.value} /></div>
-                </div>
-              ))}
-            </div>
-            <div className="card"><div className="card-hd">Top Episodes · All Time</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                {podcastData.topEpisodes.map((ep, i) => {
-                  const maxDl = podcastData.topEpisodes[0].downloads;
-                  return (
-                    <div key={i} style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                      <div style={{ width: 22, height: 22, borderRadius: 99, background: i === 0 ? "#715262" : i < 3 ? "#88A3AE" : "#BDCBCE", color: "#fff", fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{i + 1}</div>
-                      <div style={{ flex: 1, fontSize: 13, fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>{ep.title}</div>
-                      <div style={{ width: 120, height: 10, background: "#F1E4DC", borderRadius: 99, overflow: "hidden", flexShrink: 0 }}>
-                        <div style={{ width: `${(ep.downloads / maxDl) * 100}%`, height: "100%", background: i === 0 ? "#715262" : i < 3 ? "#88A3AE" : "#BDCBCE", borderRadius: 99, transition: "width 1.2s ease" }} />
-                      </div>
-                      <div className="display-num" style={{ width: 40, textAlign: "right" as const }}>{ep.downloads}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-            <div className="cols2">
-              <div className="card"><div className="card-hd">Listening Platforms</div>
-                <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
-                  <Donut data={podcastData.platforms.map(p => ({ value: Math.round(p.pct) }))} colors={["#715262", "#88A3AE", "#BDCBCE", "#E4CCC2", "#F1E4DC", "#C4B5AD"]} size={120} stroke={18} />
-                  <div style={{ flex: 1 }}>
-                    {podcastData.platforms.map((p, i) => (
-                      <div key={p.name} style={{ display: "flex", alignItems: "center", gap: 10, padding: "5px 0" }}>
-                        <div style={{ width: 10, height: 10, borderRadius: 3, background: ["#715262", "#88A3AE", "#BDCBCE", "#E4CCC2", "#F1E4DC", "#C4B5AD"][i] }} />
-                        <span style={{ flex: 1, fontSize: 13, fontWeight: 500 }}>{p.name}</span>
-                        <span className="display-num">{p.downloads.toLocaleString()}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="card"><div className="card-hd">Download Velocity</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 18, padding: "8px 0" }}>
-                  {[
-                    { label: "Last 7 Days", value: podcastData.last7Days, max: 600, color: "#715262" },
-                    { label: "Last 30 Days", value: podcastData.last30Days, max: 600, color: "#88A3AE" },
-                    { label: "Last 90 Days", value: podcastData.last90Days, max: 600, color: "#BDCBCE" },
-                    { label: "All Time", value: podcastData.totalDownloads, max: 5000, color: "#E4CCC2" },
-                  ].map((m) => (
-                    <div key={m.label} style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                      <div style={{ width: 90, fontSize: 13, fontWeight: 500 }}>{m.label}</div>
-                      <div style={{ flex: 1, height: 10, background: "#F1E4DC", borderRadius: 99, overflow: "hidden" }}>
-                        <div style={{ width: `${(m.value / m.max) * 100}%`, height: "100%", background: m.color, borderRadius: 99, transition: "width 1.2s ease" }} />
-                      </div>
-                      <div className="display-num" style={{ width: 50, textAlign: "right" as const }}>{m.value.toLocaleString()}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-            <div className="cols2">
-              <div className="card"><div className="card-hd">Top Countries</div>
-                {podcastData.topCountries.map((c) => {
-                  const max = podcastData.topCountries[0].downloads;
-                  return (
-                    <div key={c.country} className="age-row">
-                      <div className="age-label" style={{ width: 110 }}>{c.country}</div>
-                      <div className="age-track"><div className="age-fill" style={{ width: `${(c.downloads / max) * 100}%`, background: c.downloads === max ? "#715262" : "#88A3AE" }} /></div>
-                      <div className="age-pct">{c.downloads.toLocaleString()}</div>
-                    </div>
-                  );
-                })}
-              </div>
-              <div className="card"><div className="card-hd">Top Cities</div>
-                {podcastData.topCities.map((c) => {
-                  const max = podcastData.topCities[0].downloads;
-                  return (
-                    <div key={c.city} className="age-row">
-                      <div className="age-label" style={{ width: 110 }}>{c.city}</div>
-                      <div className="age-track"><div className="age-fill" style={{ width: `${(c.downloads / max) * 100}%`, background: c.downloads === max ? "#715262" : "#88A3AE" }} /></div>
-                      <div className="age-pct">{c.downloads}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-            <div className="card">
-              <InsightCard
-                title="Podcast Intelligence"
-                evidence={[
-                  "Milestone week: 5,000 all-time downloads and the 50th episode published",
-                  "68 downloads since last report \u2014 double the prior week's 33 (30/90-day rollups carried; Overview export not pulled this cycle)",
-                  "\u2018What 50 Years in Dentistry Teaches You\u2019 (Jul 27): 15 first-week downloads",
-                  "Platform split: Spotify 1,246 \u00b7 Web 1,191 \u00b7 Apple 1,081",
-                  "NYC leads the last-5-episode audience \u2014 62% North America, NYC top city",
-                ]}
-                impact="Both lifetime milestones landed in one week, with cross-channel promotion doubling the weekly pace."
-                action="Announce the 5K/50-episode milestone to the email list \u2014 the Podcast Newsletter is the best-opening send on record."
-                severity="success" />
-            </div>
-          </>
-        )}
-
-        {/* EMAIL */}
-        {tab === "email" && (<>
-          <div className="kpi-row">
-            {[
-              { label: "Sends", value: emailData.sends, delay: 0 },
-              { label: "Open Rate", value: emailData.openRate + "%", delay: 80 },
-              { label: "Click Rate", value: emailData.clickRate + "%", delay: 160 },
-              { label: "Click-to-Open", value: emailData.ctor + "%", delay: 240 },
-              { label: "Unsubscribes", value: emailData.unsubs, delay: 320 },
-            ].map((k, i) => (
-              <div key={i} className="kpi" style={{ animationDelay: `${k.delay}ms` }}>
-                <div className="kpi-label">{k.label}</div>
-                <div className="kpi-val">{typeof k.value === "number" ? <AnimatedNumber value={k.value} /> : <span>{k.value}</span>}</div>
-              </div>
-            ))}
-          </div>
-
-          <div className="card"><div className="card-hd">Campaign Performance · {emailData.period}</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              {emailData.campaigns.map((c, i) => (
-                <div key={i} style={{ paddingBottom: 14, borderBottom: i < emailData.campaigns.length - 1 ? "1px solid rgba(113,82,98,0.10)" : "none" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8, gap: 12 }}>
-                    <span style={{ fontSize: 14, fontWeight: 700, color: "#3A2D33" }}>{c.name}</span>
-                    <span style={{ fontSize: 11, color: "#9B9196", flexShrink: 0 }}>{c.date} · {c.sends.toLocaleString()} sends</span>
-                  </div>
-                  <div style={{ display: "flex", gap: 6, alignItems: "center", marginBottom: 8 }}>
-                    <div style={{ flex: 1, height: 10, background: "#D9CCC1", borderRadius: 99, overflow: "hidden", position: "relative" }}>
-                      <div style={{ width: `${c.openRate}%`, height: "100%", background: "#715262", borderRadius: 99, transition: "width 1.2s ease" }} />
-                    </div>
-                    <span className="display-num" style={{ width: 52, textAlign: "right" as const, fontSize: 15 }}>{c.openRate}%</span>
-                  </div>
-                  <div style={{ display: "flex", gap: 18, flexWrap: "wrap" as const }}>
-                    {[{ l: "opens", v: c.opens.toLocaleString() }, { l: "open rate", v: c.openRate + "%" }, { l: "clicks", v: c.clicks }, { l: "click rate", v: c.clickRate + "%" }, { l: "mobile open", v: c.mobile + "%" }].map((m) => (
-                      <div key={m.l}><span style={{ fontSize: 13, fontWeight: 700, color: "#715262" }}>{m.v}</span> <span style={{ fontSize: 11, color: "#9B9196" }}>{m.l}</span></div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="cols2">
-            <div className="card"><div className="card-hd">Open → Click Funnel · {emailData.period}</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 14, paddingTop: 4 }}>
-                {[
-                  { label: "Delivered", value: emailData.sends - emailData.bounces, max: emailData.sends, color: "#88A3AE" },
-                  { label: "Opened", value: emailData.opens, max: emailData.sends, color: "#715262" },
-                  { label: "Clicked", value: emailData.clicks, max: emailData.sends, color: "#BE5A5A" },
-                ].map((m) => (
-                  <div key={m.label}>
-                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
-                      <span style={{ fontSize: 13, fontWeight: 500 }}>{m.label}</span>
-                      <span className="display-num">{m.value.toLocaleString()}</span>
-                    </div>
-                    <div style={{ height: 10, background: "#D9CCC1", borderRadius: 99, overflow: "hidden" }}>
-                      <div style={{ width: `${Math.max((m.value / m.max) * 100, 0.6)}%`, height: "100%", background: m.color, borderRadius: 99, transition: "width 1.4s ease" }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="alert-box danger-bg">
-                <span style={{ fontSize: 12, fontWeight: 600, color: "#BE5A5A" }}>✦ The opportunity sits at the click. A {emailData.openRate}% open rate is strong for dental — well above the ~25% industry norm — and {emailData.ctor}% of openers currently click. The audience is engaged and ready for a clearer booking ask.</span>
-              </div>
-            </div>
-
-            <div className="card"><div className="card-hd">List Health</div>
-              <div style={{ textAlign: "center" as const, padding: "10px 0 18px" }}>
-                <div className="big-num" style={{ color: "#88A3AE" }}>{emailData.unsubRate}%</div>
-                <div style={{ fontSize: 12, color: "#9B9196", marginTop: 2 }}>Unsubscribe Rate · {emailData.period}</div>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
-                {emailLifetime.campaignUnsubs.map((b) => (
-                  <div key={b.name} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <span style={{ flex: 1, fontSize: 12.5, color: "#5C4E54" }}>{b.name}</span>
-                    <span style={{ fontSize: 11, color: "#9B9196" }}>{b.sends.toLocaleString()}</span>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: b.rate >= 1 ? "#BE5A5A" : "#BDCBCE", width: 46, textAlign: "right" as const }}>{b.rate}%</span>
-                  </div>
-                ))}
-              </div>
-              <div className="alert-box danger-bg">
-                <span style={{ fontSize: 12, fontWeight: 600, color: "#BE5A5A" }}>✦ Unsubscribes are running at 0.2–0.5% per send — comfortably under the ~0.5% healthy ceiling and steady across four campaigns. The audience that opens keeps choosing to stay, which is the clearest sign the content mix is right.</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="cols2">
-            <div className="card"><div className="card-hd">Best Open Rates · All Campaigns</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 11, paddingTop: 2 }}>
-                {emailLifetime.bestOpens.map((b) => (
-                  <div key={b.name} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <span style={{ flex: 1, fontSize: 13, color: "#5C4E54" }}>{b.name}</span>
-                    <div style={{ width: 90, height: 8, background: "#D9CCC1", borderRadius: 99, overflow: "hidden" }}>
-                      <div style={{ width: `${b.rate}%`, height: "100%", background: "#715262", borderRadius: 99 }} />
-                    </div>
-                    <span className="display-num" style={{ width: 48, textAlign: "right" as const }}>{b.rate}%</span>
-                  </div>
-                ))}
-              </div>
-              <div className="alert-box plum-bg">
-                <span style={{ fontSize: 12, fontWeight: 600, color: "#715262" }}>✦ The best-performing email DDS-PC has sent remains the Podcast Newsletter, which opened at 63.1% — ahead of the Whitening Offer (55.3%) and the Gum Article (54.1%). The new Summer Promo Extensions send opened at 47.9% but drew 46 clicks — the best click count of the three July-window sends — and its mobile open share jumped to 47.7% vs ~31% on every prior campaign.</span>
-              </div>
-            </div>
-
-            <div className="card"><div className="card-hd">Lifetime Benchmark · 3 DDS-PC Campaigns</div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-                {[
-                  { l: "Total Sends", v: emailLifetime.sends.toLocaleString(), c: "#88A3AE" },
-                  { l: "Total Opens", v: emailLifetime.opens.toLocaleString(), c: "#715262" },
-                  { l: "Avg Open Rate", v: emailLifetime.openRate + "%", c: "#715262" },
-                  { l: "Avg Click Rate", v: emailLifetime.clickRate + "%", c: "#BE5A5A" },
-                  { l: "Click-to-Open", v: emailLifetime.ctor + "%", c: "#BE5A5A" },
-                  { l: "Unsubscribes", v: emailLifetime.unsubs, c: "#BDCBCE" },
-                ].map((m) => (
-                  <div key={m.l} style={{ textAlign: "center" as const, padding: "13px 8px", background: "#F3EDEA", borderRadius: 10 }}>
-                    <div style={{ fontSize: 20, fontWeight: 700, color: m.c, fontFamily: "'Marcellus', serif" }}>{m.v}</div>
-                    <div className="stat-label">{m.l}</div>
-                  </div>
-                ))}
-              </div>
-              <div className="alert-box plum-bg">
-                <span style={{ fontSize: 12, fontWeight: 600, color: "#715262" }}>✦ Open rates are strong across the board — the four DDS-PC campaigns average {emailLifetime.openRate}% on {emailLifetime.sends.toLocaleString()} sends. The newest signal worth acting on: the Summer Promo Extensions send opened 47.7% on mobile vs ~31% on every prior campaign — the list is shifting to phones, so mobile-first subject lines and single-column layouts will protect those opens.</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="card"><div className="card-hd">Email Intelligence</div>
-            <InsightCard
-              title="Email opens are excellent, with clicks the next step"
-              evidence={[
-                `${emailData.openRate}% open rate over ${emailData.campaignCount} campaign${emailData.campaignCount > 1 ? "s" : ""} — well above the ~25% dental norm`,
-                `Only ${emailData.clicks} clicks from ${emailData.opens.toLocaleString()} opens (${emailData.ctor}% click-to-open)`,
-                "Lifetime click rate 1.81% across 4 campaigns",
-                "Best-ever open remains the DDS-PC Podcast Newsletter at 63.1%",
-              ]}
-              impact="The list reads the email. It just never gets asked to book."
-              action="Put one booking CTA above the fold in every send."
-              severity="info" />
-            <InsightCard
-              title="The list is moving to mobile"
-              evidence={[
-                "Summer Promo Extensions opened 47.7% on mobile — vs ~31% on every prior send",
-                "It also drew 46 clicks, the best click count of the three July-window sends",
-                "3.16% click-to-open on the new send, up from 1.79% the prior week",
-                "Unsubscribes held at 0.3% — no fatigue signal from the higher cadence",
-              ]}
-              impact="Mobile is becoming the primary read environment — design and subject lines should assume a phone screen first."
-              action="Keep subject lines under ~40 characters and use single-column, thumb-friendly layouts with one booking CTA."
-              severity="info" />
-          </div>
-        </>)}
-
-        {/* AUDIENCE */}
-        {tab === "audience" && (
-          <>
-            <div className="cols2">
-              <div className="card">
-                <div className="card-hd">Gender Split</div>
-                <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
-                  <Donut data={[{ value: d.audience.gender.male }, { value: d.audience.gender.female }]} colors={["#715262", "#88A3AE"]} size={130} stroke={20} />
-                  <div style={{ flex: 1 }}>
-                    {[{ label: "Male", value: d.audience.gender.male, color: "#715262" }, { label: "Female", value: d.audience.gender.female, color: "#88A3AE" }].map((g) => (
-                      <div key={g.label} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0" }}>
-                        <div style={{ width: 12, height: 12, borderRadius: 4, background: g.color }} />
-                        <span style={{ flex: 1, fontSize: 15, fontWeight: 500 }}>{g.label}</span>
-                        <span className="display-num-lg">{g.value}%</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="card">
-                <div className="card-hd">Age Distribution</div>
-                {d.audience.age.map((a) => (
-                  <div key={a.range} className="age-row">
-                    <div className="age-label">{a.range}</div>
-                    <div className="age-track"><div className="age-fill" style={{ width: `${(a.pct / 36) * 100}%`, background: a.pct >= 30 ? "#715262" : a.pct >= 20 ? "#88A3AE" : "#BDCBCE" }} /></div>
-                    <div className="age-pct">{a.pct}%</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="card">
-              <div className="card-hd">Audience Intelligence</div>
-              <InsightCard title="High-Value Patient Alignment" body="58% of the audience falls in the 35–54 age range (37% aged 35–44) — the prime demographic for implants, perio, and comprehensive restorative treatment, and a strong match for EEC's authority and publication content. This is the highest lifetime-value patient segment." severity="success" />
-              <InsightCard title="Gender Balance" body="At 52% male / 48% female, the audience is nearly balanced. The 35–44 cohort is the largest single segment. The credential and case-study content resonates with a clinically-engaged, decision-stage audience — pair it with clear consult/booking CTAs to convert that trust into appointments. (Demographics carried from the prior Metricool export — the gender/age breakdown was not refreshed this cycle.)" severity="info" />
-            </div>
-          </>
-        )}
-
-        {/* INSIGHTS */}
-        {tab === "insights" && (
-          <>
-            <div className="cols2">
-              <div>
-                <div className="section-label">Key Insights</div>
-                {engine.insights.map((ins, i) => <InsightCard key={i} {...ins} />)}
-              </div>
-              <div>
-                <div className="section-label">Growth Opportunities</div>
-                {engine.opportunities.map((o, i) => <InsightCard key={i} {...o} />)}
-                {engine.alerts.map((a, i) => <InsightCard key={`a${i}`} {...a} />)}
-              </div>
-            </div>
-          </>
-        )}
-
-        <div className="footer"><span>Edgard El Chaar, DDS, PC · Powered by Figment Creative</span></div>
+      <div className="axis">
+        <span>Jul 18</span><span>Jul 25</span><span>Aug 2</span><span>Aug 9</span><span>Aug 16</span>
       </div>
     </div>
+  );
+}
+
+/* Instagram embeds render straight from the /embed endpoint: no API, no
+   token, no files to manage. Normalisation handles every link form
+   Instagram produces (/p/, /reel/, /reels/, with or without query strings). */
+function igEmbed(url: string) {
+  const m = url.match(/instagram\.com\/(?:p|reel|reels|tv)\/([A-Za-z0-9_-]+)/);
+  return m ? `https://www.instagram.com/p/${m[1]}/embed` : url;
+}
+
+function IgFrame({ url, title }: { url: string; title: string }) {
+  return (
+    <>
+      <div className="ig-frame">
+        <iframe src={igEmbed(url)} title={title} scrolling="no" loading="lazy" allowFullScreen />
+      </div>
+      <div className="print-only"><b>{title}</b>Instagram post &middot; view online</div>
+    </>
+  );
+}
+
+/* ==========================================================================
+   PAGE
+   ========================================================================== */
+export default function Page() {
+  const [open, setOpen] = useState<string | null>("website");
+  const d = R.detail;
+
+  return (
+    <>
+      <style dangerouslySetInnerHTML={{ __html: CSS }} />
+      {/* With JavaScript off the observer never fires, so reverse the hidden
+          state here. This is inert markup, identical on server and client. */}
+      <noscript
+        dangerouslySetInnerHTML={{
+          __html: "<style>.rv{opacity:1!important;transform:none!important}</style>",
+        }}
+      />
+
+      {/* MASTHEAD */}
+      <header className="mast">
+        <div className="wrap">
+          <div className="mast-kicker">
+            <span>{R.studio} &middot; Social Intelligence</span>
+            {IS_INTERNAL ? <span className="mast-badge">Internal</span> : null}
+          </div>
+          <h1>{R.client}</h1>
+          <p className="mast-sub">Performance report &middot; {R.period}</p>
+          <div className="mast-meta">
+            <div><b>Reporting period</b>{R.period}</div>
+            <div><b>Comparison</b>July 18 &ndash; August 2, 2026</div>
+            <div><b>Advertising</b>None in period</div>
+            <div><b>Content published</b>12 pieces</div>
+          </div>
+        </div>
+      </header>
+
+      {/* NAV */}
+      <nav className="rail" aria-label="Report sections">
+        <div className="wrap rail-in">
+          {NAV.map((n) => <a key={n.id} href={`#${n.id}`}>{n.label}</a>)}
+        </div>
+      </nav>
+
+      <main>
+        {/* ------------------------------------------------------- BRIEF */}
+        <Section id="brief" num={numOf("brief")} title={R.brief.title} lede={R.brief.lede} band="white">
+          <Reveal>
+            <div>
+              {R.brief.items.map((item) => {
+                const b = IS_INTERNAL ? item : (item.client ?? item);
+                return (
+                  <div className="brief-i" key={item.role}>
+                    <div className="brief-role">{b.role}</div>
+                    <p className="brief-text">{b.text}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </Reveal>
+        </Section>
+
+        {/* ------------------------------------------------------ PERIOD */}
+        <Section id="period" num={numOf("period")} title="The period in one picture" lede={R.period_.lede} band="light">
+          <Reveal>
+            <div>
+              <PeriodChart data={R.period_.daily} />
+              <p className="chart-note">{IS_INTERNAL ? R.period_.note : R.period_.noteClient}</p>
+            </div>
+          </Reveal>
+        </Section>
+
+        {/* -------------------------------------------------- SCOREBOARD */}
+        <Section id="scoreboard" num={numOf("scoreboard")} title="Scoreboard" lede={R.scoreboard.lede} band="white">
+          <Reveal>
+            <div className="score">
+              {R.scoreboard.rows.map((r) => (
+                <div className="score-r" key={r.k}>
+                  <div className="score-k">{r.k}</div>
+                  <div className="score-v">{r.v}</div>
+                  <div className="score-m">
+                    <div className={`score-c ${r.dir}`}>{r.c}</div>
+                    <div className="score-n">{r.note}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Reveal>
+        </Section>
+
+        {/* ------------------------------------------------------ WORKED */}
+        <Section
+          id="worked"
+          num={numOf("worked")}
+          title="What worked"
+          lede={IS_INTERNAL ? R.worked.lede : R.worked.ledeClient}
+          band="warm"
+        >
+          <Reveal>
+            <div className="hero-card">
+              <IgFrame url={R.worked.hero.url} title={R.worked.hero.title} />
+              <div>
+                <div className="hero-fmt">{R.worked.hero.format} &middot; {R.worked.hero.date} &middot; Best of the period</div>
+                <h3 className="hero-t">{R.worked.hero.title}</h3>
+                <div className="hero-stats">
+                  {R.worked.hero.stats.map((s) => (
+                    <div key={s.l}>
+                      <span className="hero-s-v">{s.v}</span>
+                      <span className="hero-s-l">{s.l}</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="hero-why">{R.worked.hero.why}</p>
+              </div>
+            </div>
+          </Reveal>
+          <Reveal>
+            <div>
+              <div className="gal">
+                {R.worked.gallery.map((g) => (
+                  <div className="gal-i" key={g.url}>
+                    <IgFrame url={g.url} title={g.title} />
+                    <div className="gal-m">
+                      <div className="gal-fmt">{g.format} &middot; {g.date}</div>
+                      <div className="gal-t">{g.title}</div>
+                      <div className="gal-s">
+                        {g.views.toLocaleString()} views &middot; {g.reach.toLocaleString()} reach &middot; {g.interactions} interactions
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p className="gal-note">{R.worked.galleryNote}</p>
+            </div>
+          </Reveal>
+        </Section>
+
+        {/* ------------------------------------------- ATTENTION (internal) */}
+        {has("attention") && (
+          <Section id="attention" num={numOf("attention")} title="What needs attention" lede={R.attention.lede} band="white">
+            <Reveal>
+              <div>
+                {R.attention.items.map((a) => (
+                  <div className="att-i" key={a.title}>
+                    <span className="att-tag">{a.tag}</span>
+                    <h3 className="att-t">{a.title}</h3>
+                    <p className="att-b">{a.body}</p>
+                  </div>
+                ))}
+              </div>
+            </Reveal>
+          </Section>
+        )}
+
+        {/* ----------------------------------------------------- LEARNED */}
+        <Section id="learned" num={numOf("learned")} title="What we learned" lede={R.learned.lede} band="blue">
+          <Reveal>
+            <div className="learn">
+              {R.learned.items.map((item) => {
+                const l = IS_INTERNAL ? item : ((item as any).client ?? item);
+                return (
+                  <div key={item.title}>
+                    <h3 className="learn-t">{l.title}</h3>
+                    <p className="learn-b">{l.body}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </Reveal>
+        </Section>
+
+        {/* ----------------------------------------------- MOVES (internal) */}
+        {has("moves") && (
+          <Section id="moves" num={numOf("moves")} title="Recommended next moves" lede={R.moves.lede} band="white">
+            <Reveal>
+              <div>
+                {R.moves.items.map((m) => (
+                  <div className="mv-i" key={m.action}>
+                    <div>
+                      <h3 className="mv-t">{m.action}</h3>
+                      <p className="mv-b">{m.body}</p>
+                    </div>
+                    <div className="mv-meta">
+                      <b>Owner</b><p>{m.owner}</p>
+                      <b>Measured by</b><p>{m.metric}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Reveal>
+          </Section>
+        )}
+
+        {/* -------------------------------------------------- PLAN (client) */}
+        {has("plan") && (
+          <Section id="plan" num={numOf("plan")} title="What we do next" lede={R.plan.lede} band="white">
+            <Reveal>
+              <div>
+                {R.plan.items.map((p) => (
+                  <div className="plan-i" key={p.action}>
+                    <div className="plan-m" />
+                    <div>
+                      <h3 className="plan-t">{p.action}</h3>
+                      <p className="plan-b">{p.body}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Reveal>
+          </Section>
+        )}
+
+        {/* ------------------------------------------------------ DETAIL */}
+        <Section id="detail" num={numOf("detail")} title="Supporting detail" lede={d.lede} band="light">
+          <Reveal>
+            <div className="disc">
+              {d.panels.map((p) => {
+                const isOpen = open === p.id;
+                const note =
+                  !IS_INTERNAL && (p as any).noteClient ? (p as any).noteClient : p.note;
+                return (
+                  <div key={p.id}>
+                    <button
+                      className="disc-btn"
+                      aria-expanded={isOpen}
+                      aria-controls={`panel-${p.id}`}
+                      onClick={() => setOpen(isOpen ? null : p.id)}
+                    >
+                      <span>{p.title}</span>
+                      <span className="disc-x" aria-hidden="true">{isOpen ? "\u2013" : "+"}</span>
+                    </button>
+                    <div className="disc-p" id={`panel-${p.id}`} hidden={!isOpen}>
+                      {p.rows.length > 0 && (
+                        <table className="t">
+                          <tbody>
+                            {p.rows.map((row) => (
+                              <tr key={row[0]}>
+                                <td>{row[0]}</td>
+                                <td>{row[1]}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      )}
+                      {(p as any).faq
+                        ? (p as any).faq
+                            .filter((f: any) => (IS_INTERNAL ? !f.clientOnly : !f.internalOnly))
+                            .map((f: any) => (
+                              <div className="faq-i" key={f.q + (f.internalOnly ? "-i" : "")}>
+                                <div className="faq-q">{f.q}</div>
+                                <div className="faq-a">{f.a}</div>
+                              </div>
+                            ))
+                        : null}
+                      {note ? <p className="d-note">{note}</p> : null}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </Reveal>
+        </Section>
+      </main>
+
+      <footer className="foot">
+        <div className="wrap foot-in">
+          <span>{R.client} &middot; {R.period}</span>
+          <span>Prepared by {R.studio}</span>
+        </div>
+      </footer>
+    </>
   );
 }
