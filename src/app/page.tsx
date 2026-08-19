@@ -142,7 +142,7 @@ const R = {
 
   /* ------------------------------------------------- ATTENTION (internal)  */
   attention: {
-    lede: "Five things worth an owner and a decision before the next cycle.",
+    lede: "Six things worth an owner and a decision before the next cycle.",
     items: [
       {
         tag: "Real gap",
@@ -163,6 +163,11 @@ const R = {
         tag: "Opportunity",
         title: "People search the practice address and do not arrive",
         body: "\u201c933 5th avenue nyc\u201d and \u201c933 fifth avenue nyc\u201d together drew 45 impressions and zero clicks across thirty days, both ranking around position 9.5. This is the most fixable item in the report.",
+      },
+      {
+        tag: "Access",
+        title: "Facebook activity is happening but cannot be measured",
+        body: "The DDS PC page was unlinked from Instagram and a personal creator account linked in its place. Posting continues; the analytics are not reachable, because a personal account cannot be connected to Metricool. Facebook is therefore left out of this report rather than shown as inactive. The workaround is to report a combined Meta figure pulled through Instagram, which would need agreeing before the next cycle.",
       },
       {
         tag: "Watch",
@@ -363,17 +368,6 @@ const R = {
         note: "Buzzsprout, July 18 to August 16. No episode was published inside the reporting period, so the downloads are back catalogue and residual traffic from the July 27 episode. All figures comply with IAB Podcast Measurement Technical Guidelines 2.2.",
       },
       {
-        id: "facebook",
-        title: "Facebook",
-        rows: [
-          ["Followers", "1,334"],
-          ["Posts published", "None"],
-          ["Reactions", "0"],
-          ["Followers gained", "0"],
-        ],
-        note: "The page is currently inactive. Nothing was published in the reporting period and no engagement was recorded. Meta also retired the metric behind the page views figure in June 2026, so what remains is not comparable with earlier periods.",
-      },
-      {
         id: "method",
         title: "How this was measured",
         rows: [],
@@ -385,7 +379,8 @@ const R = {
           { q: "Where the Instagram totals come from", a: "Account-level figures reported by Metricool. Instagram\u2019s own native export was unavailable this cycle, and the two sources can differ. Post-level figures rank content against content and are never summed into a total.", internalOnly: true },
           { q: "Where the Instagram totals come from", a: "Account-level figures reported by Metricool for the period, rather than a sum of the individual posts. Post-level figures are used only to rank content against content." , clientOnly: true },
           { q: "How short link traffic is filtered", a: "Only human clicks are reported. Automated traffic is excluded from every figure, and city-level breakdowns are omitted because they reflect hosting infrastructure rather than readers." },
-          { q: "What is missing this period", a: "No advertising ran, no email campaign was sent, no podcast episode was published, and nothing was posted to Facebook. Those sections are reported here rather than shown as empty views." },
+          { q: "What is missing this period", a: "No advertising ran, no email campaign was sent, and no podcast episode was published. Those channels are reported here rather than shown as empty views. Facebook is posted to but is not currently measurable, so it is not reported.", internalOnly: true },
+          { q: "What is missing this period", a: "No advertising ran, no email campaign was sent, and no podcast episode was published. Those channels are reported here rather than shown as empty views.", clientOnly: true },
         ] as { q: string; a: string; internalOnly?: boolean; clientOnly?: boolean }[],
         note: "",
       },
