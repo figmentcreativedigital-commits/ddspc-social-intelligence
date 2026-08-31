@@ -132,18 +132,26 @@ a { color: inherit; text-decoration: none; }
 
 /* ---------- scoreboard ---------- */
 .score { border-top: 1px solid var(--rule); }
-.score-r { display: grid; grid-template-columns: 1.5fr auto 1fr; gap: 24px; align-items: baseline; padding: 20px 0; border-bottom: 1px solid var(--rule); }
+.score-h { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid var(--rule); }
+.score-h > div { font-family: var(--sub); font-size: 11px; letter-spacing: .13em; text-transform: uppercase; color: var(--muted); text-align: right; }
+.score-h > div:first-child { text-align: left; }
+.score-h i { display: block; font-style: normal; font-size: 11px; letter-spacing: .03em; text-transform: none; color: var(--muted); opacity: .7; margin-top: 3px; }
+.score-r { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 24px; align-items: baseline; padding: 20px 0; border-bottom: 1px solid var(--rule); }
 .score-k { font-family: var(--sub); font-size: 18px; color: var(--ink); }
-.score-v { font-family: var(--display); font-size: clamp(24px, 2.6vw, 34px); color: var(--plum); text-align: right; letter-spacing: .01em; }
-.score-m { text-align: right; }
-.score-c { font-size: 13px; font-weight: 700; letter-spacing: .04em; }
+.score-cell { text-align: right; }
+.score-v { font-family: var(--display); font-size: clamp(22px, 2.3vw, 30px); color: var(--plum); letter-spacing: .01em; }
+.score-v.empty { color: var(--muted); opacity: .45; }
+.score-c { font-size: 13px; font-weight: 700; letter-spacing: .04em; margin-top: 2px; }
 .score-c.up { color: #3F6B54; }
 .score-c.down { color: #9A5F5F; }
 .score-c.flat { color: var(--muted); }
-.score-n { font-size: 12.5px; color: var(--muted); margin-top: 3px; }
+.score-n { font-size: 12.5px; color: var(--muted); margin-top: 4px; }
 @media (max-width: 760px) {
-  .score-r { grid-template-columns: 1fr auto; gap: 8px 16px; }
-  .score-m { grid-column: 1 / -1; text-align: left; }
+  .score-h { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .score-h > div:first-child { display: none; }
+  .score-r { grid-template-columns: 1fr 1fr; gap: 10px 16px; }
+  .score-k { grid-column: 1 / -1; }
+  .score-cell { text-align: left; }
 }
 
 /* ---------- instagram frames ---------- */
@@ -411,14 +419,24 @@ export default function Page() {
         <Section id="scoreboard" num={numOf("scoreboard")} title="Scoreboard" lede={R.scoreboard.lede} band="white">
           <Reveal>
             <div className="score">
+              <div className="score-h">
+                <div />
+                {R.scoreboard.cols.map((c) => (
+                  <div key={c.label}>{c.label}<i>{c.sub}</i></div>
+                ))}
+              </div>
               {R.scoreboard.rows.map((r) => (
                 <div className="score-r" key={r.k}>
-                  <div className="score-k">{r.k}</div>
-                  <div className="score-v">{r.v}</div>
-                  <div className="score-m">
-                    <div className={`score-c ${r.dir}`}>{r.c}</div>
-                    <div className="score-n">{r.note}</div>
+                  <div className="score-k">
+                    {r.k}
+                    {r.note ? <div className="score-n">{r.note}</div> : null}
                   </div>
+                  {[r.d14, r.d30].map((cell, i) => (
+                    <div className="score-cell" key={i}>
+                      <div className={`score-v${cell ? "" : " empty"}`}>{cell ? cell.v : "\u2014"}</div>
+                      {cell && cell.c ? <div className={`score-c ${cell.dir}`}>{cell.c}</div> : null}
+                    </div>
+                  ))}
                 </div>
               ))}
             </div>
