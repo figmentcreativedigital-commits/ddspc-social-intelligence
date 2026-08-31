@@ -5,8 +5,8 @@ import { R, IS_INTERNAL, NAV, numOf, has } from "./report-data";
 /* ==========================================================================
    PRESENTATION  ·  Edgard El Chaar, DDS, PC
    --------------------------------------------------------------------------
-   Structure and styling only. This file should not change between cycles;
-   every figure and every sentence lives in report-data.ts.
+   Structure and styling only. This file does not change between cycles;
+   every figure, date and sentence lives in report-data.ts.
    ========================================================================== */
 
 /* ==========================================================================
@@ -285,16 +285,20 @@ function Section({
   );
 }
 
-/* Signature chart: daily visitors across the full thirty days, with the
-   advertising flight shaded so the reporting period reads in context. */
+/* Signature chart: daily visitors across the thirty-day context, with the
+   previous period shaded so this one reads against it. Legend text and axis
+   ticks are both derived from the data, so a new cycle needs no edit here. */
 function PeriodChart({ data }: { data: { d: string; v: number; paid?: boolean }[] }) {
   if (!data.length) return null;
   const top = Math.max(...data.map((x) => x.v)) || 1;
+  const ticks = [0, 0.25, 0.5, 0.75, 1].map((f) =>
+    data[Math.min(data.length - 1, Math.round(f * (data.length - 1)))].d
+  );
   return (
     <div className="chart">
       <div className="chart-key">
-        <span><i style={{ background: "var(--nav)" }} />{R.period_.paidLabel} &middot; Jul 18 &ndash; Aug 2</span>
-        <span><i style={{ background: "var(--plum)" }} />{R.period_.windowLabel} &middot; Aug 3 &ndash; 16</span>
+        <span><i style={{ background: "var(--nav)" }} />{R.period_.paidLabel}</span>
+        <span><i style={{ background: "var(--plum)" }} />{R.period_.windowLabel}</span>
       </div>
       <div className="bars">
         {data.map((x) => (
@@ -308,7 +312,7 @@ function PeriodChart({ data }: { data: { d: string; v: number; paid?: boolean }[
         ))}
       </div>
       <div className="axis">
-        <span>Jul 18</span><span>Jul 25</span><span>Aug 2</span><span>Aug 9</span><span>Aug 16</span>
+        {ticks.map((t, i) => <span key={`${t}-${i}`}>{t}</span>)}
       </div>
     </div>
   );
@@ -361,10 +365,9 @@ export default function Page() {
           <h1>{R.client}</h1>
           <p className="mast-sub">Performance report &middot; {R.period}</p>
           <div className="mast-meta">
-            <div><b>Reporting period</b>{R.period}</div>
-            <div><b>Comparison</b>July 18 &ndash; August 2, 2026</div>
-            <div><b>Advertising</b>None in period</div>
-            <div><b>Content published</b>12 pieces</div>
+            {R.meta.map((m) => (
+              <div key={m.k}><b>{m.k}</b>{m.v}</div>
+            ))}
           </div>
         </div>
       </header>
