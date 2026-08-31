@@ -75,7 +75,7 @@ export const R = {
         text: "The two windows disagree. Over the last two weeks website visits, search clicks and booking clicks each fell about a third. Over the full month search clicks are up 8.8% and booking clicks up 33%. August 17\u201330 sat against an unusually strong first half of the month, which is why it reads as decline wherever you look at it.",
         client: {
           role: "Headline",
-          text: "Two views of the same month. Over the last two weeks website visits, search clicks and booking clicks each fell about a third. Over the full month search clicks are up 8.8% and booking clicks up 33%. Both are in the report, because the shorter window sits against a strong first half of August and the month is the steadier read.",
+          text: "Over the last two weeks website visits, search clicks and booking clicks each fell about a third. Over the full month search clicks are up 8.8% and booking clicks up 33%.",
         },
       },
       {
@@ -87,12 +87,12 @@ export const R = {
         text: "Instagram reach and interactions are down against July. July carried a paid flight worth 10,181 views and published 34 pieces against August's 27, which covers most of the reach gap. It does not cover interactions, which fell 848 to 537.",
         client: {
           role: "What we are watching",
-          text: "Instagram reach and interactions are lower than July. July included a paid campaign and 34 pieces of content against August's 27, so part of the gap is how much was in market rather than how it performed. Reels went the other way on every measure.",
+          text: "Instagram reach and interactions came in below July. July was a bigger month \u2014 34 pieces published against 27, with a campaign running alongside them. Reels went the other way and grew on every measure, so that is where the September schedule is going.",
         },
       },
       {
         role: "The number that matters",
-        text: "89 booking clicks in August \u2014 50 Midtown, 39 Upper East Side \u2014 against 67 in July. It is the only direct read on intent in this report and the number to beat next month.",
+        text: "89 booking clicks in August \u2014 50 Midtown, 39 Upper East Side \u2014 against 67 in July.",
       },
     ],
   },
