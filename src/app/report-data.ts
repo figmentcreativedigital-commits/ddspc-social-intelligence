@@ -75,7 +75,7 @@ export const R = {
         text: "The two windows disagree. Over the last two weeks website visits, search clicks and booking clicks each fell about a third. Over the full month search clicks are up 8.8% and booking clicks up 33%. August 17\u201330 sat against an unusually strong first half of the month, which is why it reads as decline wherever you look at it.",
         client: {
           role: "Headline",
-          text: "Over the last two weeks website visits, search clicks and booking clicks each fell about a third. Over the full month search clicks are up 8.8% and booking clicks up 33%.",
+          text: "Over the full month search clicks are up 8.8% and booking clicks up 33%.",
         },
       },
       {
@@ -86,8 +86,8 @@ export const R = {
         role: "Primary concern",
         text: "Instagram reach and interactions are down against July. July carried a paid flight worth 10,181 views and published 34 pieces against August's 27, which covers most of the reach gap. It does not cover interactions, which fell 848 to 537.",
         client: {
-          role: "What we are watching",
-          text: "Instagram reach and interactions came in below July. July was a bigger month \u2014 34 pieces published against 27, with a campaign running alongside them. Reels went the other way and grew on every measure, so that is where the September schedule is going.",
+          role: "Where we are focusing",
+          text: "Reels drove the growth this month. The priority for September is to keep that going and keep highlighting the people behind the practice.",
         },
       },
       {
