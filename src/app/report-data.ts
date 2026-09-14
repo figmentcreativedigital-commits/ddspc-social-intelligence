@@ -117,7 +117,7 @@ export const R = {
         text: "Instagram views fell from 15,310 to 7,113 and reach from 397 a day to 139. The August 27 post welcoming Dr. Shiloah drew 6,539 views on its own, 43% of the previous window. Excluding it, views moved 8,771 to 7,113, a 19% fall. Reels held: reach per reel 471 to 459, interactions 73 to 68. Followers moved from 3,220 to 3,219, the first loss on record.",
         client: {
           role: "What we are monitoring",
-          text: "Instagram reached fewer people. The two weeks before carried the announcement of Dr. Shiloah joining, which drew 6,539 views on its own and is not something that repeats. Set against the rest of that period, views moved down 19%. Reels held steady and engagement rate rose.",
+          text: "Reach decreased this period, while engagement rate increased among the audience we did reach. The previous period benefited from an especially strong response to Dr. Shiloah’s announcement, which generated 6,539 views and significantly lifted overall performance. Compared with the rest of that period, views were down 19%, while reel performance remained steady.",
         },
       },
       {
@@ -262,7 +262,7 @@ export const R = {
         { v: "8.3%", l: "Engagement" },
       ],
       why:
-        "The strongest piece of the period by a distance. 1,307 views is more than the next three pieces combined, and its 60 interactions are 63% of everything the account earned across all eleven pieces. Engagement of 8.3% against an account average of 4.88%. It is not clinical content and it is not a credential — it is the practice being a place with a history, which is the same register that made the Dr. Shiloah announcement work two weeks earlier. Both were about people rather than procedures.",
+        "The strongest piece of the period by a distance. 1,307 views is more than the next three pieces combined, and its 60 interactions are 63% of everything the account earned across all eleven pieces. Engagement of 8.3% against an account average of 4.88%. It is not clinical content and it is not a credential. It is the people behind the practice, which is what the Dr. Shiloah announcement had too. One introduced someone new, the other showed the team already there. Both worked because they were about who the practice is rather than what it does.",
     },
     gallery: [
       {
