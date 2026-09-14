@@ -251,8 +251,8 @@ export const R = {
     lede: "Search is the finding. Position moved from 6.31 to 4.08 on 17% more impressions, and desktop closed an 8-place gap to sit level with mobile. On Instagram, one reel carries 60 of the period\u2019s 95 interactions.",
     ledeClient: "Two things worked this period. The practice is ranking better in Google than at any point this year, and a single behind-the-scenes reel outperformed everything else published.",
     hero: {
-      url: "https://www.instagram.com/reel/DcuNhkPxr2T/",
-      title: "A little office clean-out turned into a trip through the archive",
+      url: "https://www.instagram.com/reel/Dctd0SKhnWm/",
+      title: "A little office clean-out turned into a trip down memory lane",
       date: "August 31",
       format: "Reel",
       stats: [
@@ -266,23 +266,23 @@ export const R = {
     },
     gallery: [
       {
-        url: "https://www.instagram.com/p/Dcy8rKQuHVn/",
+        url: "https://www.instagram.com/p/Dcys7YKoKDU/",
         title: "Why are your gums receding?",
         date: "September 2", format: "Carousel", views: 547, reach: 209, interactions: 11,
       },
       {
-        url: "https://www.instagram.com/reel/Dc1ZXmxpQ8F/",
+        url: "https://www.instagram.com/reel/Dc1oPWmBNZU/",
         title: "Periodontics goes far beyond treating the gums",
         date: "September 3", format: "Reel", views: 320, reach: 198, interactions: 8,
       },
       {
-        url: "https://www.instagram.com/p/DdCwPnVulKR/",
-        title: "We\u2019re living longer, and keeping our mouths healthier for longer",
+        url: "https://www.instagram.com/p/DdE9mb5GQFB/",
+        title: "We\u2019re living longer, and keeping our mouths healthy is an important part of aging well",
         date: "September 9", format: "Carousel", views: 369, reach: 146, interactions: 9,
       },
       {
-        url: "https://www.instagram.com/p/DdAjR2XuLpM/",
-        title: "There\u2019s a different level of trust when a fellow dentist refers a patient",
+        url: "https://www.instagram.com/p/Dc1pP_Bh0rO/",
+        title: "There\u2019s a different level of trust when a fellow healthcare professional chooses you",
         date: "September 8", format: "Post", views: 200, reach: 103, interactions: 7,
       },
     ],
