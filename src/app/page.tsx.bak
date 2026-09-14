@@ -296,7 +296,7 @@ function Section({
 /* Signature chart: daily visitors across the thirty-day context, with the
    previous period shaded so this one reads against it. Legend text and axis
    ticks are both derived from the data, so a new cycle needs no edit here. */
-function PeriodChart({ data }: { data: { d: string; v: number; shade?: boolean }[] }) {
+function PeriodChart({ data }: { data: { d: string; v: number; paid?: boolean }[] }) {
   if (!data.length) return null;
   const top = Math.max(...data.map((x) => x.v)) || 1;
   const ticks = [0, 0.25, 0.5, 0.75, 1].map((f) =>
@@ -305,14 +305,14 @@ function PeriodChart({ data }: { data: { d: string; v: number; shade?: boolean }
   return (
     <div className="chart">
       <div className="chart-key">
-        <span><i style={{ background: "var(--nav)" }} />{R.period_.bandA}</span>
-        <span><i style={{ background: "var(--plum)" }} />{R.period_.bandB}</span>
+        <span><i style={{ background: "var(--nav)" }} />{R.period_.paidLabel}</span>
+        <span><i style={{ background: "var(--plum)" }} />{R.period_.windowLabel}</span>
       </div>
       <div className="bars">
         {data.map((x) => (
           <div
             key={x.d}
-            className={`bar${x.shade ? " paid" : ""}`}
+            className={`bar${x.paid ? " paid" : ""}`}
             style={{ height: `${Math.max((x.v / top) * 100, 2)}%` }}
           >
             <span className="bar-cap">{x.v}</span>
@@ -358,7 +358,6 @@ export default function Page() {
       {/* With JavaScript off the observer never fires, so reverse the hidden
           state here. This is inert markup, identical on server and client. */}
       <noscript
-        suppressHydrationWarning
         dangerouslySetInnerHTML={{
           __html: "<style>.rv{opacity:1!important;transform:none!important}</style>",
         }}
@@ -432,7 +431,7 @@ export default function Page() {
                     {r.k}
                     {r.note ? <div className="score-n">{r.note}</div> : null}
                   </div>
-                  {r.cells.map((cell, i) => (
+                  {[r.d14, r.d30].map((cell, i) => (
                     <div className="score-cell" key={i}>
                       <div className={`score-v${cell ? "" : " empty"}`}>{cell ? cell.v : "\u2014"}</div>
                       {cell && cell.c ? <div className={`score-c ${cell.dir}`}>{cell.c}</div> : null}
