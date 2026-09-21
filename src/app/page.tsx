@@ -205,6 +205,14 @@ a { color: inherit; text-decoration: none; }
 .plan-t { font-family: var(--display); font-size: clamp(19px, 1.9vw, 24px); line-height: 1.35; color: var(--plum); max-width: 30ch; }
 .plan-b { font-size: 15.5px; line-height: 1.65; margin-top: 10px; max-width: 60ch; }
 
+/* ---------- social ---------- */
+.soc-i { display: grid; grid-template-columns: 10px 1fr; gap: 24px; padding: 22px 0; border-top: 1px solid var(--rule); }
+.soc-m { width: 10px; height: 10px; border-radius: 999px; background: var(--nav); margin-top: 10px; }
+.soc-b { font-size: 16.5px; line-height: 1.65; max-width: 68ch; }
+.soc-take { margin-top: 8px; padding: 26px 30px; border-left: 3px solid var(--plum); background: var(--white); }
+.soc-take-k { font-family: var(--display); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--plum); margin-bottom: 8px; }
+.soc-take-b { font-size: 16.5px; line-height: 1.65; max-width: 68ch; }
+
 /* ---------- detail ---------- */
 .disc { border-top: 1px solid var(--rule); }
 .disc-btn { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 22px 0; background: none; border: none; border-bottom: 1px solid var(--rule); cursor: pointer; font-family: var(--sub); font-size: 19px; color: var(--plum); text-align: left; }
@@ -490,6 +498,26 @@ export default function Page() {
             </div>
           </Reveal>
         </Section>
+
+        {/* ---------------------------------------------------------- SOCIAL */}
+        {has("social") && (
+          <Section id="social" num={numOf("social")} title={R.social.title} lede={R.social.lede} band="light">
+            <Reveal>
+              <div>
+                {R.social.items.map((t) => (
+                  <div className="soc-i" key={t}>
+                    <div className="soc-m" />
+                    <p className="soc-b">{t}</p>
+                  </div>
+                ))}
+                <div className="soc-take">
+                  <div className="soc-take-k">Takeaway</div>
+                  <p className="soc-take-b">{R.social.takeaway}</p>
+                </div>
+              </div>
+            </Reveal>
+          </Section>
+        )}
 
         {/* ------------------------------------------- ATTENTION (internal) */}
         {has("attention") && (
