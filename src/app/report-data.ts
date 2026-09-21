@@ -29,6 +29,9 @@
      Short links (Short.io)           Sep 14 – 20 and Sep 7 – 13, 2026
      Podcast (Buzzsprout)             trailing 7 days, pulled Sep 21 and Sep 14
      Email (Constant Contact)         no campaign sent Sep 14 – 20
+     Website engagement (GA4 traffic) Sep 14 – 20 and Sep 7 – 13, pulled later on
+                                      Sep 21; rates and times only, totals stay on
+                                      the original export until Wednesday
 
    OPEN BEFORE THIS GOES TO THE PRACTICE:
      - Re-pull Search Console Chart.csv on Wednesday, September 23. The last
@@ -82,7 +85,7 @@ export const R = {
     items: [
       {
         role: "Headline",
-        text: "Instagram grew on every account measure. Search looks lower but has not finished processing. Website visitors rose 36%, but none of the increase traces to a channel we can identify, and visits from Google fell from 97 to 89.",
+        text: "Instagram grew on every account measure. Search looks lower but has not finished processing. Website visitors rose 36%, but the increase is direct traffic averaging 3.7 seconds, and visits from Google fell from 97 to 89 while staying longer.",
         client: {
           role: "Headline",
           text: "Instagram had a strong week. Views rose 25%, daily reach 23% and interactions 31%, and the account added followers again.",
@@ -138,9 +141,9 @@ export const R = {
       { d: "Sep 20", v: 101 },
     ],
     note:
-      "424 new visitors this week against 311. Last cycle the unexplained traffic was concentrated in five days. This week every day is elevated: 32 to 101, against 12 to 35 in the two weeks before August 31 apart from one day at 58. Direct visits rose from 280 to 371, a new source recorded as not set added 37, and landing pages went from 32 to 71, with 29 of those service pages drawing two or three views each. Visits from Google search fell from 97 to 89. The increase is not coming from any channel we can identify.",
+      "424 new visitors this week against 311. Last cycle the unexplained traffic was concentrated in five days. This week every day is elevated: 32 to 101, against 12 to 35 in the two weeks before August 31 apart from one day at 58. Direct visits rose from 280 to 371, and landing pages went from 32 to 71, with 29 of those service pages drawing two or three views each. GA4’s engagement data shows the extra direct traffic is not behaving like visitors: engaged direct sessions fell from 138 to 35 while total direct sessions rose, and direct visits averaged 3.7 seconds against 15.5 the week before. Visits from Google search fell from 97 to 89, and those visitors stayed longer, 90 seconds on average against 64.",
     noteClient:
-      "424 new visitors this week against 311. Most of the increase came through direct visits rather than search or social, and we have not yet been able to trace its source. Visits from Google search were 89 against 97. We are treating the higher total as unconfirmed until we know where it came from.",
+      "424 new visitors this week against 311. Most of the increase came through direct visits that averaged under four seconds on the site, so we are not counting it as new audience. Visitors from Google search, 89 against 97, stayed longer than the week before: 90 seconds on average against 64.",
   },
 
   /* ------------------------------------------------------------ SCOREBOARD */
@@ -213,12 +216,12 @@ export const R = {
       },
       {
         k: "Visits from Google search",
-        note: "The most reliable measure of website traffic this week",
+        note: "The most reliable measure of website traffic this week. These visitors stayed 90 seconds on average, up from 64",
         cells: [{ v: "89", c: "−8.2%", dir: "down" }, { v: "97", c: "", dir: "flat" }],
       },
       {
         k: "Website new visitors",
-        note: "Includes a large share of visits we cannot yet trace to a source",
+        note: "The increase came through direct visits averaging under four seconds, so it is not counted as audience growth",
         cells: [{ v: "424", c: "+36.3%", dir: "flat" }, { v: "311", c: "", dir: "flat" }],
       },
       {
@@ -279,7 +282,7 @@ export const R = {
         tag: "Real gap",
         title: "The website traffic we cannot trace is now there every day",
         body:
-          "Last cycle it was five days. This week every day is elevated: 57, 32, 36, 81, 56, 61 and 101 new visitors, against 12 to 35 in the two weeks before August 31, apart from one day at 58. Direct visits went from 280 to 371. A source recorded as not set appeared with 37 sessions. Landing pages went from 32 to 71, and 29 of them are service pages drawing two or three views each. Desktop share is 86%. Visits from Google search fell from 97 to 89 and Search Console clicks fell too. The pattern looks like something working through the site page by page rather than people finding it. Until it is traced, website totals cannot carry a growth story.",
+          "Last cycle it was five days. This week every day is elevated: 57, 32, 36, 81, 56, 61 and 101 new visitors, against 12 to 35 in the two weeks before August 31, apart from one day at 58. Direct visits went from 280 to 371, but engaged direct sessions fell from 138 to 35, and direct visits averaged 3.7 seconds against 15.5. Landing pages went from 32 to 71, and 29 of them are service pages drawing two or three views each. Desktop share is 86%. The morning export showed 37 sessions with no source; a GA4 export pulled later shows 4, so most have since been attributed. Visits from Google search fell from 97 to 89 but held their engagement rate near 62% and stayed longer, 90 seconds against 64. The added direct traffic is consistent with automated visits rather than people. Until it is traced, website totals cannot carry a growth story.",
       },
       {
         tag: "Measurement",
@@ -369,7 +372,7 @@ export const R = {
         action: "Trace the direct website traffic",
         owner: "Figment",
         metric: "A named source for the traffic, or a filter that removes it from the totals",
-        body: "It is now every day, not five days. Check GA4’s Tech and Geography reports for September 14 – 20, look at what the not set source contains, and check whether a monitoring or crawling service was added to the site around August 31.",
+        body: "It is now every day, not five days, and it does not engage: engaged direct sessions fell from 138 to 35 while direct sessions rose, averaging 3.7 seconds. Check GA4’s Tech and Geography reports for direct traffic on September 14 – 20, and whether a monitoring or crawling service was added to the site around August 31. If it is automated, a GA4 filter will keep it out of future reports.",
       },
       {
         action: "Re-pull search on Wednesday, September 23",
@@ -416,7 +419,7 @@ export const R = {
       },
       {
         action: "Look into the website visitor numbers",
-        body: "A large share of this week’s website visitors cannot be traced to a source. We are treating those figures as unconfirmed until we know where they came from.",
+        body: "Most of this week’s increase came through very short direct visits. We are finding their source so they can be kept out of future totals if they turn out to be automated.",
       },
     ],
   },
@@ -490,7 +493,8 @@ export const R = {
           ["Sessions", "514 · from 398"],
           ["Visits from Google search", "89 · from 97"],
           ["Direct visits", "371 · from 280"],
-          ["Source not set", "37 · none the week before"],
+          ["Google visitors engaged", "61.5% · 90 seconds average · from 62.9% and 64 seconds"],
+          ["Direct visitors engaged", "9.2% · 3.7 seconds average · from 49.3% and 15.5 seconds"],
           ["Bing search", "10 · from 9"],
           ["Landing pages", "71 · from 32"],
           ["Homepage landings", "325 · from 408"],
@@ -498,9 +502,9 @@ export const R = {
           ["Desktop / mobile", "86% / 14% · from 88% / 12%"],
         ],
         note:
-          "Visits from Google search are the reliable figure this week. Direct visits rose 91 and a new not set source added 37, while landing pages more than doubled, mostly service pages with two or three views each. These totals are reported as pulled and not adjusted, but they should not be read as audience growth until the source is traced. Spam referrals are excluded.",
+          "Visits from Google search are the reliable figure this week. Direct visits rose 91 while engaged direct sessions fell from 138 to 35, and landing pages more than doubled, mostly service pages with two or three views each. Engagement rates and times come from a GA4 traffic export pulled later on September 21. It matches the week before exactly, but reads September 14 – 20 slightly differently: 490 sessions against 514, direct 380 against 371, and 4 sessions with no source against 37. Session totals here stay on the original export until Wednesday’s refresh. Spam referrals are excluded.",
         noteClient:
-          "Visits from Google search are the most reliable figure this week, at 89 against 97. Most of the increase in total visitors came through direct visits we cannot yet trace, so we are treating that total as unconfirmed.",
+          "Visits from Google search are the most reliable figure this week, at 89 against 97, and those visitors stayed longer, 90 seconds on average against 64. Most of the increase in total visitors came through direct visits averaging under four seconds, so we are not counting it as audience growth.",
       },
       {
         id: "email",
@@ -540,6 +544,7 @@ export const R = {
           { q: "What the report covers", a: "September 14 to 20, 2026, seven full days, Monday to Sunday, compared with September 7 to 13. Both weeks are the same length, so every comparison is direct." },
           { q: "Why this report covers one week", a: "This report looks at a single week. The monthly view returns in October." },
           { q: "How engagement rate is calculated", a: "Interactions divided by reach, meaning the share of people who saw something and responded to it. It is not calculated against follower count, which would make the figure look higher than it is." },
+          { q: "How website engagement is measured", a: "Google Analytics counts a visit as engaged if it lasts at least 10 seconds, views a second page, or completes a key action. Engagement is shown by source, so a rise in visits can be checked against whether those visitors actually stayed." },
           { q: "Why the search figures may change", a: "Google keeps processing search data for several days after the fact. Figures for September 7 to 13 rose about 6% between our first and second readings, so the most recent days of any week are the least settled." },
           { q: "How search position is calculated", a: "Weighted by how often each page appeared, and filtered to US searches. Lower is better: a position of 1 is the top result." },
           { q: "How short link clicks are counted", a: "Clicks on the practice’s named short links, with automated requests to unrecognized paths removed. The booking and homepage links existed in both weeks and compare directly." },
