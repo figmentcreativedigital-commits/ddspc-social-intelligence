@@ -112,7 +112,7 @@ export const R = {
         text: "Add a GA4 filter for the low-engagement direct traffic, now 3 weeks running. Tag the 5 EEC short links with UTM parameters. Identify /ddspc and the new /jK1aSN. Read Instagram a second time before naming the strongest piece.",
         client: {
           role: "What we are doing next",
-          text: "We will pair each new podcast episode with a reel, keep content about the doctors and their patients at the center, and add tracking to the booking links so real visits can be counted more precisely.",
+          text: "We will keep content about the doctors and their patients at the center, with a weekly mix of reels, Stories and feed posts.",
         },
       },
     ] as { role: string; text: string; client?: { role: string; text: string } }[],
@@ -428,20 +428,12 @@ export const R = {
     lede: "What we are doing next.",
     items: [
       {
-        action: "Pair each new podcast episode with a reel",
-        body: "The reel announcing this week’s episode reached more people than anything else published in the last 4 weeks. We will announce each new episode the same way.",
-      },
-      {
         action: "Keep building content about the doctors and their patients",
         body: "The September 26 reel about Dr. Castillo’s patient finished as last week’s strongest piece once its views had settled. We will keep that at the center while maintaining a mix of educational and clinical posts.",
       },
       {
         action: "Keep a weekly mix of reels, Stories and feed posts",
         body: "This week brought 3 reels, 1 post and 12 Stories. Reels continue to reach the most people.",
-      },
-      {
-        action: "Add tracking to the booking links",
-        body: "Booking link clicks rose this week. Adding tracking to each link will let us count real visits separately from automated traffic, so the figure is more precise in future reports.",
       },
     ],
   },
@@ -487,7 +479,7 @@ export const R = {
         note:
           "Filtered to exclude the catch-all path /*, which collects automated requests. Clicks by All. Short.io’s own comparison confirms the week before at 123. A country filter was not applied: 93 of 149 clicks are from the US. Council Bluffs, Santa Clara, Ashburn and Singapore account for about 40% of this week’s clicks, against about 53% last week. /ddspc drew 2 the week before; /jK1aSN is new. Neither is identified, and both are counted in the domain total only. No link carries UTM parameters.",
         noteClient:
-          "Counts clicks on the practice’s named short links. The booking and homepage links existed in both weeks and compare directly. Some clicks come from automated traffic, which tracking on each link will separate out in future reports.",
+          "Counts clicks on the practice’s named short links. The booking and homepage links existed in both weeks and compare directly. Some clicks come from automated traffic.",
       },
       {
         id: "search",
