@@ -1,4 +1,5 @@
 import { R, IS_INTERNAL, NAV, has } from "./report-data";
+import { Spark, Daily, type Day, type Fmt } from "./charts";
 
 /* ==========================================================================
    PRESENTATION  ·  Edgard El Chaar, DDS, PC
@@ -131,11 +132,56 @@ a { color: inherit; }
 .chart .base { stroke: var(--rule); stroke-width: 1; }
 .chart .b-now { fill: var(--now); }
 .chart .b-past { fill: var(--past); }
-.chart .hv { opacity: 0; }
-.chart g.bar:hover .hv, .chart g.bar:focus .hv { opacity: 1; }
-.chart g.bar:hover rect.m, .chart g.bar:focus rect.m { opacity: .8; }
-.chart g.bar:focus { outline: none; }
-.chart g.bar:focus rect.hit { stroke: var(--now); stroke-width: 2; }
+.chart svg[role="slider"] { cursor: crosshair; touch-action: pan-y; -webkit-tap-highlight-color: transparent; }
+.chart svg[role="slider"]:focus { outline: none; }
+.chart svg[role="slider"]:focus-visible { outline: 2px solid var(--plum); outline-offset: 6px; border-radius: 4px; }
+.chart g.bar path.m { transition: opacity .15s ease; }
+.chart g.bar.dim path.m { opacity: .28; }
+.chart .dly-band { fill: var(--plum); opacity: .07; }
+.chart text.dk { fill: var(--ink); font-weight: 700; }
+
+/* readout above the daily chart */
+.dly-read { display: flex; align-items: stretch; flex-wrap: wrap; gap: 0; margin: 4px 0 22px; min-height: 76px;
+  background: #fff; border: 1px solid var(--rule-soft); border-radius: 8px; }
+.dly-cell { display: flex; flex-direction: column; gap: 2px; padding: 12px 22px; border-right: 1px solid var(--rule-soft); min-width: 150px; }
+.dly-k { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); display: inline-flex; align-items: center; gap: 7px; }
+.dly-k i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.dly-cell.now .dly-k i { background: var(--now); }
+.dly-cell.past .dly-k i { background: var(--past); }
+.dly-d { font-size: 15px; color: var(--body); }
+.dly-v { font-size: 26px; line-height: 1.1; color: var(--ink); font-weight: 700; font-variant-numeric: tabular-nums; }
+.dly-v small { font-size: 14px; font-weight: 400; color: var(--muted); }
+.dly-cell.chg { border-right: none; }
+.dly-hint { margin: 0 0 0 auto; align-self: center; padding: 12px 22px; max-width: 30ch; font-size: 14px; line-height: 1.45; color: var(--muted); }
+.dly.on .dly-hint { visibility: hidden; }
+@media (max-width: 760px) {
+  .dly-read { min-height: 0; }
+  .dly-cell { min-width: 0; flex: 1 1 0; padding: 10px 12px; }
+  .dly-cell.chg { flex: 0 0 auto; }
+  .dly-cell.chg .dly-d { display: none; }
+  .dly-k { font-size: 11px; letter-spacing: .05em; gap: 5px; white-space: nowrap; }
+  .dly-d { font-size: 14px; white-space: nowrap; }
+  .dly-v { font-size: 21px; }
+  .dly-v small { display: none; }
+  .dly-hint { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .chart g.bar path.m { transition: none; } }
+
+/* trend-line scrubbing */
+.spk { position: relative; display: inline-block; vertical-align: middle; }
+.lg-sp .spk { float: right; }
+.spk svg { cursor: crosshair; touch-action: pan-y; -webkit-tap-highlight-color: transparent; border-radius: 4px; }
+.spk svg:focus { outline: none; }
+.spk svg:focus-visible { outline: 2px solid var(--plum); outline-offset: 4px; }
+.spk-g { stroke: var(--rule); stroke-width: 1; }
+.spk-tip { position: absolute; bottom: calc(100% + 6px); transform: translateX(-50%); white-space: nowrap; pointer-events: none;
+  background: var(--plum); color: #fff; border-radius: 6px; padding: 5px 9px; font-size: 13px; line-height: 1.2; z-index: 3;
+  display: flex; gap: 8px; align-items: baseline; box-shadow: 0 2px 8px rgba(31,31,31,.14); }
+.spk-tip b { font-size: 15px; font-variant-numeric: tabular-nums; }
+.spk-tip span { opacity: .88; }
+.spk-tip.l { transform: translateX(-10px); }
+.spk-tip.r { transform: translateX(calc(-100% + 10px)); }
+@media (max-width: 760px) { .lg-sp .spk { float: none; } }
 .key { display: flex; gap: 24px; flex-wrap: wrap; font-size: 14px; color: var(--body); margin-bottom: 14px; }
 .key span { display: inline-flex; align-items: center; gap: 8px; }
 .key i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
@@ -241,107 +287,34 @@ const MONOGRAM = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAoAAAAGQCAYAAAA+
 
 /* --------------------------------------------------------------- helpers */
 
-type Trend = { values: number[]; labels: string[]; fmt?: "int" | "pct" | "pos" };
-
-function fmtVal(v: number, f?: Trend["fmt"]) {
-  if (f === "pct") return `${v.toFixed(2)}%`;
-  if (f === "pos") return v.toFixed(2);
-  return v.toLocaleString("en-US");
+/* Daily chart wrapper. The interactive chart lives in charts.tsx; this server
+   part adds weekday names (computed from the report year) and the table view. */
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+function weekday(d: string, year: number) {
+  const [mon, day] = d.split(" ");
+  const m = MONTHS.indexOf(mon.slice(0, 3));
+  return m < 0 ? "" : WEEKDAYS[new Date(Date.UTC(year, m, Number(day))).getUTCDay()];
 }
 
-/* Five-week trend line: earlier weeks in blue, this week as a plum end dot.
-   Shape only, scaled to the row's own range; the values sit in the <title>
-   and in the screen-reader text, so nothing depends on reading the line. */
-function Spark({ t }: { t: Trend }) {
-  const W = 120, H = 30, P = 5;
-  const v = t.values;
-  const lo = Math.min(...v), hi = Math.max(...v);
-  const span = hi - lo || 1;
-  const x = (i: number) => P + (i * (W - 2 * P)) / Math.max(v.length - 1, 1);
-  const y = (n: number) => H - P - ((n - lo) / span) * (H - 2 * P);
-  const pts = v.map((n, i) => `${x(i).toFixed(1)},${y(n).toFixed(1)}`).join(" ");
-  const said = v.map((n, i) => `${t.labels[i]}: ${fmtVal(n, t.fmt)}`).join(", ");
-  const last = v.length - 1;
-  return (
-    <svg className="spark" width={W} height={H} viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Weekly trend. ${said}`}>
-      <title>{said}</title>
-      <polyline points={pts} fill="none" stroke="var(--past)" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-      {last > 0 ? <circle cx={x(last - 1)} cy={y(v[last - 1])} r="3" fill="var(--past)" stroke="#fff" strokeWidth="2" /> : null}
-      <circle cx={x(last)} cy={y(v[last])} r="4.5" fill="var(--now)" stroke="#fff" strokeWidth="2" />
-    </svg>
-  );
-}
-
-function niceMax(n: number) {
-  const steps = [10, 20, 25, 50, 100, 200, 250, 500, 1000];
-  for (const s of steps) { const m = Math.ceil(n / s) * s; if (m / s <= 5) return { max: m, step: s }; }
-  return { max: Math.ceil(n / 1000) * 1000, step: 1000 };
-}
-
-/* Daily column chart, rendered on the server as SVG. Earlier week in blue,
-   this week in plum. The highest day of each week carries its value; every
-   bar shows its value on hover or keyboard focus, and the table below holds
-   all of them. */
 function DailyChart({ data, bandA, bandB }: { data: { d: string; v: number; shade?: boolean }[]; bandA: string; bandB: string }) {
+  const year = Number((/\d{4}/.exec(R.period) || ["0"])[0]);
+  const days: Day[] = data.map((x) => ({ d: x.d, w: weekday(x.d, year), v: x.v, shade: x.shade }));
   return (
     <div className="chart">
       <div className="key">
         <span><i style={{ background: "var(--past)" }} />{bandA}</span>
         <span><i style={{ background: "var(--now)" }} />{bandB}</span>
       </div>
-      <div className="ch-wide"><DailySvg data={data} W={1000} H={280} /></div>
-      <div className="ch-narrow"><DailySvg data={data} W={420} H={300} /></div>
+      <Daily data={days} unit="new visitors" nowLabel="This week" pastLabel="Week before" />
       <details className="tv">
         <summary>Show the daily figures as a table</summary>
         <table>
           <thead><tr><th scope="col">Day</th><th scope="col">New visitors</th></tr></thead>
-          <tbody>{data.map((x) => <tr key={x.d}><td>{x.d}</td><td>{x.v}</td></tr>)}</tbody>
+          <tbody>{days.map((x) => <tr key={x.d}><td>{x.w}, {x.d}</td><td>{x.v}</td></tr>)}</tbody>
         </table>
       </details>
     </div>
-  );
-}
-
-function DailySvg({ data, W, H }: { data: { d: string; v: number; shade?: boolean }[]; W: number; H: number }) {
-  const L = 36, T = 26, B = 34;
-  const ph = H - T - B, pw = W - L - 8;
-  const { max, step } = niceMax(Math.max(...data.map((x) => x.v)));
-  const slot = pw / data.length;
-  const bw = Math.min(28, slot * 0.62);
-  const y = (n: number) => T + ph - (n / max) * ph;
-  const ticks: number[] = [];
-  for (let t = 0; t <= max; t += step) ticks.push(t);
-  const weeks = [data.filter((x) => x.shade), data.filter((x) => !x.shade)];
-  const peaks = new Set(weeks.map((w) => w.reduce((a, b) => (b.v > a.v ? b : a), w[0])?.d));
-  const split = data.findIndex((x) => !x.shade);
-  const narrow = W < 600;
-  return (
-      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="New website visitors each day across both weeks. Values are in the table below.">
-        {ticks.map((t) => (
-          <g key={t}>
-            <line className={t === 0 ? "base" : "grid"} x1={L} x2={W} y1={y(t)} y2={y(t)} />
-            <text x={L - 10} y={y(t) + 4} textAnchor="end">{t}</text>
-          </g>
-        ))}
-        {split > 0 ? <line className="base" x1={L + split * slot} x2={L + split * slot} y1={T - 8} y2={T + ph} /> : null}
-        {data.map((x, i) => {
-          const cx = L + i * slot + slot / 2;
-          const top = y(x.v);
-          const h = Math.max(T + ph - top, 2);
-          const r = Math.min(4, bw / 2, h / 2);
-          const path = `M${cx - bw / 2},${T + ph} V${top + r} Q${cx - bw / 2},${top} ${cx - bw / 2 + r},${top} H${cx + bw / 2 - r} Q${cx + bw / 2},${top} ${cx + bw / 2},${top + r} V${T + ph} Z`;
-          const isPeak = peaks.has(x.d);
-          return (
-            <g key={x.d} className="bar" tabIndex={0} aria-label={`${x.d}: ${x.v}`}>
-              <title>{`${x.d}: ${x.v}`}</title>
-              <rect className="hit" x={L + i * slot + 1} y={T} width={slot - 2} height={ph} fill="transparent" />
-              <path className={`m ${x.shade ? "b-past" : "b-now"}`} d={path} />
-              {isPeak ? <text className="pk" x={cx} y={top - 8} textAnchor="middle">{x.v}</text> : <text className="pk hv" x={cx} y={top - 8} textAnchor="middle">{x.v}</text>}
-              {i === 0 || i === split || i === data.length - 1 || (isPeak && !narrow) ? <text x={cx} y={H - 10} textAnchor={narrow && i === data.length - 1 ? "end" : narrow && i === 0 ? "start" : "middle"}>{x.d}</text> : null}
-            </g>
-          );
-        })}
-      </svg>
   );
 }
 
@@ -466,7 +439,7 @@ export default function Page() {
                   return (
                     <tr className="lg-r" key={r.k}>
                       <td><div className="lg-k">{r.k}</div>{r.note ? <div className="lg-n">{r.note}</div> : null}</td>
-                      <td className="lg-sp"><Spark t={{ values: r.trend, labels: weeks.slice(weeks.length - r.trend.length), fmt: r.fmt as Trend["fmt"] }} /></td>
+                      <td className="lg-sp"><Spark name={r.k} values={r.trend} labels={weeks.slice(weeks.length - r.trend.length)} fmt={r.fmt as Fmt} /></td>
                       <td><span className="lg-v">{r.cells[0].v}</span></td>
                       <td className="lg-c">{arrow ? <i aria-hidden="true">{arrow}</i> : null}{c}</td>
                       <td className="lg-pv"><span className="lg-p">{r.cells[1].v}</span></td>
