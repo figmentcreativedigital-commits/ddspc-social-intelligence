@@ -1,342 +1,360 @@
-"use client";
-import { useEffect, useRef, useState } from "react";
-import { R, IS_INTERNAL, NAV, numOf, has } from "./report-data";
+import { R, IS_INTERNAL, NAV, has } from "./report-data";
 
 /* ==========================================================================
    PRESENTATION  ·  Edgard El Chaar, DDS, PC
    --------------------------------------------------------------------------
-   Structure and styling only. This file does not change between cycles;
-   every figure, date and sentence lives in report-data.ts.
+   Structure and styling only; every figure, date and sentence lives in
+   report-data.ts.
+
+   SERVER-RENDERED. This file has no "use client" directive and no hooks, so
+   Next.js renders it to static HTML at build time. report-data.ts is never
+   sent to the browser, and the client build carries only the text it shows.
+   Keep it that way: an interactive piece belongs in its own small client
+   component that receives only the strings it renders.
+
+   Type: Prata for titles, Marcellus for the narrative, Glacial Indifference
+   for body text and every number. Data colors (#8A3A6E this week, #3A8CB5
+   earlier weeks) pass the six-check palette validator on white; the
+   practice's own plum stays for type and structure.
    ========================================================================== */
 
-/* ==========================================================================
-   STYLE
-   Tokens taken from edgardelchaar.com so the report reads as the practice's
-   own, not as a dashboard. Three faces: Prata display, Marcellus subhead,
-   Glacial Indifference body (self-hosted, SIL Open Font License).
-   ========================================================================== */
 const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Prata&family=Marcellus&display=swap');
-
-@font-face {
-  font-family: 'Glacial Indifference';
-  src: url('/fonts/GlacialIndifference-Regular.woff2') format('woff2');
-  font-weight: 400; font-style: normal; font-display: swap;
-}
-@font-face {
-  font-family: 'Glacial Indifference';
-  src: url('/fonts/GlacialIndifference-Bold.woff2') format('woff2');
-  font-weight: 700; font-style: normal; font-display: swap;
-}
+@font-face { font-family: 'Glacial Indifference'; src: url('/fonts/GlacialIndifference-Regular.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Glacial Indifference'; src: url('/fonts/GlacialIndifference-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
 
 :root {
   --plum: #68505D;
-  --plum-dark: #574250;
-  --plum-light: #7D6570;
-  --nav: #88A3AE;
-  --nav-dark: #7494A1;
-  --band-blue: #BFCBCE;
-  --band-light: #F2EAE6;
-  --band-warm: #E8E3DE;
-  --rule: #C5BDB5;
-  --rule-soft: rgba(104,80,93,0.16);
-  --ink: #151515;
-  --body: #2A2A2A;
-  --muted: #777777;
-  --white: #FFFFFF;
+  --plum-deep: #4E3B46;
+  --ink: #241D21;
+  --body: #3A3236;
+  --muted: #6F666B;
+  --paper: #FFFFFF;
+  --wash: #F5F0EE;
+  --rule: #DDD5D0;
+  --rule-soft: #ECE6E2;
+  --now: #8A3A6E;
+  --past: #3A8CB5;
+  --track: #E2DAD5;
   --display: 'Prata', Georgia, serif;
-  --sub: 'Marcellus', Georgia, serif;
+  --narr: 'Marcellus', Georgia, serif;
   --text: 'Glacial Indifference', 'Helvetica Neue', Arial, sans-serif;
-  --max: 1500px;
-  --gut: clamp(20px, 5vw, 80px);
-  --sec: clamp(56px, 8vw, 120px);
+  --max: 1180px;
+  --gut: clamp(20px, 5vw, 64px);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
-body {
-  font-family: var(--text); font-size: 17px; line-height: 1.6;
-  color: var(--body); background: var(--white);
-  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
-}
-h1, h2, h3, h4 { font-family: var(--display); font-weight: 400; line-height: 1.25; color: var(--plum); text-wrap: balance; }
-a { color: inherit; text-decoration: none; }
-::selection { background: var(--band-blue); color: var(--ink); }
-
-/* ---------- reveal ----------
-   The hidden state is the CSS default and a <noscript> block reverses it.
-   Nothing mutates <html>: doing so before React hydrates causes a real
-   hydration mismatch in Next.js, where RootLayout owns that element. */
-.rv { opacity: 0; transform: translateY(16px); transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1); }
-.rv.in { opacity: 1; transform: none; }
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  .rv, .rv.in { opacity: 1 !important; transform: none !important; transition: none !important; }
-}
-
-/* ---------- layout ---------- */
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { font-family: var(--text); font-size: 17px; line-height: 1.6; color: var(--body); background: var(--paper); -webkit-font-smoothing: antialiased; }
+h1, h2, h3 { font-family: var(--display); font-weight: 400; color: var(--plum); line-height: 1.2; text-wrap: balance; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--now); outline-offset: 3px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .wrap { max-width: var(--max); margin: 0 auto; padding-left: var(--gut); padding-right: var(--gut); }
-.band { padding-top: var(--sec); padding-bottom: var(--sec); }
-.band-white { background: var(--white); }
-.band-light { background: var(--band-light); }
-.band-warm { background: var(--band-warm); }
-.band-blue { background: var(--band-blue); }
-.band-plum { background: var(--plum); }
-.band-plum h2, .band-plum h3 { color: var(--white); }
-.band-plum .sec-lede, .band-plum .sec-num { color: rgba(255,255,255,.78); }
 
-/* ---------- masthead ---------- */
-.mast { background: var(--nav); color: var(--white); padding: 46px 0 40px; }
-.mast h1 { color: var(--white); font-size: clamp(30px, 4.2vw, 54px); line-height: 1.14; margin-bottom: 14px; }
-.mast-kicker { font-family: var(--text); font-size: 12px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: rgba(255,255,255,.82); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.mast-badge { display: inline-block; background: var(--plum); color: var(--white); padding: 4px 12px; border-radius: 30px; letter-spacing: .12em; font-size: 10.5px; }
-.mast-sub { font-family: var(--sub); font-size: clamp(17px, 1.6vw, 21px); color: var(--white); letter-spacing: .01em; }
-.mast-meta { margin-top: 26px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,.28); display: flex; gap: 40px; flex-wrap: wrap; font-size: 14px; color: rgba(255,255,255,.9); }
-.mast-meta b { display: block; font-weight: 700; font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: rgba(255,255,255,.7); margin-bottom: 5px; }
+/* ---------- masthead: the week's headline is the hero ---------- */
+.mast { background: var(--plum); color: #fff; padding: 40px 0 56px; }
+.mast-top { display: flex; justify-content: space-between; align-items: baseline; gap: 24px; flex-wrap: wrap; padding-bottom: 22px; border-bottom: 1px solid rgba(255,255,255,.28); }
+.mast-name { font-family: var(--display); font-size: clamp(26px, 3.4vw, 40px); color: #fff; line-height: 1.15; }
+.mast-kind { font-size: 15px; color: rgba(255,255,255,.82); margin-top: 6px; }
+.mast-badge { display: inline-block; margin-left: 10px; padding: 2px 10px; border: 1px solid rgba(255,255,255,.6); border-radius: 30px; font-size: 13px; }
+.mast-when { text-align: right; font-size: 15px; color: rgba(255,255,255,.88); line-height: 1.5; }
+.mast-when b { display: block; font-weight: 700; font-size: 18px; color: #fff; }
+.mast-head { font-family: var(--narr); font-size: clamp(24px, 3.1vw, 38px); line-height: 1.35; color: #fff; max-width: 30ch; margin-top: 40px; }
+@media (max-width: 640px) { .mast-when { text-align: left; } }
 
-/* ---------- nav rail ---------- */
-.rail { position: sticky; top: 0; z-index: 90; background: var(--white); border-bottom: 1px solid var(--rule); }
-/* Longhand only: this element also carries .wrap, and a padding shorthand
-   here would reset the horizontal gutter that .wrap sets. */
-.rail-in { display: flex; gap: 26px; overflow-x: auto; padding-top: 14px; padding-bottom: 14px; scrollbar-width: none; }
+/* ---------- brief: three short columns under the headline ---------- */
+.brief { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; padding: 44px 0 8px; }
+.brief-i { border-top: 2px solid var(--plum); padding-top: 16px; }
+.brief-role { font-family: var(--display); font-size: 19px; color: var(--plum); margin-bottom: 10px; }
+.brief-text { font-size: 16px; line-height: 1.6; color: var(--body); }
+@media (max-width: 860px) { .brief { grid-template-columns: 1fr; gap: 26px; } }
+
+/* ---------- nav ---------- */
+.rail { position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.96); border-bottom: 1px solid var(--rule); margin-top: 40px; }
+.rail-in { display: flex; gap: 26px; overflow-x: auto; padding-top: 13px; padding-bottom: 13px; scrollbar-width: none; }
 .rail-in::-webkit-scrollbar { display: none; }
-.rail a { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); white-space: nowrap; padding-bottom: 3px; border-bottom: 2px solid transparent; transition: color .25s, border-color .25s; }
+.rail a { font-size: 15px; color: var(--muted); text-decoration: none; white-space: nowrap; padding-bottom: 2px; border-bottom: 2px solid transparent; }
 .rail a:hover, .rail a:focus-visible { color: var(--plum); border-bottom-color: var(--plum); }
 
-/* ---------- section furniture ---------- */
-.sec-head { max-width: 62ch; margin-bottom: 46px; }
-.sec-num { font-family: var(--text); font-size: 11px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--nav-dark); display: block; margin-bottom: 14px; }
-.sec-t { font-size: clamp(26px, 3.2vw, 42px); margin-bottom: 16px; }
-.sec-lede { font-family: var(--sub); font-size: clamp(17px, 1.5vw, 20px); line-height: 1.55; color: var(--body); }
+/* ---------- sections ---------- */
+.sec { padding: 72px 0; border-top: 1px solid var(--rule-soft); }
+.sec-wash { background: var(--wash); border-top: none; }
+.sec-head { max-width: 62ch; margin-bottom: 36px; }
+.sec-t { font-size: clamp(26px, 2.8vw, 36px); margin-bottom: 12px; }
+.sec-lede { font-family: var(--narr); font-size: 19px; line-height: 1.55; color: var(--body); }
 
-/* ---------- brief ---------- */
-.brief-i { display: grid; grid-template-columns: minmax(150px, 210px) 1fr; gap: 32px; padding: 30px 0; border-top: 1px solid var(--rule); }
-.brief-i:last-child { border-bottom: 1px solid var(--rule); }
-.brief-role { font-family: var(--text); font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--plum); padding-top: 5px; }
-.brief-text { font-family: var(--sub); font-size: clamp(18px, 1.7vw, 23px); line-height: 1.5; color: var(--ink); max-width: 46ch; }
-@media (max-width: 760px) { .brief-i { grid-template-columns: 1fr; gap: 10px; } }
-
-/* ---------- period chart ---------- */
-.chart { margin-top: 8px; }
-.chart-key { display: flex; gap: 26px; flex-wrap: wrap; margin-bottom: 22px; font-size: 12.5px; color: var(--body); }
-.chart-key span { display: flex; align-items: center; gap: 8px; }
-.chart-key i { width: 13px; height: 13px; display: inline-block; border-radius: 2px; }
-.bars { display: flex; align-items: flex-end; gap: 2px; height: 230px; padding-bottom: 2px; border-bottom: 1px solid var(--plum); }
-.bar { flex: 1; min-width: 0; position: relative; background: var(--plum); transition: opacity .25s; }
-.bar.paid { background: var(--nav); }
-.bar:hover { opacity: .72; }
-.bar-cap { position: absolute; inset: auto 0 100% 0; text-align: center; font-size: 10px; color: var(--muted); padding-bottom: 3px; opacity: 0; transition: opacity .2s; }
-.bar:hover .bar-cap { opacity: 1; }
-.axis { display: flex; justify-content: space-between; margin-top: 10px; font-size: 11.5px; color: var(--muted); letter-spacing: .04em; }
-.chart-note { margin-top: 26px; font-size: 15px; line-height: 1.6; color: var(--body); max-width: 62ch; padding-left: 16px; border-left: 2px solid var(--nav); }
-
-/* ---------- scoreboard ---------- */
-.score { border-top: 1px solid var(--rule); }
-.score-h { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid var(--rule); }
-.score-h > div { font-family: var(--sub); font-size: 11px; letter-spacing: .13em; text-transform: uppercase; color: var(--muted); text-align: right; }
-.score-h > div:first-child { text-align: left; }
-.score-h i { display: block; font-style: normal; font-size: 11px; letter-spacing: .03em; text-transform: none; color: var(--muted); opacity: .7; margin-top: 3px; }
-.score-r { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 24px; align-items: baseline; padding: 20px 0; border-bottom: 1px solid var(--rule); }
-.score-k { font-family: var(--sub); font-size: 18px; color: var(--ink); }
-.score-cell { text-align: right; }
-.score-v { font-family: var(--display); font-size: clamp(22px, 2.3vw, 30px); color: var(--plum); letter-spacing: .01em; }
-.score-v.empty { color: var(--muted); opacity: .45; }
-.score-c { font-size: 13px; font-weight: 700; letter-spacing: .04em; margin-top: 2px; }
-.score-c.up { color: #3F6B54; }
-.score-c.down { color: #9A5F5F; }
-.score-c.flat { color: var(--muted); }
-.score-n { font-size: 12.5px; color: var(--muted); margin-top: 4px; }
+/* ---------- scoreboard ledger ---------- */
+.lg { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.lg caption { text-align: left; }
+.lg-cols th { font-weight: 400; font-size: 14px; color: var(--muted); text-align: right; padding: 0 0 10px 16px; vertical-align: bottom; line-height: 1.3; }
+.lg-cols th:first-child { text-align: left; padding-left: 0; }
+.lg-cols th small { display: block; font-size: 13px; opacity: .85; }
+.lg-g th { text-align: left; font-family: var(--display); font-weight: 400; font-size: 21px; color: var(--plum); padding: 30px 0 10px; border-bottom: 2px solid var(--plum); }
+.lg-r td { padding: 16px 0 16px 16px; border-bottom: 1px solid var(--rule-soft); vertical-align: middle; text-align: right; }
+.lg-r td:first-child { text-align: left; padding-left: 0; width: 42%; }
+.lg-k { font-size: 17px; color: var(--ink); font-weight: 700; }
+.lg-n { font-size: 14px; color: var(--muted); margin-top: 3px; max-width: 52ch; line-height: 1.5; font-weight: 400; }
+.lg-v { font-size: 24px; color: var(--ink); font-weight: 700; font-variant-numeric: proportional-nums; }
+.lg-p { font-size: 17px; color: var(--muted); }
+.lg-c { font-size: 15px; color: var(--body); white-space: nowrap; }
+.lg-c i { font-style: normal; color: var(--muted); margin-right: 4px; }
+.spark { display: block; margin-left: auto; overflow: visible; }
 @media (max-width: 760px) {
-  .score-h { grid-template-columns: 1fr 1fr; gap: 16px; }
-  .score-h > div:first-child { display: none; }
-  .score-r { grid-template-columns: 1fr 1fr; gap: 10px 16px; }
-  .score-k { grid-column: 1 / -1; }
-  .score-cell { text-align: left; }
+  .lg-cols { display: none; }
+  .lg-r { display: grid; grid-template-columns: 1fr auto auto; gap: 4px 16px; padding: 14px 0; border-bottom: 1px solid var(--rule-soft); }
+  .lg-r td { border: none; padding: 0; }
+  .lg-r td:first-child { grid-column: 1 / -1; width: auto; }
+  .lg-r td.lg-sp { grid-column: 1; text-align: left; }
+  .spark { margin-left: 0; }
+  .lg-r td.lg-pv { display: none; }
+  .lg-g th { display: block; }
 }
 
-/* ---------- instagram frames ---------- */
-.hero-card { display: grid; grid-template-columns: 440px 1fr; gap: 52px; align-items: start; }
-@media (max-width: 980px) { .hero-card { grid-template-columns: 1fr; gap: 30px; } }
-/* The site rounds one edge of its hero imagery into a lozenge. At 3:4 a full
-   999px radius collapses into a half-circle and eats the picture, so the
-   reference is kept at a restrained 150px on the leading edge only. */
-.ig-frame { position: relative; width: 100%; max-width: 440px; aspect-ratio: 3/4; overflow: hidden; background: #0a0809; border-radius: 150px 0 0 150px; }
-.ig-frame iframe { position: absolute; top: -64px; left: -1px; width: calc(100% + 2px); height: calc(100% + 140px); border: none; pointer-events: none; }
-.ig-frame:hover iframe { pointer-events: auto; }
-.hero-fmt { font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--nav-dark); margin-bottom: 12px; }
-.hero-t { font-family: var(--display); font-size: clamp(22px, 2.3vw, 31px); line-height: 1.3; color: var(--plum); margin-bottom: 22px; max-width: 22ch; }
-.hero-stats { display: flex; gap: 40px; flex-wrap: wrap; padding: 22px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); margin-bottom: 22px; }
-.hero-s-v { font-family: var(--display); font-size: 28px; color: var(--plum); display: block; }
-.hero-s-l { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-top: 4px; display: block; }
-.hero-why { font-size: 16px; line-height: 1.65; max-width: 48ch; }
+/* ---------- daily chart ---------- */
+.chart svg { width: 100%; height: auto; display: block; overflow: visible; }
+.chart text { font-family: var(--text); fill: var(--muted); font-size: 13px; }
+.ch-narrow { display: none; }
+@media (max-width: 640px) { .ch-wide { display: none; } .ch-narrow { display: block; } }
+.chart .pk { fill: var(--ink); font-size: 14px; font-weight: 700; }
+.chart .grid { stroke: var(--rule-soft); stroke-width: 1; }
+.chart .base { stroke: var(--rule); stroke-width: 1; }
+.chart .b-now { fill: var(--now); }
+.chart .b-past { fill: var(--past); }
+.chart .hv { opacity: 0; }
+.chart g.bar:hover .hv, .chart g.bar:focus .hv { opacity: 1; }
+.chart g.bar:hover rect.m, .chart g.bar:focus rect.m { opacity: .8; }
+.chart g.bar:focus { outline: none; }
+.chart g.bar:focus rect.hit { stroke: var(--now); stroke-width: 2; }
+.key { display: flex; gap: 24px; flex-wrap: wrap; font-size: 14px; color: var(--body); margin-bottom: 14px; }
+.key span { display: inline-flex; align-items: center; gap: 8px; }
+.key i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.note { margin-top: 24px; max-width: 66ch; font-size: 16px; line-height: 1.65; color: var(--body); }
+.tv { margin-top: 18px; font-size: 15px; }
+.tv summary { cursor: pointer; color: var(--plum); }
+.tv table { margin-top: 12px; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.tv td, .tv th { padding: 5px 18px 5px 0; border-bottom: 1px solid var(--rule-soft); text-align: left; font-weight: 400; }
+.tv th { color: var(--muted); }
 
-.gal { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 30px; margin-top: 56px; }
-.gal-i .ig-frame { max-width: none; border-radius: 0; aspect-ratio: 3/4; }
-.gal-m { margin-top: 14px; }
-.gal-fmt { font-size: 10.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--nav-dark); }
-.gal-t { font-family: var(--sub); font-size: 15.5px; line-height: 1.4; color: var(--ink); margin: 6px 0 10px; }
-.gal-s { font-size: 12.5px; color: var(--muted); }
-.gal-note { margin-top: 34px; font-size: 13.5px; color: var(--muted); max-width: 62ch; }
+/* ---------- engagement bars ---------- */
+.eg { display: grid; gap: 18px; max-width: 900px; }
+.eg-r { display: grid; grid-template-columns: 170px 1fr; gap: 6px 20px; align-items: center; }
+.eg-l { font-size: 16px; color: var(--ink); font-weight: 700; }
+.eg-b { position: relative; height: 22px; }
+.eg-t { position: absolute; left: 0; top: 0; bottom: 0; background: var(--track); border-radius: 0 4px 4px 0; }
+.eg-f { position: absolute; left: 0; top: 0; bottom: 0; background: var(--now); border-radius: 0 4px 4px 0; border-right: 2px solid var(--paper); }
+.eg-f.z { display: none; }
+.eg-v { grid-column: 2; font-size: 14px; color: var(--muted); }
+.eg-v b { color: var(--ink); }
+@media (max-width: 640px) { .eg-r { grid-template-columns: 1fr; } .eg-v { grid-column: 1; } }
 
-/* ---------- attention ---------- */
-.att-i { padding: 30px 0; border-top: 1px solid var(--rule-soft); }
-.att-i:last-child { border-bottom: 1px solid var(--rule-soft); }
-.att-tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--white); background: var(--plum); padding: 4px 11px; border-radius: 30px; margin-bottom: 14px; }
-.att-t { font-family: var(--display); font-size: clamp(19px, 1.9vw, 25px); line-height: 1.35; margin-bottom: 12px; max-width: 34ch; }
-.att-b { font-size: 15.5px; line-height: 1.65; max-width: 62ch; }
+/* ---------- what worked ---------- */
+.hero { display: grid; grid-template-columns: minmax(280px, 400px) 1fr; gap: 48px; align-items: start; }
+@media (max-width: 900px) { .hero { grid-template-columns: 1fr; } }
+.ig { position: relative; width: 100%; aspect-ratio: 4/5; overflow: hidden; background: #1c1719; border-radius: 4px; }
+.ig iframe { position: absolute; top: -56px; left: -1px; width: calc(100% + 2px); height: calc(100% + 130px); border: 0; }
+.hero-meta { font-size: 15px; color: var(--muted); margin-bottom: 10px; }
+.hero-t { font-family: var(--narr); font-size: clamp(22px, 2.2vw, 28px); line-height: 1.35; color: var(--ink); margin-bottom: 24px; max-width: 30ch; }
+.stats { display: grid; grid-template-columns: repeat(4, auto); justify-content: start; gap: 8px 40px; padding: 18px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); margin-bottom: 22px; }
+.stats b { display: block; font-size: 30px; font-weight: 700; color: var(--ink); line-height: 1.1; }
+.stats span { font-size: 14px; color: var(--muted); }
+@media (max-width: 520px) { .stats { grid-template-columns: repeat(2, auto); } }
+.why { font-size: 16px; line-height: 1.7; max-width: 58ch; }
+.gal { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 32px; margin-top: 56px; }
+.gal .ig { aspect-ratio: 4/5; }
+.gal-d { font-size: 14px; color: var(--muted); margin-top: 12px; }
+.gal-t { font-family: var(--narr); font-size: 17px; line-height: 1.4; color: var(--ink); margin: 4px 0 8px; }
+.gal-s { font-size: 14px; color: var(--body); font-variant-numeric: tabular-nums; }
+.gal-note { margin-top: 32px; font-size: 15px; color: var(--muted); max-width: 66ch; }
 
-/* ---------- learned ---------- */
-.learn { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 44px 56px; }
-.learn-t { font-family: var(--display); font-size: 21px; line-height: 1.35; color: var(--plum); margin-bottom: 12px; padding-top: 18px; border-top: 2px solid var(--nav); }
-.learn-b { font-size: 15.5px; line-height: 1.65; }
-
-/* ---------- moves / plan ---------- */
-.mv-i { display: grid; grid-template-columns: 1fr 260px; gap: 40px; padding: 30px 0; border-top: 1px solid var(--rule); }
-.mv-i:last-child { border-bottom: 1px solid var(--rule); }
-.mv-t { font-family: var(--display); font-size: clamp(19px, 1.9vw, 24px); line-height: 1.35; color: var(--plum); margin-bottom: 12px; max-width: 26ch; }
-.mv-b { font-size: 15.5px; line-height: 1.65; max-width: 54ch; }
-.mv-meta b { display: block; font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
-.mv-meta p { font-size: 14.5px; margin-bottom: 16px; color: var(--ink); }
-@media (max-width: 860px) { .mv-i { grid-template-columns: 1fr; gap: 18px; } }
-
-.plan-i { display: grid; grid-template-columns: 10px 1fr; gap: 24px; padding: 28px 0; border-top: 1px solid var(--rule); }
-.plan-i:last-child { border-bottom: 1px solid var(--rule); }
-.plan-m { width: 10px; height: 10px; border-radius: 999px; background: var(--nav); margin-top: 13px; }
-.plan-t { font-family: var(--display); font-size: clamp(19px, 1.9vw, 24px); line-height: 1.35; color: var(--plum); max-width: 30ch; }
-.plan-b { font-size: 15.5px; line-height: 1.65; margin-top: 10px; max-width: 60ch; }
-
-/* ---------- social ---------- */
-.soc-i { display: grid; grid-template-columns: 10px 1fr; gap: 24px; padding: 22px 0; border-top: 1px solid var(--rule); }
-.soc-m { width: 10px; height: 10px; border-radius: 999px; background: var(--nav); margin-top: 10px; }
-.soc-b { font-size: 16.5px; line-height: 1.65; max-width: 68ch; }
-.soc-take { margin-top: 8px; padding: 26px 30px; border-left: 3px solid var(--plum); background: var(--white); }
-.soc-take-k { font-family: var(--display); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--plum); margin-bottom: 8px; }
-.soc-take-b { font-size: 16.5px; line-height: 1.65; max-width: 68ch; }
+/* ---------- text sections ---------- */
+.soc { max-width: 70ch; }
+.soc p { font-size: 17px; line-height: 1.7; padding: 18px 0; border-bottom: 1px solid var(--rule-soft); }
+.soc-take { margin-top: 26px; padding: 22px 26px; border-left: 3px solid var(--plum); background: var(--paper); }
+.soc-take h3 { font-size: 18px; margin-bottom: 6px; }
+.att { display: grid; gap: 0; max-width: 78ch; }
+.att-i { padding: 26px 0; border-bottom: 1px solid var(--rule-soft); }
+.att-tag { font-size: 14px; color: var(--now); font-weight: 700; margin-bottom: 6px; }
+.att-t { font-size: 22px; margin-bottom: 10px; }
+.att-b { font-size: 16px; line-height: 1.7; }
+.learn { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 36px 56px; }
+.learn h3 { font-size: 21px; margin-bottom: 10px; padding-top: 14px; border-top: 2px solid var(--past); }
+.learn p { font-size: 16px; line-height: 1.7; }
+.mv-i { display: grid; grid-template-columns: 1fr 260px; gap: 36px; padding: 26px 0; border-bottom: 1px solid var(--rule-soft); }
+.mv-i h3 { font-size: 22px; margin-bottom: 10px; }
+.mv-i p { font-size: 16px; line-height: 1.7; }
+.mv-m dt { font-size: 14px; color: var(--muted); }
+.mv-m dd { font-size: 15px; color: var(--ink); margin-bottom: 12px; }
+@media (max-width: 860px) { .mv-i { grid-template-columns: 1fr; gap: 12px; } }
+.plan { max-width: 70ch; }
+.plan-i { padding: 22px 0; border-bottom: 1px solid var(--rule-soft); }
+.plan-i h3 { font-size: 22px; margin-bottom: 8px; }
+.plan-i p { font-size: 16px; line-height: 1.7; }
 
 /* ---------- detail ---------- */
-.disc { border-top: 1px solid var(--rule); }
-.disc-btn { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 22px 0; background: none; border: none; border-bottom: 1px solid var(--rule); cursor: pointer; font-family: var(--sub); font-size: 19px; color: var(--plum); text-align: left; }
-.disc-btn:hover { color: var(--plum-dark); }
-.disc-btn:focus-visible { outline: 2px solid var(--plum); outline-offset: 3px; }
-.disc-x { font-family: var(--text); font-size: 22px; line-height: 1; color: var(--nav-dark); flex-shrink: 0; }
-.disc-p { padding: 26px 0 34px; border-bottom: 1px solid var(--rule); }
-.disc-p[hidden] { display: none; }
-.t { width: 100%; border-collapse: collapse; max-width: 640px; margin-bottom: 20px; }
-.t td { padding: 9px 0; border-bottom: 1px solid var(--rule-soft); font-size: 15px; vertical-align: top; }
-.t td:first-child { color: var(--muted); padding-right: 26px; }
-.t td:last-child { text-align: right; font-weight: 700; color: var(--ink); white-space: nowrap; }
-.d-note { font-size: 13.5px; line-height: 1.65; color: var(--muted); max-width: 68ch; }
-.faq-i { padding: 16px 0; border-bottom: 1px solid var(--rule-soft); max-width: 68ch; }
-.faq-q { font-family: var(--sub); font-size: 16px; color: var(--ink); margin-bottom: 5px; }
-.faq-a { font-size: 14.5px; line-height: 1.65; color: var(--muted); }
+.dt { border-top: 1px solid var(--rule); max-width: 900px; }
+.dt details { border-bottom: 1px solid var(--rule); }
+.dt summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 20px 0; font-family: var(--narr); font-size: 20px; color: var(--plum); }
+.dt summary::-webkit-details-marker { display: none; }
+.dt summary::after { content: "+"; font-family: var(--text); font-size: 24px; color: var(--past); }
+.dt details[open] summary::after { content: "\\2013"; }
+.dt-p { padding: 4px 0 30px; }
+.dt table { width: 100%; max-width: 680px; border-collapse: collapse; margin-bottom: 18px; font-variant-numeric: tabular-nums; }
+.dt td { padding: 9px 0; border-bottom: 1px solid var(--rule-soft); font-size: 15px; vertical-align: top; }
+.dt td:first-child { color: var(--muted); padding-right: 24px; }
+.dt td:last-child { text-align: right; color: var(--ink); font-weight: 700; }
+.dt-note { font-size: 14px; line-height: 1.7; color: var(--muted); max-width: 70ch; }
+.faq { padding: 14px 0; border-bottom: 1px solid var(--rule-soft); max-width: 70ch; }
+.faq h3 { font-family: var(--narr); font-size: 17px; color: var(--ink); margin-bottom: 4px; }
+.faq p { font-size: 15px; line-height: 1.65; color: var(--muted); }
 
-/* ---------- footer ---------- */
-.foot { background: var(--plum); color: rgba(255,255,255,.8); padding: 44px 0; font-size: 13.5px; }
-.foot-in { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+.foot { background: var(--plum-deep); color: rgba(255,255,255,.85); padding: 36px 0; font-size: 14px; }
+.foot-in { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 
-/* ---------- print ---------- */
-.print-only { display: none; }
 @media print {
-  .rv { opacity: 1 !important; transform: none !important; }
-  .rail, .mast-meta { display: none; }
-  .ig-frame { display: none; }
-  .print-only { display: block; border: 1px solid var(--rule); padding: 16px; font-size: 13px; }
-  .print-only b { display: block; font-family: var(--sub); font-size: 15px; color: var(--plum); margin-bottom: 4px; }
-  .disc-p[hidden] { display: block !important; }
-  .band { padding-top: 34px; padding-bottom: 34px; break-inside: avoid; }
-  .band-plum, .mast { background: var(--white) !important; color: var(--ink) !important; }
-  .mast h1, .mast-sub, .mast-kicker { color: var(--plum) !important; }
-  .foot { background: var(--white) !important; color: var(--muted) !important; border-top: 1px solid var(--rule); }
+  .rail, .ig, .tv { display: none; }
+  .mast { background: #fff; color: var(--ink); }
+  .mast-name, .mast-head, .mast-when b { color: var(--plum); }
+  .mast-kind, .mast-when { color: var(--muted); }
+  .dt details > *:not(summary) { display: block; }
+  .sec { padding: 32px 0; break-inside: avoid; }
+  .foot { background: #fff; color: var(--muted); border-top: 1px solid var(--rule); }
 }
 `;
 
-/* ==========================================================================
-   PRIMITIVES
-   ========================================================================== */
+/* --------------------------------------------------------------- helpers */
 
-/* Scroll reveal. The hidden state is the CSS default and a <noscript> block
-   reverses it, so the report still reads with JavaScript off. Nothing touches
-   <html>: mutating it before hydration is a real mismatch in Next.js, where
-   RootLayout owns that element. */
-function Reveal({ children }: { children: React.ReactNode }) {
-  const ref = useRef<HTMLDivElement | null>(null);
-  const [seen, setSeen] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || seen) return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) { setSeen(true); io.disconnect(); }
-        });
-      },
-      { rootMargin: "0px 0px -8% 0px", threshold: 0.05 }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [seen]);
-  return <div ref={ref} className={`rv${seen ? " in" : ""}`}>{children}</div>;
+type Trend = { values: number[]; labels: string[]; fmt?: "int" | "pct" | "pos" };
+
+function fmtVal(v: number, f?: Trend["fmt"]) {
+  if (f === "pct") return `${v.toFixed(2)}%`;
+  if (f === "pos") return v.toFixed(2);
+  return v.toLocaleString("en-US");
 }
 
-function Section({
-  id, num, title, lede, band = "white", children,
-}: {
-  id: string; num: string; title: string; lede?: string;
-  band?: "white" | "light" | "warm" | "blue" | "plum";
-  children: React.ReactNode;
-}) {
+/* Five-week trend line: earlier weeks in blue, this week as a plum end dot.
+   Shape only, scaled to the row's own range; the values sit in the <title>
+   and in the screen-reader text, so nothing depends on reading the line. */
+function Spark({ t }: { t: Trend }) {
+  const W = 120, H = 30, P = 5;
+  const v = t.values;
+  const lo = Math.min(...v), hi = Math.max(...v);
+  const span = hi - lo || 1;
+  const x = (i: number) => P + (i * (W - 2 * P)) / Math.max(v.length - 1, 1);
+  const y = (n: number) => H - P - ((n - lo) / span) * (H - 2 * P);
+  const pts = v.map((n, i) => `${x(i).toFixed(1)},${y(n).toFixed(1)}`).join(" ");
+  const said = v.map((n, i) => `${t.labels[i]}: ${fmtVal(n, t.fmt)}`).join(", ");
+  const last = v.length - 1;
   return (
-    <section id={id} className={`band band-${band}`}>
-      <div className="wrap">
-        <Reveal>
-          <div className="sec-head">
-            <span className="sec-num">Section {num}</span>
-            <h2 className="sec-t">{title}</h2>
-            {lede ? <p className="sec-lede">{lede}</p> : null}
-          </div>
-        </Reveal>
-        {children}
-      </div>
-    </section>
+    <svg className="spark" width={W} height={H} viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Weekly trend. ${said}`}>
+      <title>{said}</title>
+      <polyline points={pts} fill="none" stroke="var(--past)" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+      {last > 0 ? <circle cx={x(last - 1)} cy={y(v[last - 1])} r="3" fill="var(--past)" stroke="#fff" strokeWidth="2" /> : null}
+      <circle cx={x(last)} cy={y(v[last])} r="4.5" fill="var(--now)" stroke="#fff" strokeWidth="2" />
+    </svg>
   );
 }
 
-/* Signature chart: daily visitors across the thirty-day context, with the
-   previous period shaded so this one reads against it. Legend text and axis
-   ticks are both derived from the data, so a new cycle needs no edit here. */
-function PeriodChart({ data }: { data: { d: string; v: number; shade?: boolean }[] }) {
-  if (!data.length) return null;
-  const top = Math.max(...data.map((x) => x.v)) || 1;
-  const ticks = [0, 0.25, 0.5, 0.75, 1].map((f) =>
-    data[Math.min(data.length - 1, Math.round(f * (data.length - 1)))].d
-  );
+function niceMax(n: number) {
+  const steps = [10, 20, 25, 50, 100, 200, 250, 500, 1000];
+  for (const s of steps) { const m = Math.ceil(n / s) * s; if (m / s <= 5) return { max: m, step: s }; }
+  return { max: Math.ceil(n / 1000) * 1000, step: 1000 };
+}
+
+/* Daily column chart, rendered on the server as SVG. Earlier week in blue,
+   this week in plum. The highest day of each week carries its value; every
+   bar shows its value on hover or keyboard focus, and the table below holds
+   all of them. */
+function DailyChart({ data, bandA, bandB }: { data: { d: string; v: number; shade?: boolean }[]; bandA: string; bandB: string }) {
   return (
     <div className="chart">
-      <div className="chart-key">
-        <span><i style={{ background: "var(--nav)" }} />{R.period_.bandA}</span>
-        <span><i style={{ background: "var(--plum)" }} />{R.period_.bandB}</span>
+      <div className="key">
+        <span><i style={{ background: "var(--past)" }} />{bandA}</span>
+        <span><i style={{ background: "var(--now)" }} />{bandB}</span>
       </div>
-      <div className="bars">
-        {data.map((x) => (
-          <div
-            key={x.d}
-            className={`bar${x.shade ? " paid" : ""}`}
-            style={{ height: `${Math.max((x.v / top) * 100, 2)}%` }}
-          >
-            <span className="bar-cap">{x.v}</span>
+      <div className="ch-wide"><DailySvg data={data} W={1000} H={280} /></div>
+      <div className="ch-narrow"><DailySvg data={data} W={420} H={300} /></div>
+      <details className="tv">
+        <summary>Show the daily figures as a table</summary>
+        <table>
+          <thead><tr><th scope="col">Day</th><th scope="col">New visitors</th></tr></thead>
+          <tbody>{data.map((x) => <tr key={x.d}><td>{x.d}</td><td>{x.v}</td></tr>)}</tbody>
+        </table>
+      </details>
+    </div>
+  );
+}
+
+function DailySvg({ data, W, H }: { data: { d: string; v: number; shade?: boolean }[]; W: number; H: number }) {
+  const L = 36, T = 26, B = 34;
+  const ph = H - T - B, pw = W - L - 8;
+  const { max, step } = niceMax(Math.max(...data.map((x) => x.v)));
+  const slot = pw / data.length;
+  const bw = Math.min(28, slot * 0.62);
+  const y = (n: number) => T + ph - (n / max) * ph;
+  const ticks: number[] = [];
+  for (let t = 0; t <= max; t += step) ticks.push(t);
+  const weeks = [data.filter((x) => x.shade), data.filter((x) => !x.shade)];
+  const peaks = new Set(weeks.map((w) => w.reduce((a, b) => (b.v > a.v ? b : a), w[0])?.d));
+  const split = data.findIndex((x) => !x.shade);
+  const narrow = W < 600;
+  return (
+      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="New website visitors each day across both weeks. Values are in the table below.">
+        {ticks.map((t) => (
+          <g key={t}>
+            <line className={t === 0 ? "base" : "grid"} x1={L} x2={W} y1={y(t)} y2={y(t)} />
+            <text x={L - 10} y={y(t) + 4} textAnchor="end">{t}</text>
+          </g>
+        ))}
+        {split > 0 ? <line className="base" x1={L + split * slot} x2={L + split * slot} y1={T - 8} y2={T + ph} /> : null}
+        {data.map((x, i) => {
+          const cx = L + i * slot + slot / 2;
+          const top = y(x.v);
+          const h = Math.max(T + ph - top, 2);
+          const r = Math.min(4, bw / 2, h / 2);
+          const path = `M${cx - bw / 2},${T + ph} V${top + r} Q${cx - bw / 2},${top} ${cx - bw / 2 + r},${top} H${cx + bw / 2 - r} Q${cx + bw / 2},${top} ${cx + bw / 2},${top + r} V${T + ph} Z`;
+          const isPeak = peaks.has(x.d);
+          return (
+            <g key={x.d} className="bar" tabIndex={0} aria-label={`${x.d}: ${x.v}`}>
+              <title>{`${x.d}: ${x.v}`}</title>
+              <rect className="hit" x={L + i * slot + 1} y={T} width={slot - 2} height={ph} fill="transparent" />
+              <path className={`m ${x.shade ? "b-past" : "b-now"}`} d={path} />
+              {isPeak ? <text className="pk" x={cx} y={top - 8} textAnchor="middle">{x.v}</text> : <text className="pk hv" x={cx} y={top - 8} textAnchor="middle">{x.v}</text>}
+              {i === 0 || i === split || i === data.length - 1 || (isPeak && !narrow) ? <text x={cx} y={H - 10} textAnchor={narrow && i === data.length - 1 ? "end" : narrow && i === 0 ? "start" : "middle"}>{x.d}</text> : null}
+            </g>
+          );
+        })}
+      </svg>
+  );
+}
+
+/* Visits by source: the full bar is every visit, the plum part the visits
+   that engaged. One scale for all rows, so lengths compare directly. */
+function Engagement({ rows }: { rows: { label: string; sessions: number; engaged: number; seconds: number }[] }) {
+  const max = Math.max(...rows.map((r) => r.sessions));
+  return (
+    <div>
+      <div className="key">
+        <span><i style={{ background: "var(--now)" }} />Visits that engaged</span>
+        <span><i style={{ background: "var(--track)" }} />All visits</span>
+      </div>
+      <div className="eg">
+        {rows.map((r) => (
+          <div className="eg-r" key={r.label}>
+            <div className="eg-l">{r.label}</div>
+            <div className="eg-b" role="img" aria-label={`${r.label}: ${r.engaged} of ${r.sessions} visits engaged`}>
+              <div className="eg-t" style={{ width: `${(r.sessions / max) * 100}%` }} />
+              <div className={`eg-f${r.engaged ? "" : " z"}`} style={{ width: `${(r.engaged / max) * 100}%` }} />
+            </div>
+            <div className="eg-v"><b>{r.engaged}</b> of {r.sessions.toLocaleString("en-US")} engaged, {r.seconds} seconds on average</div>
           </div>
         ))}
-      </div>
-      <div className="axis">
-        {ticks.map((t, i) => <span key={`${t}-${i}`}>{t}</span>)}
       </div>
     </div>
   );
 }
 
-/* Instagram embeds render straight from the /embed endpoint: no API, no
-   token, no files to manage. Normalisation handles every link form
-   Instagram produces (/p/, /reel/, /reels/, with or without query strings). */
 function igEmbed(url: string) {
   const m = url.match(/instagram\.com\/(?:p|reel|reels|tv)\/([A-Za-z0-9_-]+)/);
   return m ? `https://www.instagram.com/p/${m[1]}/embed` : url;
@@ -344,311 +362,218 @@ function igEmbed(url: string) {
 
 function IgFrame({ url, title }: { url: string; title: string }) {
   return (
-    <>
-      <div className="ig-frame">
-        <iframe src={igEmbed(url)} title={title} scrolling="no" loading="lazy" allowFullScreen />
-      </div>
-      <div className="print-only"><b>{title}</b>Instagram post &middot; view online</div>
-    </>
+    <div className="ig">
+      <iframe src={igEmbed(url)} title={title} scrolling="no" loading="lazy" allowFullScreen />
+    </div>
   );
 }
 
-/* ==========================================================================
-   PAGE
-   ========================================================================== */
+function Section({ id, title, lede, wash, children }: { id: string; title: string; lede?: string; wash?: boolean; children: React.ReactNode }) {
+  return (
+    <section id={id} className={`sec${wash ? " sec-wash" : ""}`} aria-labelledby={`${id}-t`}>
+      <div className="wrap">
+        <div className="sec-head">
+          <h2 className="sec-t" id={`${id}-t`}>{title}</h2>
+          {lede ? <p className="sec-lede">{lede}</p> : null}
+        </div>
+        {children}
+      </div>
+    </section>
+  );
+}
+
+/* ================================================================== PAGE */
 export default function Page() {
-  const [open, setOpen] = useState<string | null>("website");
-  const d = R.detail;
+  const brief = R.brief.items.map((item) => (IS_INTERNAL ? item : item.client ?? item));
+  const [head, ...rest] = brief;
+  const groups: { name: string; rows: typeof R.scoreboard.rows }[] = [];
+  for (const r of R.scoreboard.rows) {
+    const g = groups.find((x) => x.name === r.group);
+    if (g) g.rows.push(r); else groups.push({ name: r.group, rows: [r] });
+  }
+  const weeks = R.scoreboard.weeks;
 
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
-      {/* With JavaScript off the observer never fires, so reverse the hidden
-          state here. This is inert markup, identical on server and client. */}
-      <noscript
-        suppressHydrationWarning
-        dangerouslySetInnerHTML={{
-          __html: "<style>.rv{opacity:1!important;transform:none!important}</style>",
-        }}
-      />
 
-      {/* MASTHEAD */}
       <header className="mast">
         <div className="wrap">
-          <div className="mast-kicker">
-            <span>{R.studio} &middot; Social Intelligence</span>
-            {IS_INTERNAL ? <span className="mast-badge">Internal</span> : null}
+          <div className="mast-top">
+            <div>
+              <h1 className="mast-name">{R.client}</h1>
+              <p className="mast-kind">Weekly report{IS_INTERNAL ? <span className="mast-badge">Internal</span> : null}</p>
+            </div>
+            <p className="mast-when"><b>{R.period}</b>{R.compared}</p>
           </div>
-          <h1>{R.client}</h1>
-          <p className="mast-sub">Performance report &middot; {R.period}</p>
-          <div className="mast-meta">
-            {R.meta.map((m) => (
-              <div key={m.k}><b>{m.k}</b>{m.v}</div>
-            ))}
-          </div>
+          <p className="mast-head">{head.text}</p>
         </div>
       </header>
 
-      {/* NAV */}
+      <div className="wrap" id="brief">
+        <div className="brief">
+          {rest.map((b) => (
+            <div className="brief-i" key={b.role}>
+              <h2 className="brief-role">{b.role}</h2>
+              <p className="brief-text">{b.text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <nav className="rail" aria-label="Report sections">
         <div className="wrap rail-in">
-          {NAV.map((n) => <a key={n.id} href={`#${n.id}`}>{n.label}</a>)}
+          {NAV.filter((n) => n.id !== "brief").map((n) => <a key={n.id} href={`#${n.id}`}>{n.label}</a>)}
         </div>
       </nav>
 
       <main>
-        {/* ------------------------------------------------------- BRIEF */}
-        <Section id="brief" num={numOf("brief")} title={R.brief.title} lede={R.brief.lede} band="white">
-          <Reveal>
-            <div>
-              {R.brief.items.map((item) => {
-                const b = IS_INTERNAL ? item : (item.client ?? item);
-                return (
-                  <div className="brief-i" key={item.role}>
-                    <div className="brief-role">{b.role}</div>
-                    <p className="brief-text">{b.text}</p>
-                  </div>
-                );
-              })}
-            </div>
-          </Reveal>
+        <Section id="scoreboard" title="The week in numbers" lede={R.scoreboard.lede}>
+          <table className="lg">
+            <caption className="sr">Each measure this week and the week before, with its trend over {weeks.length} weeks</caption>
+            <thead>
+              <tr className="lg-cols">
+                <th scope="col">Measure</th>
+                <th scope="col">{weeks.length} weeks<small>{weeks[0]} to {weeks[weeks.length - 1]}</small></th>
+                <th scope="col">{R.scoreboard.cols[0].label}<small>{R.scoreboard.cols[0].sub}</small></th>
+                <th scope="col">Change</th>
+                <th scope="col">{R.scoreboard.cols[1].label}<small>{R.scoreboard.cols[1].sub}</small></th>
+              </tr>
+            </thead>
+            {groups.map((g) => (
+              <tbody key={g.name}>
+                <tr className="lg-g"><th colSpan={5} scope="colgroup">{g.name}</th></tr>
+                {g.rows.map((r) => {
+                  const c = r.cells[0].c;
+                  const arrow = c.startsWith("+") ? "▲" : c.startsWith("−") ? "▼" : "";
+                  return (
+                    <tr className="lg-r" key={r.k}>
+                      <td><div className="lg-k">{r.k}</div>{r.note ? <div className="lg-n">{r.note}</div> : null}</td>
+                      <td className="lg-sp"><Spark t={{ values: r.trend, labels: weeks.slice(weeks.length - r.trend.length), fmt: r.fmt as Trend["fmt"] }} /></td>
+                      <td><span className="lg-v">{r.cells[0].v}</span></td>
+                      <td className="lg-c">{arrow ? <i aria-hidden="true">{arrow}</i> : null}{c}</td>
+                      <td className="lg-pv"><span className="lg-p">{r.cells[1].v}</span></td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            ))}
+          </table>
         </Section>
 
-        {/* ------------------------------------------------------ PERIOD */}
-        <Section id="period" num={numOf("period")} title="The period in one picture" lede={R.period_.lede} band="light">
-          <Reveal>
-            <div>
-              <PeriodChart data={R.period_.daily} />
-              <p className="chart-note">{IS_INTERNAL ? R.period_.note : R.period_.noteClient}</p>
-            </div>
-          </Reveal>
+        <Section id="period" title="New website visitors each day" lede={R.period_.lede} wash>
+          <DailyChart data={R.period_.daily} bandA={R.period_.bandA} bandB={R.period_.bandB} />
+          <p className="note">{IS_INTERNAL ? R.period_.note : R.period_.noteClient}</p>
         </Section>
 
-        {/* -------------------------------------------------- SCOREBOARD */}
-        <Section id="scoreboard" num={numOf("scoreboard")} title="Scoreboard" lede={R.scoreboard.lede} band="white">
-          <Reveal>
-            <div className="score">
-              <div className="score-h">
-                <div />
-                {R.scoreboard.cols.map((c) => (
-                  <div key={c.label}>{c.label}<i>{c.sub}</i></div>
-                ))}
+        <Section id="engaged" title={R.engagement.title} lede={R.engagement.lede}>
+          <Engagement rows={R.engagement.rows} />
+          <p className="note">{IS_INTERNAL ? R.engagement.note : R.engagement.noteClient}</p>
+        </Section>
+
+        <Section id="worked" title="What worked" lede={IS_INTERNAL ? R.worked.lede : R.worked.ledeClient} wash>
+          <div className="hero">
+            <IgFrame url={R.worked.hero.url} title={R.worked.hero.title} />
+            <div>
+              <p className="hero-meta">{R.worked.hero.format}, {R.worked.hero.date}</p>
+              <h3 className="hero-t">{R.worked.hero.title}</h3>
+              <div className="stats">
+                {R.worked.hero.stats.map((s) => <div key={s.l}><b>{s.v}</b><span>{s.l}</span></div>)}
               </div>
-              {R.scoreboard.rows.map((r) => (
-                <div className="score-r" key={r.k}>
-                  <div className="score-k">
-                    {r.k}
-                    {r.note ? <div className="score-n">{r.note}</div> : null}
-                  </div>
-                  {r.cells.map((cell, i) => (
-                    <div className="score-cell" key={i}>
-                      <div className={`score-v${cell ? "" : " empty"}`}>{cell ? cell.v : "\u2014"}</div>
-                      {cell && cell.c ? <div className={`score-c ${cell.dir}`}>{cell.c}</div> : null}
-                    </div>
-                  ))}
+              <p className="why">{R.worked.hero.why}</p>
+            </div>
+          </div>
+          {R.worked.gallery.length ? (
+            <div className="gal">
+              {R.worked.gallery.map((g) => (
+                <div key={g.url}>
+                  <IgFrame url={g.url} title={g.title} />
+                  <p className="gal-d">{g.format}, {g.date}</p>
+                  <p className="gal-t">{g.title}</p>
+                  <p className="gal-s">{g.views.toLocaleString("en-US")} views, {g.reach.toLocaleString("en-US")} reach, {g.interactions} interactions</p>
                 </div>
               ))}
             </div>
-          </Reveal>
+          ) : null}
+          <p className="gal-note">{R.worked.galleryNote}</p>
         </Section>
 
-        {/* ------------------------------------------------------ WORKED */}
-        <Section
-          id="worked"
-          num={numOf("worked")}
-          title="What worked"
-          lede={IS_INTERNAL ? R.worked.lede : R.worked.ledeClient}
-          band="warm"
-        >
-          <Reveal>
-            <div className="hero-card">
-              <IgFrame url={R.worked.hero.url} title={R.worked.hero.title} />
-              <div>
-                <div className="hero-fmt">{R.worked.hero.format} &middot; {R.worked.hero.date} &middot; Best of the period</div>
-                <h3 className="hero-t">{R.worked.hero.title}</h3>
-                <div className="hero-stats">
-                  {R.worked.hero.stats.map((s) => (
-                    <div key={s.l}>
-                      <span className="hero-s-v">{s.v}</span>
-                      <span className="hero-s-l">{s.l}</span>
-                    </div>
-                  ))}
+        {has("social") ? (
+          <Section id="social" title={R.social.title} lede={R.social.lede}>
+            <div className="soc">
+              {R.social.items.map((t) => <p key={t}>{t}</p>)}
+              <div className="soc-take"><h3>Takeaway</h3><p>{R.social.takeaway}</p></div>
+            </div>
+          </Section>
+        ) : null}
+
+        {has("attention") ? (
+          <Section id="attention" title="What needs attention" lede={R.attention.lede} wash>
+            <div className="att">
+              {R.attention.items.map((a) => (
+                <div className="att-i" key={a.title}>
+                  <p className="att-tag">{a.tag}</p>
+                  <h3 className="att-t">{a.title}</h3>
+                  <p className="att-b">{a.body}</p>
                 </div>
-                <p className="hero-why">{R.worked.hero.why}</p>
-              </div>
+              ))}
             </div>
-          </Reveal>
-          <Reveal>
-            <div>
-              <div className="gal">
-                {R.worked.gallery.map((g) => (
-                  <div className="gal-i" key={g.url}>
-                    <IgFrame url={g.url} title={g.title} />
-                    <div className="gal-m">
-                      <div className="gal-fmt">{g.format} &middot; {g.date}</div>
-                      <div className="gal-t">{g.title}</div>
-                      <div className="gal-s">
-                        {g.views.toLocaleString()} views &middot; {g.reach.toLocaleString()} reach &middot; {g.interactions} interactions
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <p className="gal-note">{R.worked.galleryNote}</p>
-            </div>
-          </Reveal>
+          </Section>
+        ) : null}
+
+        <Section id="learned" title="What we learned" lede={R.learned.lede}>
+          <div className="learn">
+            {R.learned.items.map((item) => {
+              const l = IS_INTERNAL ? item : item.client ?? item;
+              return <div key={item.title}><h3>{l.title}</h3><p>{l.body}</p></div>;
+            })}
+          </div>
         </Section>
 
-        {/* ---------------------------------------------------------- SOCIAL */}
-        {has("social") && (
-          <Section id="social" num={numOf("social")} title={R.social.title} lede={R.social.lede} band="light">
-            <Reveal>
-              <div>
-                {R.social.items.map((t) => (
-                  <div className="soc-i" key={t}>
-                    <div className="soc-m" />
-                    <p className="soc-b">{t}</p>
-                  </div>
-                ))}
-                <div className="soc-take">
-                  <div className="soc-take-k">Takeaway</div>
-                  <p className="soc-take-b">{R.social.takeaway}</p>
-                </div>
+        {has("moves") ? (
+          <Section id="moves" title="Recommended next moves" lede={R.moves.lede} wash>
+            {R.moves.items.map((m) => (
+              <div className="mv-i" key={m.action}>
+                <div><h3>{m.action}</h3><p>{m.body}</p></div>
+                <dl className="mv-m"><dt>Owner</dt><dd>{m.owner}</dd><dt>Measured by</dt><dd>{m.metric}</dd></dl>
               </div>
-            </Reveal>
+            ))}
           </Section>
-        )}
+        ) : null}
 
-        {/* ------------------------------------------- ATTENTION (internal) */}
-        {has("attention") && (
-          <Section id="attention" num={numOf("attention")} title="What needs attention" lede={R.attention.lede} band="white">
-            <Reveal>
-              <div>
-                {R.attention.items.map((a) => (
-                  <div className="att-i" key={a.title}>
-                    <span className="att-tag">{a.tag}</span>
-                    <h3 className="att-t">{a.title}</h3>
-                    <p className="att-b">{a.body}</p>
-                  </div>
-                ))}
-              </div>
-            </Reveal>
-          </Section>
-        )}
-
-        {/* ----------------------------------------------------- LEARNED */}
-        <Section id="learned" num={numOf("learned")} title="What we learned" lede={R.learned.lede} band="blue">
-          <Reveal>
-            <div className="learn">
-              {R.learned.items.map((item) => {
-                const l = IS_INTERNAL ? item : ((item as any).client ?? item);
-                return (
-                  <div key={item.title}>
-                    <h3 className="learn-t">{l.title}</h3>
-                    <p className="learn-b">{l.body}</p>
-                  </div>
-                );
-              })}
+        {has("plan") ? (
+          <Section id="plan" title="What we do next" lede={R.plan.lede}>
+            <div className="plan">
+              {R.plan.items.map((p) => <div className="plan-i" key={p.action}><h3>{p.action}</h3><p>{p.body}</p></div>)}
             </div>
-          </Reveal>
-        </Section>
-
-        {/* ----------------------------------------------- MOVES (internal) */}
-        {has("moves") && (
-          <Section id="moves" num={numOf("moves")} title="Recommended next moves" lede={R.moves.lede} band="white">
-            <Reveal>
-              <div>
-                {R.moves.items.map((m) => (
-                  <div className="mv-i" key={m.action}>
-                    <div>
-                      <h3 className="mv-t">{m.action}</h3>
-                      <p className="mv-b">{m.body}</p>
-                    </div>
-                    <div className="mv-meta">
-                      <b>Owner</b><p>{m.owner}</p>
-                      <b>Measured by</b><p>{m.metric}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Reveal>
           </Section>
-        )}
+        ) : null}
 
-        {/* -------------------------------------------------- PLAN (client) */}
-        {has("plan") && (
-          <Section id="plan" num={numOf("plan")} title="What we do next" lede={R.plan.lede} band="white">
-            <Reveal>
-              <div>
-                {R.plan.items.map((p) => (
-                  <div className="plan-i" key={p.action}>
-                    <div className="plan-m" />
-                    <div>
-                      <h3 className="plan-t">{p.action}</h3>
-                      <p className="plan-b">{p.body}</p>
-                    </div>
+        <Section id="detail" title="Supporting detail" lede={R.detail.lede} wash>
+          <div className="dt">
+            {R.detail.panels.map((p) => {
+              const note = !IS_INTERNAL && "noteClient" in p && p.noteClient ? p.noteClient : p.note;
+              const faq = "faq" in p ? (p.faq as { q: string; a: string }[]) : [];
+              return (
+                <details key={p.id}>
+                  <summary>{p.title}</summary>
+                  <div className="dt-p">
+                    {p.rows.length ? (
+                      <table><tbody>{p.rows.map((row) => <tr key={row[0]}><td>{row[0]}</td><td>{row[1]}</td></tr>)}</tbody></table>
+                    ) : null}
+                    {faq.map((f) => <div className="faq" key={f.q}><h3>{f.q}</h3><p>{f.a}</p></div>)}
+                    {note ? <p className="dt-note">{note}</p> : null}
                   </div>
-                ))}
-              </div>
-            </Reveal>
-          </Section>
-        )}
-
-        {/* ------------------------------------------------------ DETAIL */}
-        <Section id="detail" num={numOf("detail")} title="Supporting detail" lede={d.lede} band="light">
-          <Reveal>
-            <div className="disc">
-              {d.panels.map((p) => {
-                const isOpen = open === p.id;
-                const note =
-                  !IS_INTERNAL && (p as any).noteClient ? (p as any).noteClient : p.note;
-                return (
-                  <div key={p.id}>
-                    <button
-                      className="disc-btn"
-                      aria-expanded={isOpen}
-                      aria-controls={`panel-${p.id}`}
-                      onClick={() => setOpen(isOpen ? null : p.id)}
-                    >
-                      <span>{p.title}</span>
-                      <span className="disc-x" aria-hidden="true">{isOpen ? "\u2013" : "+"}</span>
-                    </button>
-                    <div className="disc-p" id={`panel-${p.id}`} hidden={!isOpen}>
-                      {p.rows.length > 0 && (
-                        <table className="t">
-                          <tbody>
-                            {p.rows.map((row) => (
-                              <tr key={row[0]}>
-                                <td>{row[0]}</td>
-                                <td>{row[1]}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      )}
-                      {(p as any).faq
-                        ? (p as any).faq
-                            .filter((f: any) => (IS_INTERNAL ? !f.clientOnly : !f.internalOnly))
-                            .map((f: any) => (
-                              <div className="faq-i" key={f.q + (f.internalOnly ? "-i" : "")}>
-                                <div className="faq-q">{f.q}</div>
-                                <div className="faq-a">{f.a}</div>
-                              </div>
-                            ))
-                        : null}
-                      {note ? <p className="d-note">{note}</p> : null}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </Reveal>
+                </details>
+              );
+            })}
+          </div>
         </Section>
       </main>
 
       <footer className="foot">
         <div className="wrap foot-in">
-          <span>{R.client} &middot; {R.period}</span>
+          <span>{R.client}, weekly report for {R.period}</span>
           <span>Prepared by {R.studio}</span>
         </div>
       </footer>
