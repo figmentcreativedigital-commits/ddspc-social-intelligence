@@ -81,7 +81,6 @@ export const R = {
     { k: "This week", v: "October 5 – 11, 2026" },
     { k: "Compared with", v: "September 28 – October 4, 2026" },
     { k: "Both weeks", v: "7 days, Monday to Sunday" },
-    { k: "Content published", v: "9 pieces" },
   ],
 
   /* ------------------------------------------------------------- THE BRIEF */
@@ -218,13 +217,6 @@ export const R = {
         cells: [{ v: "3,257", c: "+6", dir: "up" }, { v: "3,251", c: "+16", dir: "flat" }],
       },
       {
-        k: "Content published",
-        note: "2 reels and 7 Stories, against 3 reels, 1 post and 12 Stories",
-        group: "Instagram", fmt: "int",
-        trend: [5, 7, 10, 16, 9],
-        cells: [{ v: "9", c: "−7", dir: "flat" }, { v: "16", c: "", dir: "flat" }],
-      },
-      {
         k: "Booking link clicks",
         note: "Midtown 15 and Upper East Side 11, against 22 and 15",
         group: "Booking links", fmt: "int",
@@ -316,7 +308,7 @@ export const R = {
       },
     ],
     galleryNote:
-      "The other reel published October 5 – 11. 7 Stories complete the 9 pieces; no feed post went out this week. A post shared with NYC Dental Smiles on October 8, about the Hudson Yards event, drew 29 likes and 12 shares. Engagement is interactions divided by reach.",
+      "The other reel published October 5 – 11. 7 Stories went out alongside the reels. A post shared with NYC Dental Smiles on October 8, about the Hudson Yards event, drew 29 likes and 12 shares. Engagement is interactions divided by reach.",
   },
 
   /* ---------------------------------------------------------------- SOCIAL */
@@ -464,7 +456,7 @@ export const R = {
       },
       {
         action: "Keep a weekly mix of reels, Stories and feed posts",
-        body: "This week brought 2 reels and 7 Stories. We will balance the podcast and event content with posts about the doctors and their patients.",
+        body: "We will balance the podcast and event content with posts about the doctors and their patients.",
       },
     ],
   },
