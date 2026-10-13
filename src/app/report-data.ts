@@ -108,8 +108,8 @@ export const R = {
         role: "What softened",
         text: "Search clicks 65 to 58 and impressions 582 to 516. US position 4.74 to 6.77: edgard el chaar sits at 22.23 against 1.28, dr el chaar at 19.71 against 6.95, and desktop at 9.69. Visits from Google 103 to 82. Direct visits 215 to 336, with 21 engaged; new users reaching the 404 page 117 to 179. Booking link clicks 37 to 26.",
         client: {
-          role: "What we are monitoring",
-          text: "The site appeared lower in Google results this week, at an average position of 6.77 against 4.74, mostly when people searched for Dr. El Chaar by name. Visits from Google search were 82 against 103, and clicks on the booking links 26 against 37.",
+          role: "What we are looking into",
+          text: "Searches for Dr. El Chaar by name are placing the site lower than usual, and we are checking what changed. The share of people who saw the site in Google and clicked through held steady, at 11.24% against 11.17%.",
         },
       },
       {
@@ -402,8 +402,8 @@ export const R = {
         title: "Search position moved with the branded queries",
         body: "US position 6.77 against 4.74. The 2 queries that moved, edgard el chaar and dr el chaar, carry 60 of the 516 impressions. Clicks held at 58 against 65.",
         client: {
-          title: "The site appeared lower in Google results",
-          body: "The average position moved from 4.74 to 6.77, mostly on searches for Dr. El Chaar by name. Clicks held close to last week, 58 against 65.",
+          title: "Two branded searches moved the position figure",
+          body: "Almost all of the change in average position comes from two searches for Dr. El Chaar by name. Clicks held close to last week at 58 against 65, and the click rate edged up.",
         },
       },
     ],
