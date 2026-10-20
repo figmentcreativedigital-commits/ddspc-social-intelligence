@@ -105,7 +105,7 @@ export const R = {
         text: "The branded search positions came back. edgard el chaar moved from 22.23 to 1.33 and dr el chaar from 19.71 to 4.89, taking the US average from 6.77 to 5.05. Search clicks 58 to 62 and the click rate 11.20% to 12.11%. Visits from Google 85 to 94. Instagram interactions 132 to 144 on reach per day of 381.",
         client: {
           role: "Headline",
-          text: "Searches for Dr. El Chaar by name are returning the site near the top again. The most common spelling of his name moved from position 22.23 to 1.33, lifting the overall US average from 6.77 to 5.05. Visits from Google search rose to 94, and 12.11% of people who saw the site in search results clicked through, up from 11.20%.",
+          text: "The Hudson Yards carousel was the strongest piece of the week, reaching 906 people and drawing 74 responses. Visits from Google search rose to 94 against 85, and 63 of them engaged with the site.",
         },
       },
       {
@@ -113,7 +113,7 @@ export const R = {
         text: "Instagram interactions 132 to 144 and reach per day 363 to 381, on 7 pieces against 9. Engagement rate 5.19% to 5.40%. The Hudson Yards carousel drew 74 interactions at 8.17%. Search click rate 11.20% to 12.11%, homepage link clicks 126 to 130. New users reaching the 404 page fell from 179 to 56.",
         client: {
           role: "What improved",
-          text: "Instagram interactions rose to 144 and the account reached an average of 381 people a day, both up on the week before. The Hudson Yards carousel was the strongest piece at 2,340 views and 74 interactions. Clicks on the homepage link rose from 126 to 130.",
+          text: "Searches for Dr. El Chaar by name are returning the site near the top again, and the click rate from Google rose to 12.11% from 11.20%. On Instagram, interactions rose to 144 and the account reached an average of 381 people a day. Clicks on the homepage link rose from 126 to 130.",
         },
       },
       {
@@ -298,7 +298,7 @@ export const R = {
   /* ----------------------------------------------------------- WHAT WORKED */
   worked: {
     lede: "The Hudson Yards carousel led the week: 2,340 views, 906 reach and 74 of the week’s 144 interactions, at 8.17% engagement. The microgrooving reel took the widest reach at 1,140.",
-    ledeClient: "The strongest piece of the week was the carousel from the Hudson Yards event.",
+    ledeClient: "The Hudson Yards event and the podcast conversation produced the week’s two best pieces.",
     hero: {
       url: "https://www.instagram.com/p/DehsxlCGYTA/",
       title: "A few more moments from our day at Hudson Yards",
