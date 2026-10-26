@@ -73,9 +73,12 @@ export const ALL_SECTIONS: SectionDef[] = [
   { id: "worked", label: "What worked" },
   { id: "social", label: "Social" },
   { id: "attention", label: "Needs attention", internalOnly: true },
-  { id: "learned", label: "What we learned" },
+  { id: "learned", label: "What we learned", internalOnly: true },
   { id: "moves", label: "Next moves", internalOnly: true },
-  { id: "plan", label: "The plan" },
+  /* `plan` was the client-voice twin of `moves`. With the client build no longer
+     carrying it, it is internal-only and duplicates `moves`; drop it from this
+     array entirely once that is confirmed. */
+  { id: "plan", label: "The plan", internalOnly: true },
   { id: "detail", label: "Detail" },
 ];
 
@@ -83,6 +86,43 @@ export const NAV = ALL_SECTIONS.filter((x) => (IS_INTERNAL ? !x.clientOnly : !x.
 const ORDINALS = ["One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"];
 export const numOf = (id: string) => ORDINALS[NAV.findIndex((n) => n.id === id)] ?? "";
 export const has = (id: string) => NAV.some((n) => n.id === id);
+
+/* Brief items. `internalOnly` drops an item from the client build entirely;
+   without it the client would fall through to the internal wording. */
+const BRIEF_ALL: {
+  role: string; text: string; internalOnly?: boolean;
+  client?: { role: string; text: string };
+}[] = [
+  {
+    role: "Headline",
+    text: "Booking link clicks 22 to 26, ending 2 weeks of decline, and homepage link clicks 130 to 155. Email returned after 5 weeks: 2 campaigns, 3,442 sends, 360 confirmed opens against 1,578 including proxy, and 85 clicks at a rate 1.9 points above the last 10 campaigns. Website sessions 233 to 345: direct rose 117 to 241 while Google fell 99 to 83, so the whole increase and more is direct, which is where untagged email clicks land. Search clicks 62 to 52 and Instagram interactions 157 to 29 on 5 pieces against 7.",
+    client: {
+      role: "Headline",
+      text: "Booking link clicks rose to 26 from 22, and clicks on the homepage link rose to 155 from 130. Website visits rose to 345 from 233.",
+    },
+  },
+  {
+    role: "What improved",
+    text: "Booking 22 to 26: Midtown 13 to 14, Upper East Side 9 to 12. Named link clicks 156 to 182. Website sessions 233 to 345 and new visitors 172 to 294. Direct engaged 14.5% to 19.9%. Google visitors engaged 65.7% to 71.1%. Followers 3,264 to 3,267.",
+    client: {
+      role: "Engagement",
+      text: "Of the people arriving from Google search, 71% engaged with the site, up from 66%. Direct visits engaged at 20%, up from 15%. More people reached the booking step: 26 clicks against 22, with the Upper East Side link rising from 9 to 12.",
+    },
+  },
+  {
+    role: "What softened",
+    text: "Search clicks 62 to 52 and impressions 512 to 466; click rate 12.11% to 11.16%, US position 5.05 to 5.25. dr el chaar slipped to 10.33 from 4.89 while edgard el chaar held at 1.42. Visits from Google 99 to 83, averaging 33.6 seconds against 62.1. Instagram interactions 29 against 157, reach per day 136 against 381, on 5 pieces against 7. Podcast downloads 131 to 77, listening apps 7 to 4.",
+    client: {
+      role: "Highlights",
+      text: "The National Dental Hygiene Month email drew 85 clicks, a higher click rate than any of the last 10 campaigns, and the website was the most-clicked link in it. The reel on the same theme reached 305 people, the widest of any piece this week.",
+    },
+  },
+  {
+    role: "Next action",
+    internalOnly: true,
+    text: "Tag the email and short links with UTM parameters: 85 email clicks produced 7 attributable sessions, and the rest are inside a direct figure that doubled. Clean the list before the next send, still bouncing at 12%. Watch dr el chaar weekly. Get a podcast episode scheduled, 3 report weeks without one.",
+  },
+];
 
 export const R = {
   client: "Edgard El Chaar, DDS, PC",
@@ -98,43 +138,17 @@ export const R = {
   ],
 
   /* ------------------------------------------------------------- THE BRIEF */
+  /* The client build opens on figures and engagement, not on forward-looking
+     narrative. page.tsx maps over whatever `items` holds and falls back to the
+     internal text when an item has no `client` override, so an internal-only
+     item has to be filtered out of the array here rather than by removing its
+     override. BRIEF_ALL is filtered once at module level. */
   brief: {
     title: "The Brief",
-    lede: "The week in 4 points.",
-    items: [
-      {
-        role: "Headline",
-        text: "Booking link clicks 22 to 26, ending 2 weeks of decline, and homepage link clicks 130 to 155. Email returned after 5 weeks: 2 campaigns, 3,442 sends, 360 confirmed opens against 1,578 including proxy, and 85 clicks at a rate 1.9 points above the last 10 campaigns. Website sessions 233 to 345: direct rose 117 to 241 while Google fell 99 to 83, so the whole increase and more is direct, which is where untagged email clicks land. Search clicks 62 to 52 and Instagram interactions 157 to 29 on 5 pieces against 7.",
-        client: {
-          role: "Headline",
-          text: "Booking link clicks rose to 26 from 22, and clicks on the homepage link rose to 155 from 130. The National Dental Hygiene Month email drew 85 clicks, a higher click rate than any of the last 10 campaigns, and the website was the most-clicked link in it.",
-        },
-      },
-      {
-        role: "What improved",
-        text: "Booking 22 to 26: Midtown 13 to 14, Upper East Side 9 to 12. Named link clicks 156 to 182. Website sessions 233 to 345 and new visitors 172 to 294. Direct engaged 14.5% to 19.9%. Google visitors engaged 65.7% to 71.1%. Followers 3,264 to 3,267.",
-        client: {
-          role: "What improved",
-          text: "More people reached the booking step: 26 clicks against 22, with the Upper East Side link rising from 9 to 12. Website visits rose to 345 from 233, and a larger share of people who arrived engaged with the site.",
-        },
-      },
-      {
-        role: "What softened",
-        text: "Search clicks 62 to 52 and impressions 512 to 466; click rate 12.11% to 11.16%, US position 5.05 to 5.25. dr el chaar slipped to 10.33 from 4.89 while edgard el chaar held at 1.42. Visits from Google 99 to 83, averaging 33.6 seconds against 62.1. Instagram interactions 29 against 157, reach per day 136 against 381, on 5 pieces against 7. Podcast downloads 131 to 77, listening apps 7 to 4.",
-        client: {
-          role: "Where we are focusing",
-          text: "The National Dental Hygiene Month reel was the week’s strongest piece, reaching 305 people on the same theme the email carried. The coming weeks build on that and on the doctor-led topics drawing the strongest response.",
-        },
-      },
-      {
-        role: "Next action",
-        text: "Tag the email and short links with UTM parameters: 85 email clicks produced 7 attributable sessions, and the rest are inside a direct figure that doubled. Clean the list before the next send, still bouncing at 12%. Watch dr el chaar weekly. Get a podcast episode scheduled, 3 report weeks without one.",
-        client: {
-          role: "What we are doing next",
-          text: "We will add tracking to the email and short links so campaign traffic can be measured properly, and build the Instagram schedule back up around the content drawing the strongest response.",
-        },
-      },
-    ] as { role: string; text: string; client?: { role: string; text: string } }[],
+    lede: "The week in figures.",
+    items: BRIEF_ALL.filter((x) => (IS_INTERNAL ? true : !x.internalOnly)) as {
+      role: string; text: string; client?: { role: string; text: string };
+    }[],
   },
 
   /* ---------------------------------------------------- THE PERIOD CHART */
