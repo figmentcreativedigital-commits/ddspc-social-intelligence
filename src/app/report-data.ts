@@ -5,7 +5,7 @@
    structure changes. Edit figures and narrative strings below.
 
    CADENCE — weekly, Monday to Sunday, permanent.
-     This report covers October 12 – 18 against October 5 – 11.
+     This report covers October 19 – 25 against October 12 – 18.
 
    STRUCTURE. page.tsx is server-rendered and reads:
      R.compared, scoreboard.weeks, and per scoreboard row group / trend / fmt;
@@ -13,13 +13,15 @@
      oldest to newest; the last value is this week. Every trend value is the
      most recent reading of that week's export.
 
-   COMPARISON COLUMN RESTATED. October 5 – 11 comes from exports re-pulled on
-     October 20: Instagram interactions 132 against 118 as deployed and views
-     6,626 against 6,619; search 518 impressions against 516, clicks unchanged
-     at 58; website 454 sessions against 462, 393 new visitors against 391,
-     Google 85 against 82. Short.io and Buzzsprout are not re-pulled: click
-     logs do not settle, and podcast downloads are measured as the change in
-     the lifetime counter between two readings.
+   COMPARISON COLUMN RESTATED. October 12 – 18 comes from exports re-pulled on
+     October 26: Instagram interactions 157 against 144 as deployed and views
+     6,083 against 6,078; the Hudson Yards carousel now reads 2,574 views, 990
+     reach and 81 interactions against 2,340, 906 and 74. Native GA4 sessions
+     233 against 219, Google 99 against 94, direct 117 against 109 — the figure
+     Looker already carried a week ago. New visitors unchanged at 172. Search
+     unchanged. Short.io and Buzzsprout are not re-pulled: click logs do not
+     settle, and podcast downloads are measured as the change in the lifetime
+     counter between two readings.
 
    SOCIAL — drafted by Figment from Metricool in the social team’s voice. The
      social lead’s write-up follows after review; replace it then and re-check
@@ -32,28 +34,28 @@
    export, or is plain arithmetic on two figures already present.
 
    SOURCE WINDOWS:
-     Instagram (Metricool)            Oct 12 – 18 pulled Oct 19; Oct 5 – 11 re-pulled
-                                      Oct 20
-     Search Console                   Oct 12 – 18 pulled Oct 19; Oct 5 – 11 re-pulled
-                                      Oct 20. No US filter on either export, so the
-                                      US position is read from Countries.csv
-     Website (GA4 via Looker Studio)  Oct 12 – 18 pulled Oct 19; Oct 5 – 11 re-pulled
-                                      Oct 20
+     Instagram (Metricool)            Oct 19 – 25 and Oct 12 – 18, both pulled Oct 26
+     Search Console                   Oct 19 – 25 and Oct 12 – 18, both pulled Oct 26.
+                                      No US filter on either export, so the US
+                                      position is read from Countries.csv
+     Website (GA4 via Looker Studio)  both weeks, pulled Oct 26
      Website sessions and engagement  native GA4 traffic acquisition, both weeks,
-                                      same pulls. Looker reads 233 sessions against
-                                      native 219 this week; native is authoritative
-     Short links (Short.io)           Oct 12 – 18 pulled Oct 19; Oct 5 – 11 re-pulled
-                                      Oct 20 to confirm the basis. Path view, All
+                                      pulled Oct 26
+     Short links (Short.io)           Oct 19 – 25, pulled Oct 26. Path view, All
                                       clicks, with the catch-all /* filtered out.
-                                      Both weeks verified: listed paths sum to the
-                                      export's Total clicks, not its Human clicks
-     Podcast (Buzzsprout)             overview and agent reports pulled Oct 19
-                                      against the Oct 12 baselines
-     Email (Constant Contact)         no campaign sent Oct 5 – 18
-     Trend history                    Sep 14 – 20 from the Sep 28 pulls; Sep 21 – 27
-                                      from the Oct 5 pulls; Sep 28 – Oct 4 from the
-                                      Oct 12 pulls; Oct 5 – 11 from the Oct 20
-                                      re-pull; Oct 12 – 18 from the Oct 19 pulls
+                                      Read from the Path PDF: this cycle's xlsx
+                                      exports all defaulted back to the Human
+                                      setting with /* included, which is not
+                                      comparable. Verified by the listed paths
+                                      summing to the export's Total clicks, 182
+     Podcast (Buzzsprout)             overview and agent reports pulled Oct 26
+                                      against the Oct 19 baselines
+     Email (Constant Contact)         2 campaigns sent Oct 19 – 25, the first since
+                                      September 12
+     Trend history                    Sep 21 – 27 from the Oct 5 pulls; Sep 28 – Oct 4
+                                      from the Oct 12 pulls; Oct 5 – 11 from the
+                                      Oct 20 re-pull; Oct 12 – 18 from the Oct 26
+                                      re-pull; Oct 19 – 25 from the Oct 26 pulls
    ========================================================================== */
 
 type Variant = "client" | "internal";
@@ -85,13 +87,13 @@ export const has = (id: string) => NAV.some((n) => n.id === id);
 export const R = {
   client: "Edgard El Chaar, DDS, PC",
   studio: "Figment Creative",
-  period: "October 12 – 18, 2026",
-  compared: "Compared with October 5 – 11",
-  context: "October 12 – 18, 2026 · compared with the week before",
+  period: "October 19 – 25, 2026",
+  compared: "Compared with October 12 – 18",
+  context: "October 19 – 25, 2026 · compared with the week before",
 
   meta: [
-    { k: "This week", v: "October 12 – 18, 2026" },
-    { k: "Compared with", v: "October 5 – 11, 2026" },
+    { k: "This week", v: "October 19 – 25, 2026" },
+    { k: "Compared with", v: "October 12 – 18, 2026" },
     { k: "Both weeks", v: "7 days, Monday to Sunday" },
   ],
 
@@ -102,34 +104,34 @@ export const R = {
     items: [
       {
         role: "Headline",
-        text: "The branded search positions came back. edgard el chaar moved from 22.23 to 1.33 and dr el chaar from 19.71 to 4.89, taking the US average from 6.77 to 5.05. Search clicks 58 to 62 and the click rate 11.20% to 12.11%. Visits from Google 85 to 94. Instagram interactions 132 to 144 on reach per day of 381.",
+        text: "Booking link clicks 22 to 26, ending 2 weeks of decline, and homepage link clicks 130 to 155. Email returned after 5 weeks: 2 campaigns, 3,442 sends, 360 confirmed opens against 1,578 including proxy, and 85 clicks at a rate 1.9 points above the last 10 campaigns. Website sessions 233 to 345: direct rose 117 to 241 while Google fell 99 to 83, so the whole increase and more is direct, which is where untagged email clicks land. Search clicks 62 to 52 and Instagram interactions 157 to 29 on 5 pieces against 7.",
         client: {
           role: "Headline",
-          text: "The Hudson Yards carousel was the strongest piece of the week, reaching 906 people and drawing 74 responses. Visits from Google search rose to 94 against 85, and 63 of them engaged with the site.",
+          text: "Booking link clicks rose to 26 from 22, the first increase in 3 weeks, and clicks on the homepage link rose to 155 from 130. The National Dental Hygiene Month email drew 85 clicks, a higher click rate than any of the last 10 campaigns, and the website was the most-clicked link in it.",
         },
       },
       {
         role: "What improved",
-        text: "Instagram interactions 132 to 144 and reach per day 363 to 381, on 7 pieces against 9. Engagement rate 5.19% to 5.40%. The Hudson Yards carousel drew 74 interactions at 8.17%. Search click rate 11.20% to 12.11%, homepage link clicks 126 to 130. New users reaching the 404 page fell from 179 to 56.",
+        text: "Booking 22 to 26: Midtown 13 to 14, Upper East Side 9 to 12. Named link clicks 156 to 182. Website sessions 233 to 345 and new visitors 172 to 294. Direct engaged 14.5% to 19.9%. Google visitors engaged 65.7% to 71.1%. Followers 3,264 to 3,267.",
         client: {
           role: "What improved",
-          text: "Searches for Dr. El Chaar by name are returning the site near the top again, and the click rate from Google rose to 12.11% from 11.20%. On Instagram, interactions rose to 144 and the account reached an average of 381 people a day. Clicks on the homepage link rose from 126 to 130.",
+          text: "More people reached the booking step: 26 clicks against 22, with the Upper East Side link rising from 9 to 12. Website visits rose to 345 from 233, and a larger share of people who arrived engaged with the site.",
         },
       },
       {
         role: "What softened",
-        text: "Booking link clicks 26 to 22. Instagram views 6,626 to 6,078 and accounts engaged 164 to 139: fewer people, each interacting more. Google visits engaged at 67.0% for 65.3 seconds, against 72.9% and 81.9. Podcast downloads 177 to 131, of which 124 came through web browsers and 7 through listening apps, against 13. No episode since September 30, now 3 weeks.",
+        text: "Search clicks 62 to 52 and impressions 512 to 466; click rate 12.11% to 11.16%, US position 5.05 to 5.25. dr el chaar slipped to 10.33 from 4.89 while edgard el chaar held at 1.42. Visits from Google 99 to 83, averaging 33.6 seconds against 62.1. Instagram interactions 29 against 157, reach per day 136 against 381, on 5 pieces against 7. Podcast downloads 131 to 77, listening apps 7 to 4.",
         client: {
           role: "Where we are focusing",
-          text: "The booking links are the next thing we want to move. Search is sending more people to the site than it did a week ago, so the work now is making the path from the site to a booking as short as possible.",
+          text: "The National Dental Hygiene Month reel was the week’s strongest piece, reaching 305 people on the same theme the email carried. The coming weeks build on that and on the doctor-led topics drawing the strongest response.",
         },
       },
       {
         role: "Next action",
-        text: "Record the branded-search recovery and keep watching it weekly. Review the booking links and where they sit on the page. Get an episode scheduled: 3 weeks dark. Check how Buzzsprout counts the web-browser downloads before reporting them as listeners.",
+        text: "Tag the email and short links with UTM parameters: 85 email clicks produced 7 attributable sessions, and the rest are inside a direct figure that doubled. Clean the list before the next send, still bouncing at 12%. Watch dr el chaar weekly. Get a podcast episode scheduled, 3 report weeks without one.",
         client: {
           role: "What we are doing next",
-          text: "We will keep building on the Hudson Yards and podcast content that earned the most attention this week, and review how people get from the site to a booking.",
+          text: "We will add tracking to the email and short links so campaign traffic can be measured properly, and build the Instagram schedule back up around the content drawing the strongest response.",
         },
       },
     ] as { role: string; text: string; client?: { role: string; text: string } }[],
@@ -138,206 +140,204 @@ export const R = {
   /* ---------------------------------------------------- THE PERIOD CHART */
   period_: {
     lede: "New visitors to the website each day, this week and the week before.",
-    bandA: "Previous week · Oct 5 – 11",
-    bandB: "This week · Oct 12 – 18",
-    /* GA4 daily new visitors. This week pulled Oct 19; the previous week
-       re-pulled Oct 20, where Oct 11 reads 24 against 22 as deployed.
-       `shade` marks the previous week. */
+    bandA: "Previous week · Oct 12 – 18",
+    bandB: "This week · Oct 19 – 25",
+    /* GA4 daily new visitors, both weeks pulled Oct 26. The previous week is
+       unchanged on re-read at 172. `shade` marks the previous week. */
     daily: [
-      { d: "Oct 5", v: 40, shade: true },
-      { d: "Oct 6", v: 94, shade: true },
-      { d: "Oct 7", v: 73, shade: true },
-      { d: "Oct 8", v: 72, shade: true },
-      { d: "Oct 9", v: 59, shade: true },
-      { d: "Oct 10", v: 31, shade: true },
-      { d: "Oct 11", v: 24, shade: true },
-      { d: "Oct 12", v: 26 },
-      { d: "Oct 13", v: 38 },
-      { d: "Oct 14", v: 25 },
-      { d: "Oct 15", v: 30 },
-      { d: "Oct 16", v: 22 },
-      { d: "Oct 17", v: 13 },
-      { d: "Oct 18", v: 18 },
+      { d: "Oct 12", v: 26, shade: true },
+      { d: "Oct 13", v: 38, shade: true },
+      { d: "Oct 14", v: 25, shade: true },
+      { d: "Oct 15", v: 30, shade: true },
+      { d: "Oct 16", v: 22, shade: true },
+      { d: "Oct 17", v: 13, shade: true },
+      { d: "Oct 18", v: 18, shade: true },
+      { d: "Oct 19", v: 96 },
+      { d: "Oct 20", v: 36 },
+      { d: "Oct 21", v: 31 },
+      { d: "Oct 22", v: 63 },
+      { d: "Oct 23", v: 26 },
+      { d: "Oct 24", v: 22 },
+      { d: "Oct 25", v: 20 },
     ],
     note:
-      "172 new visitors against 393. Sessions 454 to 219, and almost all of the difference is one source: direct fell from 337 to 109 and aocr.org from 16 to none, while Google rose from 85 to 94. New users who reached the 404 page fell from 179 to 56, and landing pages from 76 to 27.",
+      "294 new visitors against 172, and 96 of them landed on October 19, the day the National Dental Hygiene Month email went out. Sessions 233 to 345: direct 117 to 241, while Google fell 99 to 83. Constant Contact referrals account for only 7 sessions against 85 recorded email clicks, so most of that campaign traffic is inside the direct figure. New users reaching the 404 page rose 56 to 106 and landing pages 27 to 54.",
     noteClient:
-      "172 new visitors this week against 393. The fall tracks a drop in very short direct visits over the same week, shown in the next section. Visits from Google search went the other way, rising from 85 to 94.",
+      "294 new visitors this week against 172. The busiest day was October 19, when the National Dental Hygiene Month email went out, and October 22 was the next busiest.",
   },
 
   /* ------------------------------------------------- VISITS THAT ENGAGED */
   engagement: {
     title: "Which visits engaged",
     lede: "Every visit to the website this week, by where it came from. The darker part of each bar is the visits that engaged with the site.",
-    /* Native GA4 traffic acquisition, Oct 12 – 18. Other sources combines 6
-       sources with 16 sessions and 10 engaged; its average time is weighted by
-       sessions: (6×102.7 + 3×12.3 + 3×2.7 + 2×59.5 + 44 + 25) ÷ 16 = 53.
-       aocr.org sent nothing this week and its row is removed rather than
-       rendered empty. */
+    /* Native GA4 traffic acquisition, Oct 19 – 25. Other sources combines 11
+       sources with 21 sessions and 9 engaged; its average time is weighted by
+       sessions: (5×38.4 + 5×5.8 + 43 + 3 + 2 + 47 + 52 + 162) ÷ 21 = 25.
+       7 of those sessions came from Constant Contact domains. */
     rows: [
-      { label: "Google search", sessions: 94, engaged: 63, seconds: 65 },
-      { label: "Direct", sessions: 109, engaged: 17, seconds: 9 },
-      { label: "Other sources", sessions: 16, engaged: 10, seconds: 53 },
+      { label: "Direct", sessions: 241, engaged: 48, seconds: 13 },
+      { label: "Google search", sessions: 83, engaged: 59, seconds: 34 },
+      { label: "Other sources", sessions: 21, engaged: 9, seconds: 25 },
     ],
     note:
-      "Google 94 sessions at 67.0% engaged and 65.3 seconds, against 85, 72.9% and 81.9 the week before: more arrivals, 63 engaged against 62. Direct 109 with 17 engaged, 15.6%, averaging 8.7 seconds, against 337, 25 and 2.1 seconds. Both the count and the quality of direct traffic moved in the right direction. aocr.org sent none, against 16. Other sources: 6 sources, 16 sessions, 10 engaged.",
+      "Direct 241 sessions with 48 engaged, 19.9%, averaging 12.6 seconds, against 117, 17 and 8.1 the week before: more of it, and a higher share engaging. The October 19 email is the likeliest source, since its links carry no tracking and land here rather than as a referral. Google 83 at 71.1% engaged, up from 65.7%, but 33.6 seconds against 62.1. Other sources: 11 sources, 21 sessions, 9 engaged, 7 of them from Constant Contact domains.",
     noteClient:
-      "Google search sent 94 visits this week against 85, and 63 of them engaged with the site. Direct visits fell from 337 to 109, and the ones that remained stayed four times longer on average.",
+      "Direct visits were the largest group at 241, and a fifth of them engaged with the site, up from a seventh the week before. Google search sent 83 visits and 59 of them engaged, a little over 7 in 10.",
   },
 
   /* ------------------------------------------------------------ SCOREBOARD */
   scoreboard: {
     lede: "Each measure this week and the week before, with its trend over the last 5 weeks. This week is the plum dot.",
-    weeks: ["Sep 14", "Sep 21", "Sep 28", "Oct 5", "Oct 12"],
+    weeks: ["Sep 21", "Sep 28", "Oct 5", "Oct 12", "Oct 19"],
     cols: [
-      { label: "This week", sub: "Oct 12 – 18" },
-      { label: "Previous week", sub: "Oct 5 – 11" },
+      { label: "This week", sub: "Oct 19 – 25" },
+      { label: "Previous week", sub: "Oct 12 – 18" },
     ],
     rows: [
       {
-        k: "Average search position",
-        note: "US searches only. Lower is better",
-        group: "Search", fmt: "pos",
-        trend: [4.16, 5.19, 4.74, 6.77, 5.05],
-        cells: [{ v: "5.05", c: "from 6.77", dir: "up" }, { v: "6.77", c: "", dir: "flat" }],
-      },
-      {
-        k: "Search clicks",
-        note: "Clicks from Google search results",
-        group: "Search", fmt: "int",
-        trend: [55, 52, 65, 58, 62],
-        cells: [{ v: "62", c: "+6.9%", dir: "up" }, { v: "58", c: "", dir: "flat" }],
-      },
-      {
-        k: "Search click rate",
-        note: "Share of people who saw the site in Google and clicked through",
-        group: "Search", fmt: "pct",
-        trend: [12.28, 11.43, 11.17, 11.20, 12.11],
-        cells: [{ v: "12.11%", c: "+0.91 points", dir: "up" }, { v: "11.20%", c: "", dir: "flat" }],
-      },
-      {
-        k: "Search impressions",
-        note: "Times the site appeared in Google results",
-        group: "Search", fmt: "int",
-        trend: [448, 455, 582, 518, 512],
-        cells: [{ v: "512", c: "−1.2%", dir: "flat" }, { v: "518", c: "", dir: "flat" }],
-      },
-      {
-        k: "Visits from Google search",
-        note: "67% of these visits engaged, against 73%. They averaged 65 seconds on the site, against 82",
-        group: "Website", fmt: "int",
-        trend: [91, 81, 103, 85, 94],
-        cells: [{ v: "94", c: "+10.6%", dir: "up" }, { v: "85", c: "", dir: "flat" }],
-      },
-      {
-        k: "Website new visitors",
-        note: "Fewer very short direct visits than the week before. Visits from Google search rose over the same week",
-        group: "Website", fmt: "int",
-        trend: [434, 199, 290, 393, 172],
-        cells: [{ v: "172", c: "−56.2%", dir: "down" }, { v: "393", c: "", dir: "flat" }],
-      },
-      {
-        k: "Instagram interactions",
-        note: "Likes, comments, saves and shares",
-        group: "Instagram", fmt: "int",
-        trend: [24, 103, 224, 132, 144],
-        cells: [{ v: "144", c: "+9.1%", dir: "up" }, { v: "132", c: "", dir: "flat" }],
-      },
-      {
-        k: "Instagram reach per day",
-        note: "Average accounts reached each day",
-        group: "Instagram", fmt: "int",
-        trend: [92, 214, 527, 363, 381],
-        cells: [{ v: "381", c: "+5.0%", dir: "up" }, { v: "363", c: "", dir: "flat" }],
-      },
-      {
-        k: "Instagram engagement rate",
-        note: "Interactions divided by reach",
-        group: "Instagram", fmt: "pct",
-        trend: [3.73, 6.88, 6.07, 5.19, 5.40],
-        cells: [{ v: "5.40%", c: "+0.21 points", dir: "up" }, { v: "5.19%", c: "", dir: "flat" }],
-      },
-      {
-        k: "Instagram views",
-        note: "Metricool’s account total, not a sum of the individual pieces",
-        group: "Instagram", fmt: "int",
-        trend: [3208, 5527, 8526, 6626, 6078],
-        cells: [{ v: "6,078", c: "−8.3%", dir: "down" }, { v: "6,626", c: "", dir: "flat" }],
-      },
-      {
-        k: "Followers",
-        note: "Metricool’s account total at the end of each week",
-        group: "Instagram", fmt: "int",
-        trend: [3221, 3235, 3251, 3257, 3264],
-        cells: [{ v: "3,264", c: "+7", dir: "up" }, { v: "3,257", c: "+6", dir: "flat" }],
+        k: "Booking link clicks",
+        note: "Midtown 14 and Upper East Side 12, against 13 and 9",
+        group: "Booking links", fmt: "int",
+        trend: [22, 37, 26, 22, 26],
+        cells: [{ v: "26", c: "+18.2%", dir: "up" }, { v: "22", c: "", dir: "flat" }],
       },
       {
         k: "Homepage link clicks",
         note: "Clicks on the short link to the homepage",
         group: "Booking links", fmt: "int",
-        trend: [144, 99, 106, 126, 130],
-        cells: [{ v: "130", c: "+3.2%", dir: "up" }, { v: "126", c: "", dir: "flat" }],
+        trend: [99, 106, 126, 130, 155],
+        cells: [{ v: "155", c: "+19.2%", dir: "up" }, { v: "130", c: "", dir: "flat" }],
       },
       {
-        k: "Booking link clicks",
-        note: "Midtown 13 and Upper East Side 9, against 15 and 11",
-        group: "Booking links", fmt: "int",
-        trend: [32, 22, 37, 26, 22],
-        cells: [{ v: "22", c: "−15.4%", dir: "down" }, { v: "26", c: "", dir: "flat" }],
+        k: "Website new visitors",
+        note: "96 of them arrived on October 19, the day the email went out",
+        group: "Website", fmt: "int",
+        trend: [199, 290, 393, 172, 294],
+        cells: [{ v: "294", c: "+70.9%", dir: "up" }, { v: "172", c: "", dir: "flat" }],
+      },
+      {
+        k: "Visits from Google search",
+        note: "71% of these visits engaged, against 66%",
+        group: "Website", fmt: "int",
+        trend: [81, 103, 85, 99, 83],
+        cells: [{ v: "83", c: "−16.2%", dir: "down" }, { v: "99", c: "", dir: "flat" }],
+      },
+      {
+        k: "Average search position",
+        note: "US searches only. Lower is better",
+        group: "Search", fmt: "pos",
+        trend: [5.19, 4.74, 6.77, 5.05, 5.25],
+        cells: [{ v: "5.25", c: "from 5.05", dir: "down" }, { v: "5.05", c: "", dir: "flat" }],
+      },
+      {
+        k: "Search clicks",
+        note: "Clicks from Google search results",
+        group: "Search", fmt: "int",
+        trend: [52, 65, 58, 62, 52],
+        cells: [{ v: "52", c: "−16.1%", dir: "down" }, { v: "62", c: "", dir: "flat" }],
+      },
+      {
+        k: "Search click rate",
+        note: "Share of people who saw the site in Google and clicked through",
+        group: "Search", fmt: "pct",
+        trend: [11.43, 11.17, 11.20, 12.11, 11.16],
+        cells: [{ v: "11.16%", c: "−0.95 points", dir: "down" }, { v: "12.11%", c: "", dir: "flat" }],
+      },
+      {
+        k: "Search impressions",
+        note: "Times the site appeared in Google results",
+        group: "Search", fmt: "int",
+        trend: [455, 582, 518, 512, 466],
+        cells: [{ v: "466", c: "−9.0%", dir: "down" }, { v: "512", c: "", dir: "flat" }],
+      },
+      {
+        k: "Followers",
+        note: "Metricool’s account total at the end of each week",
+        group: "Instagram", fmt: "int",
+        trend: [3235, 3251, 3257, 3264, 3267],
+        cells: [{ v: "3,267", c: "+3", dir: "up" }, { v: "3,264", c: "+7", dir: "flat" }],
+      },
+      {
+        k: "Instagram interactions",
+        note: "Likes, comments, saves and shares",
+        group: "Instagram", fmt: "int",
+        trend: [103, 224, 132, 157, 29],
+        cells: [{ v: "29", c: "−81.5%", dir: "down" }, { v: "157", c: "", dir: "flat" }],
+      },
+      {
+        k: "Instagram reach per day",
+        note: "Average accounts reached each day",
+        group: "Instagram", fmt: "int",
+        trend: [214, 527, 363, 381, 136],
+        cells: [{ v: "136", c: "−64.3%", dir: "down" }, { v: "381", c: "", dir: "flat" }],
+      },
+      {
+        k: "Instagram engagement rate",
+        note: "Interactions divided by the week’s total reach",
+        group: "Instagram", fmt: "pct",
+        trend: [6.88, 6.07, 5.19, 5.89, 3.05],
+        cells: [{ v: "3.05%", c: "−2.84 points", dir: "down" }, { v: "5.89%", c: "", dir: "flat" }],
+      },
+      {
+        k: "Instagram views",
+        note: "Metricool’s account total, not a sum of the individual pieces",
+        group: "Instagram", fmt: "int",
+        trend: [5527, 8526, 6626, 6083, 2940],
+        cells: [{ v: "2,940", c: "−51.7%", dir: "down" }, { v: "6,083", c: "", dir: "flat" }],
       },
       {
         k: "Podcast downloads",
-        note: "Most came through web browsers. Listening apps added 7, against 13",
+        note: "Most came through web browsers. Listening apps added 4, against 7",
         group: "Podcast", fmt: "int",
-        trend: [24, 11, 69, 177, 131],
-        cells: [{ v: "131", c: "−26.0%", dir: "down" }, { v: "177", c: "", dir: "flat" }],
+        trend: [11, 69, 177, 131, 77],
+        cells: [{ v: "77", c: "−41.2%", dir: "down" }, { v: "131", c: "", dir: "flat" }],
       },
     ],
   },
 
   /* ----------------------------------------------------------- WHAT WORKED */
   worked: {
-    lede: "The Hudson Yards carousel led the week: 2,340 views, 906 reach and 74 of the week’s 144 interactions, at 8.17% engagement. The microgrooving reel took the widest reach at 1,140.",
-    ledeClient: "The Hudson Yards event and the podcast conversation produced the week’s two best pieces.",
+    lede: "The National Dental Hygiene Month reel reached the most people, 305 against 234, and drew 15 of the week’s 29 interactions. The orthodontics carousel took more views, 578 against 437, on narrower reach.",
+    ledeClient: "The reel marking National Dental Hygiene Month reached the most people this week. The orthodontics carousel drew more views on a narrower audience.",
     hero: {
-      url: "https://www.instagram.com/p/DehsxlCGYTA/",
-      title: "A few more moments from our day at Hudson Yards",
-      date: "October 15",
-      format: "Carousel",
+      url: "https://www.instagram.com/reel/De1uSW_Tiey/",
+      title: "Great care starts with the people providing it",
+      date: "October 23",
+      format: "Reel",
       stats: [
-        { v: "2,340", l: "Views" },
-        { v: "906", l: "Reach" },
-        { v: "74", l: "Interactions" },
-        { v: "8.17%", l: "Engagement" },
+        { v: "437", l: "Views" },
+        { v: "305", l: "Reach" },
+        { v: "15", l: "Interactions" },
+        { v: "4.92%", l: "Engagement" },
       ],
       why:
-        "The strongest piece of the week on views, interactions and engagement rate. It drew 74 of the week’s 144 interactions: 64 likes, 5 comments and 5 shares. Its 8.17% engagement is the highest since September 30, and it earned that rate on 906 reach rather than a small audience.",
+        "The widest-reaching piece of the week at 305 accounts, and the one that drew the most responses: 13 likes and 2 shares. The orthodontics carousel took more views, 578 against 437, but reached fewer people. The reel ran alongside the National Dental Hygiene Month email, which went to 3,403 people the same week, so the theme carried across both channels.",
     },
     gallery: [
       {
-        url: "https://www.instagram.com/reel/DeZuEwUTIQY/",
-        title: "Not all microgrooving is created equal",
-        date: "October 14", format: "Reel", views: 1672, reach: 1140, interactions: 62,
+        url: "https://www.instagram.com/p/Deul06zmWpb/",
+        title: "Orthodontics has come a long way",
+        date: "October 20", format: "Carousel", views: 578, reach: 234, interactions: 14,
       },
     ],
     galleryNote:
-      "The reel published October 12 – 18, continuing the conversation with Mélissa M. Seif from the podcast episode. It reached 1,140 accounts, the widest of any piece this week, and was reposted 9 times. A second carousel on October 16, about hygiene visits, reached 193. 4 Stories went out alongside them. Engagement is interactions divided by reach.",
+      "The week’s feed post, tracing orthodontics from early wires and metal bands to modern brackets. 3 Stories went out alongside them. A post shared with NYC Dental Smiles on October 21, about the Modern Luxury feature on the mouth-body connection, also carried the practice. Engagement is interactions divided by reach.",
   },
 
   /* ---------------------------------------------------------------- SOCIAL */
-  /* Drafted by Figment for October 12 – 18 from the Metricool export, in the
+  /* Drafted by Figment for October 19 – 25 from the Metricool export, in the
      social team’s usual voice. The social lead’s write-up follows after
      review: replace it then, and re-check any figure it changes. */
   social: {
     title: "Social",
     lede: "How Instagram performed this week, and what we will keep doing.",
     items: [
-      "Instagram reached an average of 381 accounts a day, up from 363, and interactions rose to 144 from 132. The account added 7 followers to reach 3,264.",
-      "The Hudson Yards event gave the account its strongest piece. The carousel drew 2,340 views, reached 906 accounts and generated 74 interactions at 8.17% engagement, the highest rate since September 30 and earned on a much wider audience.",
-      "The reel continuing the conversation with Mélissa M. Seif reached 1,140 accounts, the widest of any piece this week, and was reposted 9 times. Engagement rate across the account was 5.40% against 5.19%.",
+      "The account reached an average of 136 accounts a day and added 3 followers to reach 3,267. National Dental Hygiene Month gave the week its theme across both Instagram and email.",
+      "The National Dental Hygiene Month reel was the week’s strongest piece, reaching 305 accounts and drawing 15 interactions. It ran alongside the email on the same theme, which went to 3,403 people.",
+      "A post shared with NYC Dental Smiles on October 21 carried the Modern Luxury feature on the connection between oral health and whole-body wellness, extending the practice’s reach through a partner account.",
     ],
     takeaway:
-      "Event coverage and the podcast conversation are both earning strong responses, and the people-led angle is what connects them. We’ll keep the weekly mix of reels, Stories and feed posts, and build on the topics drawing the most engagement.",
+      "Themed weeks give the content a clear spine, and running the reel alongside the email on the same subject is worth repeating. The focus for the coming weeks is building the publishing schedule back up around the doctor-led and patient-focused topics that have drawn the strongest response.",
   },
 
   /* -------------------------------------------------------- NEEDS ATTENTION */
@@ -346,39 +346,39 @@ export const R = {
     items: [
       {
         tag: "Resolved",
-        title: "The branded search positions came back",
+        title: "Booking clicks rose, ending the 2-week decline",
         body:
-          "edgard el chaar: 1.33 on 21 impressions, against 22.23 on 22 last week. dr el chaar: 4.89 on 28, against 19.71 on 38. edgar el chaar drew 8 clicks at 1.33 and dr el chaar nyc 3 at 1.33. The homepage sits at 3.79 against 6.08, desktop at 8.48 against 9.62, both read from the October 20 re-pull. US average 5.05 against 6.77. No change was made on our side, so the cause of both the drop and the recovery is still unknown. Worth a weekly check on these 2 queries rather than treating it as closed.",
-      },
-      {
-        tag: "Resolved",
-        title: "Direct traffic and the 404 page both cleared, and it is not a filter artifact",
-        body:
-          "Direct 109 sessions with 17 engaged, 15.6%, averaging 8.7 seconds, against 337, 25 and 2.1. New users reaching the 404 page fell from 179 to 56, landing pages from 76 to 27, and /dental-service/test-service is gone. The GA4 filter was never applied, and the check that proves it is the re-pull: October 5 – 11 re-read on October 20 returns 337 direct sessions against the 336 first reported. A filter would have cut that figure, not left it flat. Both weeks are on the same basis, so the fall is real traffic leaving rather than a measurement change.",
+          "Booking 26 against 22: Midtown 14 against 13, Upper East Side 12 against 9. Over 4 weeks: 37, 26, 22, 26. Homepage link clicks 130 to 155 and the named-link total 156 to 182. This came in the week the National Dental Hygiene Month email went out, so the email is the most likely driver and the next 2 weeks will show whether it holds without one.",
       },
       {
         tag: "Real gap",
-        title: "Booking clicks fell a third week while every other signal rose",
+        title: "85 email clicks produced 7 attributable sessions",
         body:
-          "Booking 22 against 26: Midtown 13 and Upper East Side 9, against 15 and 11. Over 3 weeks: 37, 26, 22. Both columns were confirmed against a re-pull on October 20, which reproduced 126, 15 and 11 for the previous week exactly, so the decline is real and not a basis artifact. Homepage clicks went the other way, 126 to 130, and the named-link total 152 to 156. Visits from Google rose 85 to 94 over the same week, so more people are arriving and fewer are reaching the booking step. This is the clearest commercial gap in the report. Check where the booking links sit on the page, that both resolve, and whether anything in that path changed.",
+          "The October 19 campaign recorded 85 clicks. GA4 shows 7 sessions from Constant Contact domains that week. Direct sessions doubled over the same period, 117 to 241, with 96 new visitors on October 19 alone, so most of that traffic is sitting inside the direct figure without attribution. The same gap applies to the short links, none of which carry UTM parameters. Tagging both ends it and is the single highest-value fix available this cycle.",
       },
       {
-        tag: "Note",
-        title: "Fewer accounts engaged, each interacting more",
+        tag: "Real gap",
+        title: "The email list is still bouncing at 12%",
         body:
-          "Accounts engaged 139 against 164, down 15.2%, while interactions rose 132 to 144 and reach per day 363 to 381. 7 pieces went out against 9. The Hudson Yards carousel carried 74 of the 144 interactions on 906 reach. Concentration rather than decline, but worth watching whether it holds next week.",
+          "421 of 3,403 sends on the October 19 campaign did not deliver, 12.4%, unchanged from the 12.1% on the August 1 send. 353 confirmed opens and 85 clicks on 2,982 delivered; the headline 1,557 is 1,204 proxy opens on top of that. The smaller October 21 send, 39 addresses, bounced 2. This has now been carried for 4 cycles. Clean the list before the next send or the comparison keeps running on a shrinking real base.",
+      },
+      {
+        tag: "Real gap",
+        title: "dr el chaar slipped while edgard el chaar held",
+        body:
+          "dr el chaar: position 10.33 on 30 impressions, against 4.89 on 28 last week. edgard el chaar held at 1.42 on 19 impressions and drew 8 clicks. dr el chaar nyc sits at 1.38, edgar el chaar at 1.4, dr edgard el chaar at 1.44. One query moving while its near-duplicates hold is the same pattern as 2 weeks ago, when the drop and the recovery both went unexplained. Keep the weekly check.",
       },
       {
         tag: "Measurement",
-        title: "Podcast still almost entirely web browser, and 3 weeks without an episode",
+        title: "Short.io exports defaulted back to the Human setting",
         body:
-          "Lifetime downloads rose 131, from 5,530 to 5,661. Buzzsprout’s app report puts 124 of the rise on Web Browser; every other app added 7, against 13 the week before. The September 30 episode reads 23 in total, up 6. Buzzsprout’s dashboard and its per-episode export disagree again: the dashboard reads 87 for 7 days against 125 in the export, and 389 and 751 for 30 and 90 days against 390 and 759. The export is used here, as before.",
+          "All 3 xlsx exports for this week came through on the Human setting with /* included, reading / 88, Midtown 6 and Upper East Side 5. On that basis booking clicks would read as a fall rather than a rise. The correct figures were taken from the Path PDF: / 155, Midtown 14, Upper East Side 12, /ddspc 1, summing to 182, which the dashboard confirms as Total clicks. Check the signature every cycle: the listed paths must sum to Total clicks, not Human clicks.",
       },
       {
         tag: "Note",
-        title: "Last week restated, and followers disagree a third time",
+        title: "Last week restated, and followers disagree a fourth time",
         body:
-          "October 5 – 11 re-read on October 20: Instagram interactions 132 against 118 as deployed, views 6,626 against 6,619, engagement rate 5.19% against 4.64%. The guest clip reads 2,061 views, 1,406 reach and 83 interactions against 1,948, 1,362 and 77. Search 518 impressions against 516, clicks unchanged at 58, position unchanged at 6.77. Website 454 sessions against 462, 393 new visitors against 391, Google 85 against 82. Separately, the account total rose by 7, from 3,257 to 3,264, while Metricool reports 8 acquired and 0 lost. This report uses the account total, as before.",
+          "October 12 – 18 re-read on October 26: Instagram interactions 157 against 144 as deployed, views 6,083 against 6,078, engagement rate 5.89% against 5.40%. The Hudson Yards carousel now reads 2,574 views, 990 reach and 81 interactions against 2,340, 906 and 74. Native GA4 sessions 233 against 219, Google 99 against 94, direct 117 against 109 — the figures Looker already carried a week ago, so the native export settles upward over about a week. Search and new visitors unchanged. Separately, the account total rose by 3 while Metricool reports 8 acquired and 4 lost. This report uses the account total, as before.",
       },
     ],
   },
@@ -388,35 +388,35 @@ export const R = {
     lede: "4 things worth carrying into the next report.",
     items: [
       {
-        title: "The branded searches recovered as quickly as they slipped",
-        body: "edgard el chaar 22.23 to 1.33 and dr el chaar 19.71 to 4.89 in a single week, taking the US average from 6.77 to 5.05. Nothing was changed on our side either week.",
+        title: "Booking clicks moved in the week the email went out",
+        body: "26 against 22, ending 2 weeks of decline, alongside homepage link clicks 130 to 155. The email reached 2,982 delivered addresses on October 19 and the website recorded its busiest day of the month the same day.",
         client: {
-          title: "The practice is back at the top for its own name",
-          body: "The most common spelling of Dr. El Chaar’s name now returns the site at position 1.33, against 22.23 the week before. The overall US average improved to 5.05 from 6.77.",
+          title: "More people reached the booking step",
+          body: "Booking link clicks rose to 26 from 22, the first increase in 3 weeks, in the same week the National Dental Hygiene Month email went out.",
         },
       },
       {
-        title: "A carousel outperformed the reel",
-        body: "The Hudson Yards carousel took 2,340 views and 74 interactions at 8.17% against the reel’s 1,672 and 62 at 5.44%. The reel still took the widest reach, 1,140 against 906.",
+        title: "Untagged links are hiding the email’s effect",
+        body: "85 recorded email clicks, 7 attributable sessions. Direct doubled to 241 in the same week. Without UTM parameters the campaign cannot be credited with the traffic it almost certainly produced.",
         client: {
-          title: "The event carousel drew the strongest response",
-          body: "The Hudson Yards carousel reached an engagement rate of 8.17% on 906 people, the strongest combination of reach and response in several weeks.",
+          title: "Email traffic is arriving without a label",
+          body: "The email recorded 85 clicks, but only 7 visits could be traced back to it because the links carry no tracking. We are adding that so the next campaign can be measured properly.",
         },
       },
       {
-        title: "Search sent more people on fewer impressions",
-        body: "62 clicks on 512 impressions against 58 on 518. The click rate carried the gain, 11.20% to 12.11%, and visits from Google rose 85 to 94.",
+        title: "Running the reel and the email on one theme worked",
+        body: "National Dental Hygiene Month carried both the October 23 reel, the week’s widest-reaching piece at 305, and the October 19 email to 3,403 addresses. The themed week is the clearest structure the content has had.",
         client: {
-          title: "More people clicked through from Google",
-          body: "The site was shown about as often as the week before but drew more clicks, lifting the click rate from 11.20% to 12.11%.",
+          title: "A single theme across two channels",
+          body: "National Dental Hygiene Month ran across both the email and the week’s best-performing reel. Pairing a theme across channels is something we want to repeat.",
         },
       },
       {
-        title: "Last week’s figures moved most on Instagram interactions",
-        body: "Re-reading October 5 – 11 on October 20 moved interactions 118 to 132, a 12% gain, while search clicks and position did not move at all. Instagram is the only channel where the re-pull changes a conclusion.",
+        title: "The native GA4 export settles upward for about a week",
+        body: "October 12 – 18 sessions re-read at 233 against the 219 first reported, matching what Looker already showed a week ago. Where the two disagree on a fresh pull, Looker is closer to the settled figure.",
         client: {
-          title: "Instagram figures keep settling after publication",
-          body: "Instagram posts gather responses for days after they go out, so last week’s interactions now read 132 against the 118 first reported. Search and website figures barely moved.",
+          title: "Figures keep settling after publication",
+          body: "Website and Instagram figures continue to be counted for several days after a week closes, so last week’s numbers read slightly higher now than when first reported.",
         },
       },
     ],
@@ -427,34 +427,34 @@ export const R = {
     lede: "5 actions, each with the reason behind it and the number that shows whether it worked.",
     items: [
       {
-        action: "Review the path from the site to a booking",
+        action: "Tag the email links and the EEC short links with UTM parameters",
         owner: "Figment",
-        metric: "Booking clicks above 26 next week",
-        body: "3 weeks of decline, 37 to 26 to 22, confirmed on a matched basis after the October 20 re-pull, while visits from Google rose 85 to 94 and homepage link clicks 126 to 130. More people arriving, fewer reaching the booking step. Check where the booking links sit on the page, that both resolve, and whether anything in that path changed.",
+        metric: "Next campaign's clicks appearing as attributable sessions rather than direct",
+        body: "85 email clicks produced 7 attributable sessions while direct doubled to 241. The campaign almost certainly earned that traffic and cannot be credited with it. Tagging the email links and the short links gives both a source GA4 can read, independently of which clicks Short.io itself counts. Highest-value fix available this cycle.",
+      },
+      {
+        action: "Clean the email list before the next send",
+        owner: "Figment",
+        metric: "Bounce rate under 5% on the next campaign",
+        body: "421 of 3,403 did not deliver on October 19, 12.4%, against 12.1% on August 1. Carried for 4 cycles now. Every open and click rate in the report is calculated on delivered mail, so the list size is the only thing distorted, but it will keep shrinking the real base.",
+      },
+      {
+        action: "Rebuild the Instagram publishing schedule",
+        owner: "Figment",
+        metric: "7 or more pieces next week, reach per day above 136",
+        body: "5 pieces this week against 7, with nothing between October 16 and 20. Reach per day 381 to 136 and interactions 157 to 29. The themed week worked where it ran: the National Dental Hygiene Month reel reached 305 and the matching email went to 3,403.",
+      },
+      {
+        action: "Keep dr el chaar on a weekly check",
+        owner: "Figment",
+        metric: "dr el chaar back under position 5",
+        body: "10.33 against 4.89, while edgard el chaar held at 1.42 and 3 other spellings sat near 1.4. One query moving alone is the same shape as the unexplained drop 2 weeks ago.",
       },
       {
         action: "Get a podcast episode scheduled",
         owner: "Practice · Figment to schedule",
         metric: "One episode published before the next report",
-        body: "Nothing since September 30, now 3 weeks. Downloads 177 to 131, and listening apps 13 to 7. The September 30 episode is still gathering at 6 a week, so the catalog is working; there is just nothing new on it.",
-      },
-      {
-        action: "Keep the 2 branded queries on a weekly check",
-        owner: "Figment",
-        metric: "edgard el chaar and dr el chaar holding under position 3",
-        body: "Both recovered without any change on our side, which means the cause of the original drop is still unknown and could return. A weekly look at these 2 queries costs nothing and catches it early.",
-      },
-      {
-        action: "Ask Buzzsprout about the web-browser downloads",
-        owner: "Figment",
-        metric: "A clear count of listening-app downloads for the weekly report",
-        body: "124 of 131 new downloads came through Web Browser. Listening apps added 7, against 13. Third week carrying this, and it decides whether the headline download figure means listeners.",
-      },
-      {
-        action: "Tag the 5 EEC short links with UTM parameters",
-        owner: "Figment",
-        metric: "Booking clicks that carry UTM parameters in Short.io’s UTM Medium report",
-        body: "The city breakdown this week covers all paths rather than named links only, so it cannot be compared with last week’s. The Dalles and one unnamed geoname ID account for 423 of 532 city-attributed clicks. A UTM filter isolates real clicks directly and ends the basis problem.",
+        body: "Nothing since September 30, 3 full report weeks. Downloads 131 to 77, listening apps 7 to 4. The September 30 episode is still gathering at 2 a week, so the catalog works; there is nothing new on it.",
       },
     ],
   },
@@ -464,12 +464,16 @@ export const R = {
     lede: "What we are doing next.",
     items: [
       {
-        action: "Build on the event and podcast content",
-        body: "The Hudson Yards carousel and the reel from the podcast conversation were the 2 strongest pieces of the week. We will keep developing the topics and formats drawing the most response.",
+        action: "Add tracking to the email and short links",
+        body: "The National Dental Hygiene Month email recorded 85 clicks, but only a handful of those visits could be traced back to it. Adding tracking means the next campaign can be measured properly against the website.",
       },
       {
-        action: "Review how people get from the site to a booking",
-        body: "More people are arriving from Google search than a week ago. We want the path from the site to a booking to be as short and clear as possible, so we are reviewing where those links sit.",
+        action: "Build the Instagram schedule back up",
+        body: "We will build on the doctor-led and patient-focused topics that have drawn the strongest response, and keep pairing a theme across channels the way National Dental Hygiene Month ran across the reel and the email.",
+      },
+      {
+        action: "Review the email list before the next campaign",
+        body: "Part of the list is no longer reaching people. Verifying the addresses protects delivery for everyone else and gives a clearer read on how the next campaign performs.",
       },
       {
         action: "Publish a new podcast episode",
@@ -483,127 +487,142 @@ export const R = {
     lede: "The figures behind the report, and how each was measured.",
     panels: [
       {
-        id: "instagram",
-        title: "Instagram",
+        id: "email",
+        title: "Email",
         rows: [
-          ["Interactions", "144 · from 132"],
-          ["Reach per day", "381 · from 363"],
-          ["Engagement rate", "5.40% · from 5.19%"],
-          ["Views", "6,078 · from 6,626"],
-          ["Accounts engaged", "139 · from 164"],
-          ["Followers", "3,264 · up 7 · from 3,257"],
-          ["Feed posts", "2 · 2,784 views · 550 average reach · 82 interactions"],
-          ["Reels", "1 · 1,672 views · 1,140 reach · 62 interactions"],
-          ["Reels, week before", "2 · 3,270 views · 1,062 average reach · 132 interactions"],
-          ["Stories", "4 · 330 impressions · 81 average reach · from 7, 509 and 70"],
-          ["Published", "2 feed posts · 1 reel · 4 Stories"],
+          ["Campaign", "October 19 · National Dental Hygiene Month"],
+          ["Sent / delivered", "3,403 / 2,982"],
+          ["Confirmed opens", "353 · 11.8%"],
+          ["All opens", "1,557 · 52.2% · includes 1,204 proxy"],
+          ["Clicks", "85 · 2.9%"],
+          ["Most-clicked link", "The website · 70 of 178 link clicks"],
+          ["Not delivered", "421 · 12.4%"],
+          ["Unsubscribes", "12"],
+          ["Second campaign", "October 21 · Oral Genome Offer · 39 sent"],
+          ["Second campaign opens", "7 confirmed · 21 including proxy"],
+          ["Previous 5 weeks", "No campaign sent"],
         ],
         note:
-          "Account totals are Metricool’s account-level figures. Engagement rate is interactions on posts and reels divided by average reach per day times 7: 144 against 2,667 this week and 132 against 2,541 the week before. The week before is restated from the October 20 re-pull, where interactions read 132 against the 118 first reported. The mix inverted: 2 feed posts and 1 reel this week, against 0 and 2. Followers: account total up 7, while Metricool reports 8 acquired and 0 lost; this report uses the account total. No advertising ran in either week: every paid column is empty.",
+          "Constant Contact. First campaigns since September 12. Rates are calculated on delivered mail, not on sends. Use the confirmed figure: 353 of the 1,557 opens are confirmed and 1,204 are proxy, where a mail client loaded the images without anyone reading it. Constant Contact puts the confirmed rate at 11.8%, against 12.3% on the August 1 send, so the real open rate has not moved. The click rate of 2.9% is the figure that did move, 1.9 points above the average of the last 10 campaigns. 85 clickers produced 178 link clicks: the website took 70, the Modern Luxury article 36, a Constant Contact short link 28, and Facebook and Instagram 22 each. Only 7 of those arrived in GA4 as Constant Contact referrals, because the links carry no tracking; the rest are inside a direct figure that doubled in the same week. The 12.4% that did not deliver is effectively unchanged from the 12.1% on August 1, so the list has not been cleaned in 4 cycles.",
         noteClient:
-          "Account totals come from Metricool’s account-level figures. Engagement rate is interactions divided by reach. Figures for the week before were re-read this week and include responses that arrived after last week’s report. No paid advertising ran in either week.",
+          "Constant Contact. The National Dental Hygiene Month campaign was the first since September 12. Rates are calculated on delivered mail rather than on sends. Two open figures are shown: confirmed opens, where someone actually opened the message, and all opens, which also counts mail clients that load images automatically. Confirmed opens are the reliable figure. A second, much smaller campaign went out on October 21 to 39 addresses.",
       },
       {
         id: "links",
         title: "Short links",
         rows: [
-          ["Homepage link", "130 · from 126"],
-          ["Booking · Midtown", "13 · from 15"],
-          ["Booking · Upper East Side", "9 · from 11"],
-          ["Booking total", "22 · from 26"],
-          ["Other named links", "4 · from 0"],
-          ["Named links total", "156 · from 152"],
+          ["Homepage link", "155 · from 130"],
+          ["Booking · Midtown", "14 · from 13"],
+          ["Booking · Upper East Side", "12 · from 9"],
+          ["Booking total", "26 · from 22"],
+          ["Other named links", "1 · from 4"],
+          ["Named links total", "182 · from 156"],
         ],
-        note: "Taken from Short.io’s Path view with the catch-all /* filtered out, so only named links are counted, and on the All rather than Human setting. Both weeks were confirmed on that basis: October 5 – 11 was re-pulled on October 20 and returns 126, 15 and 11, reproducing the published figures exactly. The test is that the listed paths sum to the export’s Total clicks rather than its Human clicks, 152 for the previous week and 156 for this one. The city breakdown this week covers all paths rather than named links only: The Dalles and one unnamed geoname ID account for 423 of 532 city-attributed clicks. No link carries UTM parameters.",
+        note: "Taken from Short.io’s Path view with the catch-all /* filtered out, so only named links are counted, and on the All rather than Human setting. Read from the Path PDF this cycle: all 3 xlsx exports came through on the Human setting with /* included, which reads / 88, Midtown 6 and Upper East Side 5 and is not comparable with previous weeks. The test is that the listed paths sum to the export’s Total clicks rather than its Human clicks: 182 this week against the dashboard’s Total clicks of 182, and 156 the week before. No link carries UTM parameters.",
         noteClient:
           "Counts clicks on the practice’s named short links. The booking and homepage links existed in both weeks and compare directly. Some clicks come from automated traffic.",
-      },
-      {
-        id: "search",
-        title: "Search",
-        rows: [
-          ["Average position", "5.05 · from 6.77 · US only"],
-          ["Clicks", "62 · from 58"],
-          ["Click rate", "12.11% · from 11.20%"],
-          ["Impressions", "512 · from 518"],
-          ["edgard el chaar", "position 1.33 · from 22.23"],
-          ["dr el chaar", "position 4.89 · from 19.71"],
-          ["Desktop", "34 clicks · 223 impressions · position 8.48 · all searches"],
-          ["Mobile", "27 clicks · 283 impressions · position 4.12 · all searches"],
-          ["Homepage", "48 clicks · 392 impressions · position 3.79"],
-          ["Our Doctors", "12 clicks · 310 impressions · position 4.86"],
-          ["Locations", "7 clicks · 212 impressions · position 3.58"],
-          ["About", "0 clicks · 151 impressions · position 3.11"],
-          ["Dental Services", "0 clicks · 131 impressions · position 2.72"],
-        ],
-        note:
-          "Totals come from Search Console’s daily export. The headline average position is weighted by impressions and filtered to US searches; device positions cover all searches. Neither export carried a US filter, so the US position is read from Countries.csv: 56 clicks on 437 impressions at 5.05. Tablets drew 1 click on 6 impressions. The query export withholds 63% of clicks and 66% of impressions as low-volume, so query-level figures are a sample and are never summed into a total. October 5 – 11 re-pulled October 20: impressions 518 against 516, clicks and position unchanged.",
-        noteClient:
-          "Totals come from Search Console’s daily export. Google keeps processing search data for several days, so the most recent days are the least settled. Average position covers US searches only; lower is better.",
       },
       {
         id: "website",
         title: "Website",
         rows: [
-          ["Visits from Google search", "94 · from 85"],
-          ["Google visitors engaged", "67.0% · 65 seconds average · from 72.9% and 82 seconds"],
-          ["Sessions", "219 · from 454"],
-          ["New visitors", "172 · from 393"],
-          ["Direct visits", "109 · from 337"],
-          ["Direct visitors engaged", "15.6% · 9 seconds average · from 7.4% and 2 seconds"],
-          ["Landing pages", "27 · from 76"],
-          ["Homepage landings", "241 · from 278"],
-          ["Our Doctors landings", "42 · from 60"],
-          ["Desktop / mobile", "74% / 25% · from 88% / 11%"],
+          ["Sessions", "345 · from 233"],
+          ["New visitors", "294 · from 172"],
+          ["Direct visits", "241 · from 117"],
+          ["Direct visitors engaged", "19.9% · 13 seconds average · from 14.5% and 8 seconds"],
+          ["Visits from Google search", "83 · from 99"],
+          ["Google visitors engaged", "71.1% · 34 seconds average · from 65.7% and 62 seconds"],
+          ["Visits from Constant Contact", "7 · from none"],
+          ["Busiest day", "October 19 · 96 new visitors"],
+          ["Landing pages", "54 · from 27"],
+          ["Homepage landings", "244 · from 241"],
+          ["Our Doctors landings", "34 · from 42"],
+          ["Desktop / mobile", "80% / 20% · from 74% / 25%"],
         ],
         note:
-          "Sessions by source and engagement come from the native GA4 traffic export for the Dr Edgar El Chaar property. Looker Studio reads 233 sessions against native 219 this week, where the two matched last week; native is authoritative and the gap is flagged rather than reconciled. New users reaching the 404 page fell from 179 to 56. New visitors, landing pages, devices and page titles come from Looker Studio. October 5 – 11 re-pulled October 20: 454 sessions against 462, 393 new visitors against 391, Google 85 against 82, direct 337 against 336. Mobile active users are identical in both weeks at 47, so the whole fall in traffic is desktop. Landing pages are counted without blank and (not set) rows. Spam referrals are excluded.",
+          "Sessions by source and engagement come from the native GA4 traffic export for the Dr Edgar El Chaar property. October 12 – 18 re-read on October 26 gives 233 sessions against the 219 first reported, Google 99 against 94 and direct 117 against 109 — the figures Looker already carried a week ago, so the native export settles upward over roughly a week and Looker is the better read on a fresh pull. New visitors unchanged at 172. New users reaching the 404 page rose from 56 to 106. New visitors, landing pages, devices and page titles come from Looker Studio. Landing pages are counted without blank and (not set) rows. Spam referrals are excluded.",
         noteClient:
-          "Visits from Google search are the clearest measure of website interest, at 94 against 85. The fall in the overall total is almost entirely direct visits, which dropped from 337 to 109, and the ones that remained stayed considerably longer.",
+          "Visits rose to 345 from 233, with the busiest day on October 19, when the email went out. Visits from Google search are the clearest measure of ongoing interest, at 83 against 99, and 71% of them engaged with the site, up from 66%.",
       },
       {
-        id: "email",
-        title: "Email",
+        id: "instagram",
+        title: "Instagram",
         rows: [
-          ["This week", "No campaign sent"],
-          ["Previous week", "No campaign sent"],
+          ["Interactions", "29 · from 157"],
+          ["Reach per day", "136 · from 381"],
+          ["Engagement rate", "3.05% · from 5.89%"],
+          ["Views", "2,940 · from 6,083"],
+          ["Accounts engaged", "54 · from 139"],
+          ["Followers", "3,267 · up 3 · from 3,264"],
+          ["Reels", "1 · 437 views · 305 reach · 15 interactions"],
+          ["Feed posts", "1 · 578 views · 234 reach · 14 interactions"],
+          ["Feed posts, week before", "2 · 3,094 views · 602 average reach · 89 interactions"],
+          ["Reels, week before", "1 · 1,818 views · 1,205 reach · 68 interactions"],
+          ["Stories", "3 · 198 impressions · 65 average reach · from 4, 330 and 81"],
+          ["Published", "1 reel · 1 feed post · 3 Stories"],
         ],
-        note: "No campaign went to the EEC list October 5 – 18. The most recent, RH 2.0, went September 12. No Constant Contact referral sessions appear in GA4 this week, against 4 the week before.",
-        noteClient: "No email campaign was sent this week or the week before. The most recent was sent September 12.",
+        note:
+          "Account totals are Metricool’s account-level figures. Engagement rate is interactions on posts and reels divided by average reach per day times 7: 29 against 952 this week and 157 against 2,667 the week before. The week before is restated from the October 26 re-pull, where interactions read 157 against the 144 first reported and the Hudson Yards carousel now reads 2,574 views, 990 reach and 81 interactions. 5 pieces published against 7, with nothing between October 16 and 20. A post shared with NYC Dental Smiles on October 21 carried the Modern Luxury feature and is counted on that account, not this one. Followers: account total up 3, while Metricool reports 8 acquired and 4 lost; this report uses the account total. No advertising ran in either week: every paid column is empty.",
+        noteClient:
+          "Account totals come from Metricool’s account-level figures. Engagement rate is interactions divided by the week’s total reach, meaning average daily reach multiplied by 7, not by the daily figure on its own. Figures for the week before were re-read this week and include responses that arrived after last week’s report. No paid advertising ran in either week.",
+      },
+      {
+        id: "search",
+        title: "Search",
+        rows: [
+          ["Average position", "5.25 · from 5.05 · US only"],
+          ["Clicks", "52 · from 62"],
+          ["Click rate", "11.16% · from 12.11%"],
+          ["Impressions", "466 · from 512"],
+          ["edgard el chaar", "position 1.42 · from 1.33 · 8 clicks"],
+          ["dr el chaar", "position 10.33 · from 4.89 · 6 clicks"],
+          ["Desktop", "29 clicks · 213 impressions · position 6.38 · all searches"],
+          ["Mobile", "23 clicks · 252 impressions · position 4.51 · all searches"],
+          ["Homepage", "34 clicks · 325 impressions · position 4.21"],
+          ["Our Doctors", "13 clicks · 287 impressions · position 4.49"],
+          ["Locations", "6 clicks · 184 impressions · position 3.09"],
+          ["About", "0 clicks · 127 impressions · position 2.20"],
+          ["Dental Services", "0 clicks · 115 impressions · position 2.42"],
+        ],
+        note:
+          "Totals come from Search Console’s daily export. The headline average position is weighted by impressions and filtered to US searches; device positions cover all searches. Neither export carried a US filter, so the US position is read from Countries.csv: 50 clicks on 416 impressions at 5.25. The query export withholds 52% of clicks and 62% of impressions as low-volume, so query-level figures are a sample and are never summed into a total. October 25 reads 0 clicks on 28 impressions and is the least settled day in the window. October 12 – 18 re-pulled October 26: unchanged at 62 clicks, 512 impressions and position 5.05.",
+        noteClient:
+          "Totals come from Search Console’s daily export. Google keeps processing search data for several days, so the most recent days are the least settled. Average position covers US searches only; lower is better.",
       },
       {
         id: "podcast",
         title: "Podcast",
         rows: [
-          ["Downloads this week", "131"],
-          ["Through listening apps", "7 · from 13"],
-          ["Through web browsers", "124 · from 164"],
-          ["The week before", "177"],
-          ["Last 30 days", "390"],
-          ["Last 90 days", "759"],
-          ["Lifetime downloads", "5,661"],
+          ["Downloads this week", "77"],
+          ["Through listening apps", "4 · from 7"],
+          ["Through web browsers", "73 · from 124"],
+          ["The week before", "131"],
+          ["Last 30 days", "460"],
+          ["Last 90 days", "804"],
+          ["Lifetime downloads", "5,738"],
           ["Episodes published", "51"],
-          ["Most recent episode", "September 30 · Biology Always Wins · 23 downloads"],
-          ["New York share", "525 of 5,655 located downloads · 9.3%"],
+          ["Most recent episode", "September 30 · Biology Always Wins · 25 downloads"],
+          ["New York share", "525 of 5,732 located downloads · 9.2%"],
         ],
         note:
-          "This week’s 131 is lifetime downloads rising from 5,530 on October 12 to 5,661 on October 19, the same method as previous weeks, which is also why this figure is never re-pulled. The split by app comes from Buzzsprout’s app report, which counts located downloads: Web Browser rose 124 and every other app 7, against 164 and 13 the week before. 30 and 90 days come from the per-episode export, 390 and 759; Buzzsprout’s dashboard read 87 for 7 days, 389 for 30 and 751 for 90 the same morning. No episode has been published since September 30, now 3 weeks.",
+          "This week’s 77 is lifetime downloads rising from 5,661 on October 19 to 5,738 on October 26, the same method as previous weeks, which is also why this figure is never re-pulled. The split by app comes from Buzzsprout’s app report, which counts located downloads: Web Browser rose 73 and every other app 4, against 124 and 7 the week before. 30 and 90 days come from the per-episode export, 460 and 804; Buzzsprout’s dashboard read 82 for 7 days, 459 for 30 and 746 for 90 the same morning. No episode has been published since September 30, 26 days before this pull and 3 full report weeks.",
         noteClient:
-          "Buzzsprout reports downloads over the most recent 7, 30 and 90 days. Most of this week’s downloads came through web browsers; listening apps such as Apple Podcasts and Spotify added 7. The most recent episode went out September 30 and is still being downloaded each week.",
+          "Buzzsprout reports downloads over the most recent 7, 30 and 90 days. Most of this week’s downloads came through web browsers; listening apps such as Apple Podcasts and Spotify added 4. The most recent episode went out September 30 and is still being downloaded each week.",
       },
       {
         id: "method",
         title: "How this was measured",
         rows: [],
         faq: [
-          { q: "What the report covers", a: "October 12 to 18, 2026, 7 full days, Monday to Sunday, compared with October 5 to 11. Both weeks are the same length, so every comparison is direct." },
-          { q: "What the trend lines show", a: "Each measure over the last 5 weeks, from September 14 to 20 through this week, using the most recent reading of each week. The line shows the shape; the values are in each line’s label and in the detail panels." },
-          { q: "Why last week’s figures differ from last week’s report", a: "Instagram, search and website figures for October 5 to 11 were all read again on October 20. Instagram posts keep gathering responses for days after they go out, which moved last week’s interactions from 118 to 132; search and website figures moved very little. Short link clicks and podcast downloads are not re-read, because click logs are written at the moment of the click and podcast downloads are measured as the change in a lifetime counter between two readings." },
-          { q: "How engagement rate is calculated", a: "Interactions divided by reach, meaning the share of people who saw something and responded to it. It is not calculated against follower count, which would make the figure look higher than it is." },
+          { q: "What the report covers", a: "October 19 to 25, 2026, 7 full days, Monday to Sunday, compared with October 12 to 18. Both weeks are the same length, so every comparison is direct." },
+          { q: "What the trend lines show", a: "Each measure over the last 5 weeks, from September 21 to 27 through this week, using the most recent reading of each week. The line shows the shape; the values are in each line’s label and in the detail panels." },
+          { q: "Why last week’s figures differ from last week’s report", a: "Instagram, search and website figures for October 12 to 18 were all read again on October 26. Instagram posts keep gathering responses for days after they go out, which moved last week’s interactions from 144 to 157, and the website session count settled from 219 to 233. Search did not move. Short link clicks and podcast downloads are not re-read, because click logs are written at the moment of the click and podcast downloads are measured as the change in a lifetime counter between two readings." },
+          { q: "How engagement rate is calculated", a: "Interactions divided by the week’s total reach, meaning the share of people who saw something and responded to it. Total reach is the average daily reach multiplied by 7, so it will not match interactions divided by the daily figure shown on the scoreboard. It is not calculated against follower count, which would make it look higher than it is." },
           { q: "What counts as an engaged visit", a: "Google Analytics counts a visit as engaged if it lasts at least 10 seconds, views a second page, or completes a key action." },
+          { q: "How email open and click rates are calculated", a: "On mail that was delivered, not on the number sent, because the two differ whenever part of a list no longer reaches people. Opens are reported twice. A confirmed open means someone opened the message. Most mail clients now load images automatically, which registers as an open whether or not anyone read it, and those are counted separately as proxy opens. The confirmed figure is the one to work from." },
           { q: "How search position is calculated", a: "Weighted by how often each page appeared, and filtered to US searches. Lower is better: a position of 1 is the top result." },
           { q: "How short link clicks are counted", a: "Clicks on the practice’s named short links, with automated requests to unrecognized paths removed. The booking and homepage links existed in both weeks and compare directly." },
-          { q: "What is not in this report", a: "No paid advertising ran in either week. No email campaign was sent in either week. Facebook is not reported: the page published nothing in either week, and the metric behind Meta’s post views was retired in June 2026." },
+          { q: "What is not in this report", a: "No paid advertising ran in either week. Facebook figures are not reported because Meta retired the metric behind post views in June 2026." },
         ],
         note: "Every figure in this report is carried from a source export or is arithmetic on 2 figures already present. Nothing is estimated.",
       },
