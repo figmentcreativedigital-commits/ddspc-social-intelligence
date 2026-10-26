@@ -107,7 +107,7 @@ export const R = {
         text: "Booking link clicks 22 to 26, ending 2 weeks of decline, and homepage link clicks 130 to 155. Email returned after 5 weeks: 2 campaigns, 3,442 sends, 360 confirmed opens against 1,578 including proxy, and 85 clicks at a rate 1.9 points above the last 10 campaigns. Website sessions 233 to 345: direct rose 117 to 241 while Google fell 99 to 83, so the whole increase and more is direct, which is where untagged email clicks land. Search clicks 62 to 52 and Instagram interactions 157 to 29 on 5 pieces against 7.",
         client: {
           role: "Headline",
-          text: "Booking link clicks rose to 26 from 22, the first increase in 3 weeks, and clicks on the homepage link rose to 155 from 130. The National Dental Hygiene Month email drew 85 clicks, a higher click rate than any of the last 10 campaigns, and the website was the most-clicked link in it.",
+          text: "Booking link clicks rose to 26 from 22, and clicks on the homepage link rose to 155 from 130. The National Dental Hygiene Month email drew 85 clicks, a higher click rate than any of the last 10 campaigns, and the website was the most-clicked link in it.",
         },
       },
       {
@@ -392,7 +392,7 @@ export const R = {
         body: "26 against 22, ending 2 weeks of decline, alongside homepage link clicks 130 to 155. The email reached 2,982 delivered addresses on October 19 and the website recorded its busiest day of the month the same day.",
         client: {
           title: "More people reached the booking step",
-          body: "Booking link clicks rose to 26 from 22, the first increase in 3 weeks, in the same week the National Dental Hygiene Month email went out.",
+          body: "Booking link clicks rose to 26 from 22, in the same week the National Dental Hygiene Month email went out.",
         },
       },
       {
