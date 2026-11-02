@@ -60,26 +60,46 @@ a { color: inherit; }
 .wrap { max-width: var(--max); margin: 0 auto; padding-left: var(--gut); padding-right: var(--gut); }
 
 /* ---------- masthead: the week's headline is the hero ---------- */
-.mast { position: relative; overflow: hidden; background: var(--plum); color: #fff; padding: 40px 0 60px; }
-.mast-wm { position: absolute; right: -6%; top: 50%; transform: translateY(-50%); width: min(62vw, 820px); opacity: .07; pointer-events: none; }
+.mast { position: relative; overflow: hidden; background: var(--plum); color: #fff; padding: 56px 0 72px; }
+.mast-wm { position: absolute; right: -9%; top: 50%; transform: translateY(-50%); width: min(50vw, 640px); opacity: .055; pointer-events: none; }
 .mast .wrap { position: relative; }
-.mast-top { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; padding-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,.3); }
+.mast-top { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; padding-bottom: 28px; border-bottom: 1px solid rgba(255,255,255,.3); }
 .mast-logo { display: inline-flex; flex-direction: column; align-items: center; gap: 12px; color: #fff; font-family: var(--text); font-weight: 400; }
 .mast-logo img { width: 128px; height: auto; display: block; }
 .mast-logo span { font-size: 12px; letter-spacing: .32em; text-transform: uppercase; padding-left: .32em; white-space: nowrap; }
-.mast-kind { font-family: var(--display); font-size: 15px; letter-spacing: .06em; color: rgba(255,255,255,.88); margin-top: 18px; }
+.mast-kind { font-family: var(--display); font-size: 15px; letter-spacing: .06em; color: rgba(255,255,255,.9); margin-top: 18px; }
 .mast-badge { display: inline-block; margin-left: 10px; padding: 2px 10px; border: 1px solid rgba(255,255,255,.6); border-radius: 30px; font-size: 13px; }
-.mast-when { text-align: right; font-size: 15px; color: rgba(255,255,255,.88); line-height: 1.5; }
+.mast-when { text-align: right; font-size: 15px; color: rgba(255,255,255,.9); line-height: 1.5; }
 .mast-when b { display: block; font-weight: 700; font-size: 18px; color: #fff; }
-.mast-head { font-family: var(--text); font-weight: 400; font-size: clamp(24px, 3vw, 36px); line-height: 1.38; color: #fff; max-width: 32ch; margin-top: 40px; }
-@media (max-width: 640px) { .mast-when { text-align: left; } }
 
-/* ---------- brief: three short columns under the headline ---------- */
-.brief { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; padding: 44px 0 8px; }
-.brief-i { border-top: 2px solid var(--plum); padding-top: 16px; }
-.brief-role { font-family: var(--display); font-weight: 700; font-size: 17px; letter-spacing: .03em; color: var(--plum); margin-bottom: 10px; }
-.brief-text { font-size: 16px; line-height: 1.6; color: var(--body); }
-@media (max-width: 860px) { .brief { grid-template-columns: 1fr; gap: 26px; } }
+/* The lead block runs kicker, headline, deck, then the figure row. The gaps
+   step 52 / 18 / 26 / 60 rather than sitting on one flat value, which is what
+   stopped the band reading as a single condensed column. Every colour on the
+   plum ground is at least 90% white: below that, 12px text drops under 4.5:1. */
+.mast-kicker { font-family: var(--display); font-size: 13px; letter-spacing: .26em; text-transform: uppercase; color: rgba(255,255,255,.9); margin-top: 52px; margin-bottom: 18px; }
+.mast-head { font-family: var(--text); font-weight: 400; font-size: clamp(28px, 3.9vw, 50px); line-height: 1.2; letter-spacing: -.008em; color: #fff; max-width: 22ch; }
+.mast-deck { font-size: clamp(16px, 1.4vw, 18px); line-height: 1.65; color: rgba(255,255,255,.9); max-width: 50ch; margin-top: 26px; }
+.mast-note { font-size: 15px; line-height: 1.65; color: rgba(255,255,255,.9); max-width: 70ch; margin-top: 24px; }
+.mast-figs { display: flex; flex-wrap: wrap; margin-top: 60px; border-top: 1px solid rgba(255,255,255,.3); padding-top: 40px; }
+.mast-fig { flex: 1 1 190px; padding: 0 40px; border-left: 1px solid rgba(255,255,255,.26); }
+.mast-fig:first-child { padding-left: 0; border-left: 0; }
+.mast-fig b { display: block; font-family: var(--display); font-weight: 700; font-size: clamp(40px, 5vw, 64px); line-height: 1; color: #fff; }
+.mast-fig span { display: block; font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.9); margin-top: 14px; }
+.mast-fignote { flex: 1 1 230px; align-self: flex-end; padding-left: 40px; border-left: 1px solid rgba(255,255,255,.26); font-size: 15px; line-height: 1.6; color: rgba(255,255,255,.9); }
+@media (max-width: 640px) {
+  .mast-when { text-align: left; }
+  .mast-figs { gap: 28px; padding-top: 28px; }
+  .mast-fig, .mast-fignote { flex-basis: 100%; padding-left: 0; border-left: 0; }
+}
+
+/* ---------- brief: short columns under the headline ---------- */
+/* auto-fit, not repeat(3): the client build carries fewer items than the
+   internal one, and a fixed 3-track grid left the client an empty cell. */
+.brief { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 48px; padding: 60px 0 8px; }
+.brief-i { border-top: 2px solid var(--plum); padding-top: 20px; }
+.brief-role { font-family: var(--display); font-weight: 700; font-size: 18px; letter-spacing: .03em; color: var(--plum); margin-bottom: 14px; }
+.brief-text { font-size: 16px; line-height: 1.72; color: var(--body); }
+@media (max-width: 860px) { .brief { grid-template-columns: 1fr; gap: 30px; } }
 
 /* ---------- nav ---------- */
 .rail { position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.96); border-bottom: 1px solid var(--rule); margin-top: 40px; }
@@ -270,10 +290,12 @@ a { color: inherit; }
 @media print {
   .rail, .ig, .tv { display: none; }
   .mast { background: #fff; color: var(--ink); }
-  .mast-logo, .mast-head, .mast-when b { color: var(--plum); }
+  .mast-logo, .mast-head, .mast-when b, .mast-kicker, .mast-fig b { color: var(--plum); }
   .mast-wm { display: none; }
   .mast-logo img { filter: brightness(0) saturate(100%) invert(35%) sepia(10%) saturate(1200%) hue-rotate(275deg); }
-  .mast-kind, .mast-when { color: var(--muted); }
+  .mast-kind, .mast-when, .mast-deck, .mast-note, .mast-fig span, .mast-fignote { color: var(--muted); }
+  .mast-top, .mast-figs { border-color: var(--rule); }
+  .mast-fig, .mast-fignote { border-left-color: var(--rule); }
   .dt details > *:not(summary) { display: block; }
   .sec { padding: 32px 0; break-inside: avoid; }
   .foot { background: #fff; color: var(--muted); border-top: 1px solid var(--rule); }
@@ -373,8 +395,11 @@ function Section({ id, title, lede, wash, children }: { id: string; title: strin
 
 /* ================================================================== PAGE */
 export default function Page() {
-  const brief = R.brief.items.map((item) => (IS_INTERNAL ? item : item.client ?? item));
-  const [head, ...rest] = brief;
+  /* The brief is picked per variant in report-data.ts now, not mapped through a
+     `client` override here. The old shape fell back to the internal wording
+     whenever an item had no override, which is how internal copy reached the
+     client build once already. Nothing to fall back to any more. */
+  const brief = R.brief.items;
   const groups: { name: string; rows: typeof R.scoreboard.rows }[] = [];
   for (const r of R.scoreboard.rows) {
     const g = groups.find((x) => x.name === r.group);
@@ -396,13 +421,22 @@ export default function Page() {
             </div>
             <p className="mast-when"><b>{R.period}</b>{R.compared}</p>
           </div>
-          <p className="mast-head">{head.text}</p>
+          <p className="mast-kicker">{R.lead.kicker}</p>
+          <h2 className="mast-head">{R.lead.headline}</h2>
+          <p className="mast-deck">{R.lead.deck}</p>
+          {IS_INTERNAL ? <p className="mast-note">{R.lead.internalNote}</p> : null}
+          <div className="mast-figs">
+            {R.lead.figures.map((f) => (
+              <div className="mast-fig" key={f.l}><b>{f.v}</b><span>{f.l}</span></div>
+            ))}
+            <p className="mast-fignote">{R.lead.figureNote}</p>
+          </div>
         </div>
       </header>
 
       <div className="wrap" id="brief">
         <div className="brief">
-          {rest.map((b) => (
+          {brief.map((b) => (
             <div className="brief-i" key={b.role}>
               <h2 className="brief-role">{b.role}</h2>
               <p className="brief-text">{b.text}</p>

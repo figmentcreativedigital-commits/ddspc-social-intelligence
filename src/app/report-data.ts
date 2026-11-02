@@ -110,39 +110,70 @@ const ORDINALS = ["One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight"
 export const numOf = (id: string) => ORDINALS[NAV.findIndex((n) => n.id === id)] ?? "";
 export const has = (id: string) => NAV.some((n) => n.id === id);
 
-/* Brief items. `internalOnly` drops an item from the client build entirely;
-   without it the client would fall through to the internal wording. */
-const BRIEF_ALL: {
-  role: string; text: string; internalOnly?: boolean;
-  client?: { role: string; text: string };
-}[] = [
+/* ---------------------------------------------------------------- THE LEAD */
+/* The masthead, restructured November 2. It used to be one prose paragraph set
+   at display size, which carried 3 separate facts and gave the week's biggest
+   figures no more weight than the words around them. It now runs kicker,
+   headline, deck, figures.
+
+   THE HEADLINE IS ONE IDEA. Keep it under about 16 words and on a single
+   claim; the measure is 22ch and it is meant to break over 3 lines. Anything
+   longer re-creates the paragraph this replaced.
+
+   EVERY FIGURE HERE IS CLIENT-VISIBLE, in both builds — `figures` and
+   `figureNote` are not variant-filtered. Only `internalNote` is. */
+const LEAD = {
+  kicker: "October 28 · Reel",
+  headline: "One reel went further than anything the account has published in five weeks.",
+  deck: "88 seconds on the implant-abutment connection, cut from the podcast conversation with Mélissa M. Seif.",
+  /* 8,985 against a 5-week best of about 3,700 for an entire week of
+     publishing (527 reach per day x 7, week of September 28), so no single
+     piece in the window can have gone wider. */
+  figures: [
+    { v: "8,985", l: "Accounts reached" },
+    { v: "260", l: "Responses" },
+    { v: "+86", l: "New followers" },
+  ],
+  figureNote: "Against 32 followers across the previous four weeks.",
+  internalNote:
+    "Reach per day 136 to 1,395, interactions 31 to 272, accounts engaged 54 to 285, followers 3,267 to 3,353. A new podcast episode went out October 29, the first since September 30. US search position 5.25 to 4.79 and dr el chaar back to 3.18 from 10.33. Website sessions 344 to 204 and new visitors 294 to 156 against a comparison week carrying the October 19 email; Google search visits 83 to 64 and search clicks 52 to 40, both the lowest in the 6 weeks on record.",
+};
+
+/* --------------------------------------------------------------- THE BRIEF */
+/* Two separate arrays, not one array with `client` overrides. The old shape
+   fell back to the internal wording whenever an item had no override, which is
+   how internal copy reached the client build once already; and it forced both
+   builds to share a grouping, which stopped working once the client brief
+   wanted Email and Podcast as their own columns. The grid is auto-fit, so the
+   two arrays no longer have to be the same length. */
+type BriefItem = { role: string; text: string };
+
+const BRIEF_CLIENT: BriefItem[] = [
   {
-    role: "Headline",
-    text: "One reel moved the whole Instagram week: the October 28 excerpt from the podcast conversation on the implant-abutment connection took 11,321 views and reached 8,985 accounts, more than the whole account reached in any full week of the previous 5. Reach per day 136 to 1,395, interactions 31 to 272, accounts engaged 54 to 285, and followers 3,267 to 3,353 — up 86 against a combined 32 over the previous 4 weeks. A new podcast episode went out October 29, the first since September 30. US search position 5.25 to 4.79 and dr el chaar back to 3.18 from 10.33. Website sessions 344 to 204 and new visitors 294 to 156 against a comparison week carrying the October 19 email; Google search visits 83 to 64 and search clicks 52 to 40, both the lowest in the 6 weeks on record.",
-    client: {
-      role: "Headline",
-      text: "One reel on the implant-abutment connection reached 8,985 accounts and drew 260 responses, and the account added 86 followers over that week, more than the previous 4 weeks together.",
-    },
+    role: "Engagement",
+    text: "285 accounts engaged with the content, up from 54. The reel held attention as well as reach: 58% of the people who saw it watched past the first 3 seconds, and the average view ran 28 seconds of its 88. Visits from Google search averaged 49 seconds on the site, up from 34.",
   },
+  {
+    role: "Email",
+    text: "The End of Year Benefits email reached 2,967 inboxes on October 28. Of the 53 links clicked in it, 22 went to the website and 15 to the booking page.",
+  },
+  {
+    role: "Podcast and search",
+    text: "A new episode went out October 29: Beyond the Plate, on nutrition, inflammation and the mouth-body connection, with Alexandra Cerone. In Google results the site’s average position for the week came in at 4.79, against 5.25, where 1 is the top result.",
+  },
+];
+
+const BRIEF_INTERNAL: BriefItem[] = [
   {
     role: "What improved",
     text: "Instagram interactions 31 to 272, reach per day 136 to 1,395, accounts engaged 54 to 285, followers up 86 against 3. The October 28 reel: 8,985 reach, 11,321 views, 260 interactions, 67 saves, 44 shares, 13 reposts, 58.1% of viewers past 3 seconds and 31.35% average retention on 88 seconds. US search position 5.25 to 4.79 and the homepage 4.21 to 2.80; dr el chaar 10.33 to 3.18 with no change on our side. Visits from Google averaged 48.5 seconds against 33.9. A new podcast episode on October 29, 15 downloads in 4 days. Downloads reaching something other than a web browser 4 to 37. The October 28 email put 15 of its 53 link clicks on the CareStack booking page, which is booking intent the short link figure never sees.",
-    client: {
-      role: "Engagement",
-      text: "285 accounts engaged with the content, up from 54. That reel held attention as well as reach: 58% of the people who saw it watched past the first 3 seconds, the average view ran 28 seconds of its 88, and it drew 67 saves and 44 shares. Visits from Google search averaged 49 seconds on the site, up from 34.",
-    },
   },
   {
     role: "What softened",
     text: "Website sessions 344 to 204, new visitors 294 to 156, direct 240 to 131 — the comparison week carried the October 19 email, which put 96 new visitors on a single day. Google search visits 83 to 64, search clicks 52 to 40, impressions 466 to 427, click rate 11.16% to 9.37%. Engagement rate 3.26% to 2.79%: interactions rose 8.8 times while reach rose 10.3 times. Podcast downloads 77 to 57. Email clicks 86 to 35 and confirmed opens 353 to 338, a benefits reminder against a campaign with a seasonal hook. Landing pages 54 to 32. Homepage short link 155 to 98 and booking 26 to 23, on a named total that fell 182 to 168 while carrying 37 clicks on the Instagram bio link, which recorded nothing last week.",
-    client: {
-      role: "Highlights",
-      text: "The End of Year Benefits email reached 2,967 inboxes on October 28, and of the 53 links clicked in it, 22 went to the website and 15 to the booking page. A new podcast episode followed on October 29: Beyond the Plate, on nutrition, inflammation and the mouth-body connection, with Alexandra Cerone. In Google results the site’s average position for the week came in at 4.79, against 5.25, where 1 is the top result.",
-    },
   },
   {
     role: "Next action",
-    internalOnly: true,
     text: "Cut more podcast episodes into 60-to-90-second clinical excerpts: one did 8,985 reach and 86 followers this week against a 5-week best of about 3,700 for an entire week, and there are 52 episodes behind it. Tag the email and short links with UTM parameters, 35 email clicks produced 1 attributable session. Ask Buzzsprout why the browser-versus-app mix inverted in a week, 73 of 77 to 20 of 57, before that figure goes in front of the client again. Clean the list, still bouncing at 12% on a fifth cycle.",
   },
 ];
@@ -160,18 +191,16 @@ export const R = {
     { k: "Both weeks", v: "7 days, Monday to Sunday" },
   ],
 
-  /* ------------------------------------------------------------- THE BRIEF */
-  /* The client build opens on figures and engagement, not on forward-looking
-     narrative. page.tsx maps over whatever `items` holds and falls back to the
-     internal text when an item has no `client` override, so an internal-only
-     item has to be filtered out of the array here rather than by removing its
-     override. BRIEF_ALL is filtered once at module level. */
+  /* The masthead lead. page.tsx renders kicker, headline, deck and figures from
+     here; only `internalNote` is held back from the client build. */
+  lead: LEAD,
+
+  /* The brief columns under the masthead. Picked by variant here, so page.tsx
+     has nothing to fall back to. */
   brief: {
     title: "The Brief",
     lede: "The week in figures.",
-    items: BRIEF_ALL.filter((x) => (IS_INTERNAL ? true : !x.internalOnly)) as {
-      role: string; text: string; client?: { role: string; text: string };
-    }[],
+    items: IS_INTERNAL ? BRIEF_INTERNAL : BRIEF_CLIENT,
   },
 
   /* ---------------------------------------------------- THE PERIOD CHART */
