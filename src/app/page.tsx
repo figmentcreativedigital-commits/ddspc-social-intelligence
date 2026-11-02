@@ -511,14 +511,16 @@ export default function Page() {
           </Section>
         ) : null}
 
-        <Section id="learned" title="What we learned" lede={R.learned.lede}>
-          <div className="learn">
-            {R.learned.items.map((item) => {
-              const l = IS_INTERNAL ? item : item.client ?? item;
-              return <div key={item.title}><h3>{l.title}</h3><p>{l.body}</p></div>;
-            })}
-          </div>
-        </Section>
+        {has("learned") ? (
+          <Section id="learned" title="What we learned" lede={R.learned.lede}>
+            <div className="learn">
+              {R.learned.items.map((item) => {
+                const l = IS_INTERNAL ? item : item.client ?? item;
+                return <div key={item.title}><h3>{l.title}</h3><p>{l.body}</p></div>;
+              })}
+            </div>
+          </Section>
+        ) : null}
 
         {has("moves") ? (
           <Section id="moves" title="Recommended next moves" lede={R.moves.lede} wash>
