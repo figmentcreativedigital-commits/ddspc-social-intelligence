@@ -23,10 +23,15 @@
      Homepage short link     from Dec 2025
      Email                   EEC's first campaign Oct 31, 2025
      Podcast                 all 24 months
-     Search, website         counted from June 2026 (see SEARCH below)
+     Search, website         US only, counted from June 2026 (see SEARCH below)
+
+   US ONLY (Walter, Nov 9) — Search and website figures count the US only;
+     the pull keeps all-country totals for its self-check and the internal
+     notes. Google lists only 32 to 41% of US clicks by page, so the
+     client text gives no US page figures.
 
    SEARCH AND WEBSITE — the old blog posts dropped out of Google between
-     May 28 and mid-June 2026 (daily impressions about 1,900 to about 100) and
+     May 28 and mid-June 2026 (daily US impressions about 1,500 to about 80) and
      their addresses now return the 404 page, which first appears in May. Every
      earlier month describes a different set of pages, so Search and Google
      visits are compared only from June: the 3-month view, uncompared this
@@ -36,7 +41,8 @@
 
    SOURCES — all read Nov 9, 2026:
      scripts/review-pull.mjs --client eec  → pulls/review/eec/2026-10.json
-       (md5 a526df0e…, 138 requests, self-check 10 of 10 against the ledgers)
+       (md5 93135e4c…, 145 requests, self-check 13 of 13 against the ledgers;
+       Search and GA4 US only, all-country totals kept for the check)
      Constant Contact, read in the logged-in app (campaign details and each
        campaign's results), EEC = sent from "Edgard El Chaar, DDS, PC" or
        "DDS PC". 17 EEC campaigns, Oct 31, 2025 to Nov 5, 2026.
@@ -77,6 +83,23 @@ export const has = (id: string) => NAV.some((n) => n.id === id);
 
 const pick = <T,>(internal: T, client: T): T => (IS_INTERNAL ? internal : client);
 
+/* Counts of 10,000 or more are shortened in the report text: rounded up to 3
+   significant figures, so a figure is never shown below its true value and
+   never 1% above it (Walter, Nov 9): 335,377 → 336k, 12,040 → 12.1k, 62,000 → 62k.
+   Below 10,000 the exact count is shown. Data tables and chart tooltips keep
+   exact counts. */
+export const short = (v: number): string => {
+  const a = Math.abs(v), sign = v < 0 ? "−" : "";
+  if (a < 10000) return sign + a.toLocaleString("en-US");
+  // Round up to 3 significant figures: 12.1k, 336k, 1.24M, 12.4M.
+  if (a < 100000) return `${sign}${Math.ceil(a / 100) / 10}k`;
+  if (Math.ceil(a / 1000) < 1000) return `${sign}${Math.ceil(a / 1000)}k`;
+  if (a < 9990000) return `${sign}${Math.ceil(a / 10000) / 100}M`;
+  if (a < 99900000) return `${sign}${Math.ceil(a / 100000) / 10}M`;
+  return `${sign}${Math.ceil(a / 1000000)}M`;
+};
+
+
 /* ---------------------------------------------------------------- THE LEAD */
 /* One hero per window; the switch shows one at a time. Figures and their
    `sub` lines are client-visible in both builds; only internalNote is not. */
@@ -85,11 +108,11 @@ type Lead = { kicker: string; headline: string; deck: string; figures: { v: stri
 const LEAD: Record<WinId, Lead> = {
   "12m": {
     kicker: "The year to October 31, 2026",
-    headline: "860 booking link clicks and 335,377 Instagram views over the year.",
-    deck: "Podcast downloads rose to 2,033 from 1,182. Emails were delivered 37,058 times.",
+    headline: `860 booking link clicks and ${short(335377)} Instagram views over the year.`,
+    deck: `Podcast downloads rose to 2,033 from 1,182. Emails were delivered ${short(37058)} times.`,
     figures: [
       { v: "860", l: "Booking link clicks", sub: "First full year on record" },
-      { v: "335,377", l: "Instagram views", sub: "Recorded from August 25, 2025" },
+      { v: short(335377), l: "Instagram views", sub: "Recorded from August 25, 2025" },
       { v: "2,033", l: "Podcast downloads", sub: "Against 1,182 the year before" },
     ],
     internalNote:
@@ -105,7 +128,7 @@ const LEAD: Record<WinId, Lead> = {
       { v: "+211", l: "Net new followers", sub: "No earlier record" },
     ],
     internalNote:
-      "Views stay out of the lead: +4.8% rests on June 30 and July 1 (19,131 views on 206 reach); without them −6.9%. Responses −11.3% against a window holding November and April. Split the 2 booking pairs in review-pull.mjs next edition. Podcast +19.6% without the 164 browser downloads.",
+      `Views stay out of the lead: +4.8% rests on June 30 and July 1 (${short(19131)} views on 206 reach); without them −6.9%. Responses −11.3% against a window holding November and April. Split the 2 booking pairs in review-pull.mjs next edition. Podcast +19.6% without the 164 browser downloads.`,
   },
   "3m": {
     kicker: "August – October 2026",
@@ -125,7 +148,7 @@ const LEAD: Record<WinId, Lead> = {
 const BRIEF = [
   { role: "The windows", text: "Each view ends October 31, 2026. 3 months is August to October, 6 months is May to October, and 12 months is November 2025 to October 2026. The review moves forward each month." },
   { role: "The comparison", text: "Each figure is compared with the equal period before it. Where that period has no full record, the figure stands alone with its start date." },
-  { role: "What is left out", text: "A measure shows only in views its source fully covers. Search and website figures count from June 2026, after the old blog posts came down." },
+  { role: "What is left out", text: "A measure shows only in views its source fully covers. Search and website figures cover the US only, and count from June 2026, after the old blog posts came down." },
 ];
 
 /* -------------------------------------------------------------- THE NUMBERS */
@@ -149,24 +172,24 @@ const NUMBERS: Record<WinId, Row[]> = {
     { group: "Instagram", k: "Net new followers", v: "+160", prior: "+51", c: "+109 followers",
       note: "Followers gained less followers lost. The account ended October at 3,352.",
       noteInternal: "Gained 210, lost 50, against 117 and 66. The account count moved from 3,190 on July 31 to 3,352 on October 31, 2 more than the daily figures." },
-    { group: "Instagram", k: "Views", v: "83,177", prior: "88,432", c: "−5.9%",
-      note: "Times the account’s content was seen. May to July includes June 30 and July 1, which recorded 19,131 views, the year’s 2 highest days. Without them, this period is ahead.",
-      noteInternal: "June 30 and July 1 read 10,865 and 8,266 views on reach of 146 and 60, with no piece published either day. Without them May to July reads 69,301 and the change is +20.0%. Metricool reports them as is; unexplained." },
+    { group: "Instagram", k: "Views", v: short(83177), prior: short(88432), c: "−5.9%",
+      note: `Times the account’s content was seen. May to July includes June 30 and July 1, which recorded ${short(19131)} views, the year’s 2 highest days. Without them, this period is ahead.`,
+      noteInternal: `June 30 and July 1 read ${short(10865)} and 8,266 views on reach of 146 and 60, with no piece published either day. Without them May to July reads ${short(69301)} and the change is +20.0%. Metricool reports them as is; unexplained.` },
     { group: "Instagram", k: "Reach per day", v: "359", na: "Recorded from June 12, 2026",
       note: "Average accounts reached per day.",
-      noteInternal: "33,018 summed daily reach over 92 days: August 329 a day, September 149, October 592. July ran at 861 a day with no piece above 1,100 reach; unexplained, and outside this window." },
+      noteInternal: `${short(33018)} summed daily reach over 92 days: August 329 a day, September 149, October 592. July ran at 861 a day with no piece above 1,100 reach; unexplained, and outside this window.` },
     { group: "Instagram", k: "Engagement rate", v: "4.43%", na: "Recorded from June 12, 2026",
       note: "Responses divided by each day’s reach, summed over the period.",
-      noteInternal: "1,464 interactions ÷ 33,018 (reach per day × days), the weekly report’s formula." },
+      noteInternal: `1,464 interactions ÷ ${short(33018)} (reach per day × days), the weekly report’s formula.` },
     { group: "Short links", k: "Booking link clicks", v: "359", prior: "301", c: "+19.3%",
       note: BOOK_DEF,
       noteInternal: "Midtown 192, Upper East Side 167, against 177 and 124. Merges DDS-PC-Midtown and DDS-PC-UES on nycdentalsmileteam.short.gy with eec-booking-midtown and eec-booking-ues; both pairs live in both windows. All clicks, /* filtered, every month read November 9." },
     { group: "Short links", k: "Homepage link clicks", v: "1,623", prior: "1,255", c: "+29.3%",
       note: `${HOME_DEF} August recorded 938.`,
       noteInternal: "The root path only, All clicks, human share unknown. /website (the Instagram bio link, also to the homepage) sits in other named links: July 60, August 208, September 5, October 3." },
-    { group: "Email", k: "Emails delivered", v: "12,040", prior: "6,369", c: "+89.0%",
+    { group: "Email", k: "Emails delivered", v: short(12040), prior: "6,369", c: "+89.0%",
       note: "Total deliveries across every email in the period.",
-      noteInternal: "6 campaigns against 3: August 1, September 12, October 19, October 21 and 2 on October 28. 13,726 sent, 1,686 not delivered (12.3%), against 7,239 and 870 (12.0%)." },
+      noteInternal: `6 campaigns against 3: August 1, September 12, October 19, October 21 and 2 on October 28. ${short(13726)} sent, 1,686 not delivered (12.3%), against 7,239 and 870 (12.0%).` },
     { group: "Email", k: "Email clicks", v: "193", prior: "97", c: "+99.0%",
       note: `${CLICKS_DEF} Clicks rose with the number of emails delivered. National Dental Hygiene Month drew 87.` },
     { group: "Email", k: "Email click rate", v: "1.60%", prior: "1.52%", c: "+0.08 points",
@@ -177,22 +200,22 @@ const NUMBERS: Record<WinId, Row[]> = {
     { group: "Podcast", k: "Downloads", v: "788", prior: "394", c: "+100.0%",
       note: `Downloads across all listening apps and the web. ${POD_OCT}`,
       noteInternal: "Buzzsprout, custom date range per month: August 148, September 162, October 478. 164 of the October 5 week’s 177 came through Web Browser (EEC October 5 – 11 report), still unexplained; without them the 3 months read 624, +58.4%. Buzzsprout’s app view works by episode, not by date, so the browser share by month is not known." },
-    { group: "Search", k: "Search clicks", v: "715", na: "Counted from June 2026",
-      note: "Clicks from Google to the site. The homepage took 503.",
-      noteInternal: "The earlier 3 months hold May, the last month of the old blog posts (703 clicks), so no comparison is shown. From the next edition (September to November against June to August) Search compares." },
-    { group: "Search", k: "Search appearances", v: "6,636", na: "Counted from June 2026",
-      note: "Times the site appeared in Google results." },
-    { group: "Search", k: "Search click rate", v: "10.77%", na: "Counted from June 2026",
-      note: "Clicks as a share of appearances, all searches." },
+    { group: "Search", k: "Search clicks", v: "678", na: "Counted from June 2026",
+      note: "Clicks from US Google searches to the site. Most went to the homepage.",
+      noteInternal: "The earlier 3 months hold May, the last month of the old blog posts (562 US clicks), so no comparison is shown. From the next edition (September to November against June to August) Search compares. All countries: 715. Google lists only 281 of the 678 US clicks by page, so no homepage count is given: the all-country list has 503 of 715 to the homepage, and with 37 clicks from outside the US, at least 466 US clicks (69%) went there." },
+    { group: "Search", k: "Search appearances", v: "5,844", na: "Counted from June 2026",
+      note: "Times the site appeared in US Google results." },
+    { group: "Search", k: "Search click rate", v: "11.60%", na: "Counted from June 2026",
+      note: "Clicks as a share of appearances." },
     { group: "Search", k: "Average search position", v: "5.22", na: "Counted from June 2026",
-      note: "US searches only. Lower is better.",
-      noteInternal: "Impression-weighted over the US-filtered daily rows." },
-    { group: "Website", k: "Visits from Google search", v: "1,154", na: "Counted from June 2026",
-      note: "Visits from a Google search. 769 engaged with the site.",
-      noteInternal: "66.6% engaged. GA4 with our own traffic left out (eec-prototype.vercel.app, figmentcreative.com)." },
-    { group: "Website", k: "New visitors", v: "3,670", na: "Counted from June 2026",
-      note: "First-time visitors. About 1 in 3 reached old addresses that no longer have a page.",
-      noteInternal: "1,123 of them reached the 404 page (31%). Read new visitors next to that count until the redirects are in." },
+      note: "Lower is better.",
+      noteInternal: "Impression-weighted over the US daily rows." },
+    { group: "Website", k: "Visits from Google search", v: "1,092", na: "Counted from June 2026",
+      note: "Visits from a US Google search. 726 engaged with the site.",
+      noteInternal: "66.5% engaged. GA4, US only, our own traffic left out (eec-prototype.vercel.app, figmentcreative.com). All countries: 1,154." },
+    { group: "Website", k: "New visitors", v: "1,631", na: "Counted from June 2026",
+      note: "First-time visitors from the US.",
+      noteInternal: "99 of them reached the 404 page (6%). All countries: 3,670 new visitors, 1,123 to the 404 page (31%), so most of the 404 traffic and more than half of new visitors are outside the US." },
   ],
   "6m": [
     { group: "Short links", k: "Booking link clicks", v: "660", prior: "200", c: "+230.0%",
@@ -207,13 +230,13 @@ const NUMBERS: Record<WinId, Row[]> = {
     { group: "Instagram", k: "Net new followers", v: "+211", na: "Daily figures start December 31, 2025",
       note: "Followers gained less followers lost. The account ended October at 3,352.",
       noteInternal: "Gained 327, lost 116. May was the only month that lost more than it gained, 30 against 35." },
-    { group: "Instagram", k: "Views", v: "171,609", prior: "163,768", c: "+4.8%",
-      note: "Times the account’s content was seen. This period includes June 30 and July 1 (19,131 views); without them it is below the 6 months before. No reading for March 29, 2026, so the earlier period counts 180 of 181 days.",
-      noteInternal: "Without June 30 and July 1 this window reads 152,478 and the change is −6.9%. March 29 is the European clock change; Metricool’s own connector returns 0 for it." },
+    { group: "Instagram", k: "Views", v: short(171609), prior: short(163768), c: "+4.8%",
+      note: `Times the account’s content was seen. This period includes June 30 and July 1 (${short(19131)} views); without them it is below the 6 months before. No reading for March 29, 2026, so the earlier period counts 180 of 181 days.`,
+      noteInternal: `Without June 30 and July 1 this window reads ${short(152478)} and the change is −6.9%. March 29 is the European clock change; Metricool’s own connector returns 0 for it.` },
     { group: "Instagram", k: "Responses", v: "2,338", prior: "2,636", c: "−11.3%",
       note: "Likes, comments, saves and shares. The earlier 6 months included November and April, the 2 strongest months before October 2026.",
       noteInternal: "73 posting days against 60." },
-    { group: "Email", k: "Emails delivered", v: "18,409", prior: "18,649", c: "−1.3%",
+    { group: "Email", k: "Emails delivered", v: short(18409), prior: short(18649), c: "−1.3%",
       note: "Total deliveries across every email. Level with the 6 months before.",
       noteInternal: "9 campaigns against 6. 2,556 not delivered (12.2%) against 3,086 (14.2%); the February 27 podcast newsletter alone lost 1,071 of 3,568." },
     { group: "Email", k: "Email clicks", v: "290", prior: "300", c: "−3.3%",
@@ -221,25 +244,25 @@ const NUMBERS: Record<WinId, Row[]> = {
     { group: "Email", k: "Email click rate", v: "1.58%", prior: "1.61%", c: "−0.03 points",
       note: "Clicks as a share of delivered emails. The earlier 6 months included the February podcast newsletter, the highest rate of any email, 4.6%." },
     { group: "Email", k: "Confirmed open rate", v: "12.33%", na: "From the June 23, 2026 email",
-      note: "2,270 confirmed opens, as a share of delivered emails. All opens, including mail apps that load images on their own: 10,112, 54.9%.",
+      note: `2,270 confirmed opens, as a share of delivered emails. All opens, including mail apps that load images on their own: ${short(10112)}, 54.9%.`,
       noteInternal: "Before June 23 Constant Contact reported confirmed opens equal to all opens on every email except February 11 (and March 20, 7 proxy), so November to April has no comparable figure. No email went out between March 20 and June 23." },
   ],
   "12m": [
     { group: "Short links", k: "Booking link clicks", v: "860", na: "First booking links created October 2025",
       note: `${BOOK_DEF} A second pair went live January 23, 2026.`,
       noteInternal: "Midtown 471, Upper East Side 389." },
-    { group: "Instagram", k: "Views", v: "335,377", na: "Recorded from August 25, 2025",
-      note: "Includes June 30 and July 1, the year’s 2 highest days (19,131 views). No reading for March 29, 2026, so the year counts 364 of 365 days.",
-      noteInternal: "June 30 and July 1 carry 19,131 between them." },
+    { group: "Instagram", k: "Views", v: short(335377), na: "Recorded from August 25, 2025",
+      note: `Includes June 30 and July 1, the year’s 2 highest days (${short(19131)} views). No reading for March 29, 2026, so the year counts 364 of 365 days.`,
+      noteInternal: `June 30 and July 1 carry ${short(19131)} between them.` },
     { group: "Instagram", k: "Responses", v: "4,974", prior: "1,395", c: "+256.6%",
       note: "The rise comes from posting more often. On record, the year before had far fewer posting days, each with more responses on average.",
       noteInternal: "133 posting days against 24; 37 interactions per posting day against 58. Metricool’s account timelines begin August 25, 2025; interactions before then come from the post history it imported, so this comparison depends on that import being complete." },
     { group: "Podcast", k: "Downloads", v: "2,033", prior: "1,182", c: "+72.0%",
       note: "7 of the 12 months beat the same month a year earlier.",
       noteInternal: "Buzzsprout custom date range per calendar month. Without the October 5 week’s 164 browser downloads, +58.1%." },
-    { group: "Email", k: "Emails delivered", v: "37,058", na: "First email October 31, 2025",
+    { group: "Email", k: "Emails delivered", v: short(37058), na: "First email October 31, 2025",
       note: "Total deliveries across every email.",
-      noteInternal: "15 campaigns, 42,700 sent, 5,642 not delivered (13.2%). The year before holds only the October 31, 2025 send (3,380 delivered, 91 clicks), so no comparison is shown." },
+      noteInternal: `15 campaigns, ${short(42700)} sent, 5,642 not delivered (13.2%). The year before holds only the October 31, 2025 send (3,380 delivered, 91 clicks), so no comparison is shown.` },
     { group: "Email", k: "Email clicks", v: "590", na: "First email October 31, 2025",
       note: `${CLICKS_DEF} The February podcast newsletter drew 114, the most of any email.` },
     { group: "Email", k: "Email click rate", v: "1.59%", na: "First email October 31, 2025",
@@ -273,7 +296,7 @@ const CHARTS_ALL: (Chart & { internalOnly?: boolean; clientOnly?: boolean })[] =
   { id: "c-views", title: "Instagram views", unit: "views", priorIn: ["3m", "6m"],
     points: months("2025-09", [14213, 25686, 34281, 44950, 11078, 25049, 26602, 21808, 16029, 27193, 45210, 28892, 17107, 37178]),
     note: "From September 2025. No reading for March 29, 2026.",
-    caption: { "3m": "83,177 against 88,432", "6m": "171,609 against 163,768", "12m": "335,377 · recorded from August 25, 2025" } },
+    caption: { "3m": `${short(83177)} against ${short(88432)}`, "6m": `${short(171609)} against ${short(163768)}`, "12m": `${short(335377)} · recorded from August 25, 2025` } },
   { id: "c-book", title: "Booking link clicks", unit: "clicks", priorIn: ["3m", "6m"],
     points: months("2025-11", [46, 7, 9, 82, 35, 21, 57, 95, 149, 178, 96, 85]),
     note: "From November 2025. The second pair went live January 23, 2026.",
@@ -283,13 +306,13 @@ const CHARTS_ALL: (Chart & { internalOnly?: boolean; clientOnly?: boolean })[] =
     note: "By month sent. Zero means no email that month.",
     caption: { "3m": "193 against 97", "6m": "290 against 300", "12m": "590 · first email October 31, 2025" } },
   { id: "c-search", title: "Search clicks", unit: "clicks", priorIn: [],
-    points: months("2025-07", [2511, 2193, 1835, 1693, 1528, 1293, 1252, 835, 944, 887, 703, 228, 225, 240, 237, 238]),
-    note: "From July 2025. The old blog posts came down in late May 2026.",
-    caption: { "3m": "715 · counted from June 2026", "6m": "Shown for context; counted from June 2026", "12m": "Shown for context; counted from June 2026" } },
+    points: months("2025-07", [1819, 1649, 1271, 1188, 1075, 981, 919, 653, 734, 688, 562, 208, 214, 225, 230, 223]),
+    note: "US searches, from July 2025. The old blog posts came down in late May 2026.",
+    caption: { "3m": "678 · counted from June 2026", "6m": "Shown for context; counted from June 2026", "12m": "Shown for context; counted from June 2026" } },
   { id: "c-google", title: "Visits from Google search", unit: "visits", priorIn: [],
-    points: months("2026-02", [1168, 1349, 1244, 889, 390, 410, 405, 374, 375]),
-    note: "From February 2026. No data for May 23, 25 and 27.",
-    caption: { "3m": "1,154 · counted from June 2026", "6m": "Shown for context; counted from June 2026", "12m": "Shown for context; counted from June 2026" } },
+    points: months("2026-02", [902, 1061, 980, 714, 367, 386, 377, 361, 354]),
+    note: "US visits, from February 2026. No data for May 23, 25 and 27.",
+    caption: { "3m": "1,092 · counted from June 2026", "6m": "Shown for context; counted from June 2026", "12m": "Shown for context; counted from June 2026" } },
 ];
 
 /* ------------------------------------------------------------ WHAT WORKED */
@@ -317,37 +340,37 @@ const WORKED: Record<WinId, { gallery: Piece[]; note: string }> = {
 
 /* ------------------------------------------------------------------ SEARCH */
 const SEARCH_TABLE = {
-  head: ["Month", "Search clicks", "Appearances", "Click rate", "US position", "Visits from Google"],
+  head: ["Month", "Search clicks", "Appearances", "Click rate", "Position", "Visits from Google"],
   rows: [
-    ["February 2026", "835", "53,863", "1.55%", "14.37", "1,168"],
-    ["March 2026", "944", "70,102", "1.35%", "16.71", "1,349"],
-    ["April 2026", "887", "61,810", "1.44%", "17.14", "1,244"],
-    ["May 2026", "703", "56,079", "1.25%", "18.88", "889"],
-    ["June 2026", "228", "4,846", "4.70%", "13.50", "390"],
-    ["July 2026", "225", "2,414", "9.32%", "4.79", "410"],
-    ["August 2026", "240", "2,215", "10.84%", "5.99", "405"],
-    ["September 2026", "237", "2,239", "10.59%", "4.33", "374"],
-    ["October 2026", "238", "2,182", "10.91%", "5.38", "375"],
+    ["February 2026", "653", "35,268", "1.85%", "14.37", "902"],
+    ["March 2026", "734", "48,159", "1.52%", "16.71", "1,061"],
+    ["April 2026", "688", "42,933", "1.60%", "17.14", "980"],
+    ["May 2026", "562", "41,530", "1.35%", "18.88", "714"],
+    ["June 2026", "208", "3,839", "5.42%", "13.50", "367"],
+    ["July 2026", "214", "2,071", "10.33%", "4.79", "386"],
+    ["August 2026", "225", "1,940", "11.60%", "5.99", "377"],
+    ["September 2026", "230", "1,990", "11.56%", "4.33", "361"],
+    ["October 2026", "223", "1,914", "11.65%", "5.38", "354"],
   ],
 };
 
 const SEARCH_CLIENT = [
-  "Google search traffic dropped sharply in late May 2026, when the site’s older blog posts came down. Clicks had already eased from 2,511 in July 2025 to 887 in April 2026; since June they have held between 225 and 240 a month. February to April averaged 889 clicks and 1,254 Google visits a month; June to October, 234 and 391.",
-  "Most of the earlier clicks came from 4 posts: dry socket after a bone graft, signs a gum graft has not taken, blowing your nose after a sinus lift, and sinus lift pain. They took 4,769 of the 8,715 clicks Google credited to individual pages from November 2025 to October 2026. The old pages as a group drew many appearances at a low click rate and position, which is why both changed so much.",
-  "Since July, about 1 appearance in 10 has led to a click, the average US position has stayed between 4.3 and 6.0, and Google visits have run between 374 and 410 a month.",
-  "Search and website figures count from June, so comparisons use the current site. The first comparison comes next month: September to November against June to August.",
+  "Google search traffic dropped sharply in late May 2026, when the site’s older blog posts came down. US clicks had already eased from 1,819 in July 2025 to 688 in April 2026; since June they have held between 208 and 230 a month. February to April averaged 692 clicks and 981 Google visits a month; June to October, 220 and 369.",
+  "Most of the earlier search traffic went to older blog posts, among them dry socket after a bone graft, signs a gum graft has not taken, blowing your nose after a sinus lift, and sinus lift pain. They appeared often in results, but low on the page and with few clicks.",
+  "Since July, more than 1 appearance in 10 has led to a click, the average position has stayed between 4.3 and 6.0, and Google visits have run between 354 and 386 a month.",
+  "All figures here are US only. They count from June, so comparisons use the current site. The first comparison comes next month: September to November against June to August.",
 ];
 
 const SEARCH_INTERNAL = [
-  "The break: daily impressions fell from about 1,900 to about 100 between May 28 and mid-June 2026; GA4 has no rows for May 23, 25 and 27 (likely the switch-over); the 404 page first appears in May (69 new users that month). Impressions: about 62,000 a month February to April; June to October averages 2,779.",
-  "The 4 posts: /dry-socket-with-bone-graft/ 1,954, /signs-of-failed-gum-graft/ 1,543, /accidentally-blew-nose-after-sinus-lift/ 810 and /how-painful-is-a-sinus-lift/ 462, together 2.37% click rate at position 6.9, better than the site average then. The low pre-June click rate came from the 154 other old pages missing from the August to October list (0.37% at position 18.2). Restoring or redirecting the 4 is the largest single search opportunity on the site, and it is the redirect work already open with Johana. The client text explains the drop but not the fix; raise that with the practice separately.",
-  "August to October, searches for the practice’s name lead the query list: edgard el chaar 86 clicks at position 3.4, edgar el chaar 46 at 1.4, dr el chaar 45 at 8.0, all countries. On the page list the homepage took 503 clicks, Our Doctors 132 and Locations 70.",
-  "The 404 page has taken 2,172 new users since May: 69, 311, 669, 285, 374 and 464 by month. The client text names the drop and the 4 posts (Walter, November 9: show it “as long as we explain the context”) but not the 404 page or who took the posts down.",
+  `The break: daily US impressions fell from about 1,500 (May 1 to 27) to about 80 (June 15 to 30) after May 28; GA4 has no rows for May 23, 25 and 27 (likely the switch-over); the 404 page first appears in May (26 US new users that month). US impressions averaged ${short(42120)} a month February to April; June to October, 2,351. The US share of clicks rose from 78% (February to April) to 94% (June to October): the old posts drew more searches from outside the US.`,
+  "Google lists only part of US search by page: 2,146 of 6,712 US clicks over the 12 months (281 of 678 for August to October, close to the 265 with a known query), and a page × country read returned the same. So the client text gives no US page figures. From the all-country page list (the morning pull), old pages took 6,160 of 8,715 page clicks and the 4 posts 4,769 (/dry-socket-with-bone-graft/ 1,954, /signs-of-failed-gum-graft/ 1,543, /accidentally-blew-nose-after-sinus-lift/ 810, /how-painful-is-a-sinus-lift/ 462). At most 1,898 clicks in the 12 months came from outside the US, so at least 4,262 US clicks (63%) went to old pages and 2,871 (43%) to the 4 alone, give or take the small gap between page and site totals. Restoring or redirecting the 4 is the largest single search opportunity on the site, and it is the redirect work already open with Johana. The client text explains the drop but not the fix; raise that with the practice separately.",
+  "August to October, searches for the practice’s name lead the US query list: edgard el chaar 83 clicks at position 3.7, dr el chaar 45 at 8.1, edgar el chaar 44 at 1.4. Of the 281 US clicks Google lists by page, the homepage took 194, Our Doctors 36 and Locations 35.",
+  "The 404 page has taken 206 US new users since May: 26, 51, 30, 14, 38 and 47 by month (2,172 across all countries). The client text names the drop and the 4 posts (Walter, November 9: show it “as long as we explain the context”) but not the 404 page or who took the posts down.",
 ];
 
 /* ------------------------------------------------------------ DATA NOTES */
 const NOTES = [
-  { title: "2 Instagram days carry 19,131 views", body: "June 30 and July 1: 10,865 and 8,266 views on reach of 146 and 60, no piece published. They set the direction of the views comparison at 3 months (−5.9%; +20.0% without them) and 6 months (+4.8%; −6.9% without). Kept as Metricool reports them; the client notes name both days." },
+  { title: `2 Instagram days carry ${short(19131)} views`, body: `June 30 and July 1: ${short(10865)} and 8,266 views on reach of 146 and 60, no piece published. They set the direction of the views comparison at 3 months (−5.9%; +20.0% without them) and 6 months (+4.8%; −6.9% without). Kept as Metricool reports them; the client notes name both days.` },
   { title: "No Instagram reading for March 29, 2026", body: "The European clock change. Metricool’s own connector returns 0 for the day. The 6-month comparison counts 180 of 181 days and the 12-month views 364 of 365, both named in the client notes." },
   { title: "Instagram interactions before August 2025 are imported", body: "Metricool’s timelines start August 25, 2025; earlier interactions come from its imported post history. The year before reads 24 posting days and 1,395 interactions (58 a day) against 133 and 4,974 (37 a day). Check the import against the account before leading on the 12-month comparison." },
   { title: "July reach ran at 861 a day", body: "Against 329, 149 and 592 a day August to October, with no July piece above 1,100 reach. Outside the only window that shows reach. Ask whether anything was boosted in July." },
@@ -356,7 +379,7 @@ const NOTES = [
   { title: "Podcast browser downloads are unexplained", body: "October’s 478 includes the October 5 week’s 164 Web Browser downloads of 177 (EEC October 5 – 11 report). Without them: +58.4% at 3 months, +19.6% at 6, +58.1% at 12. Buzzsprout can’t split browser share by month. The client copy gives totals but doesn’t headline them." },
   { title: "Booking links merge 2 pairs; the homepage link starts in December", body: "The pull counts the DDS-PC pair (October 21, 2025) and the links.edgardelchaar.com pair (January 23, 2026) together; the 6-month client note gives the like-for-like rate. Every links.edgardelchaar.com link dates from December 18, 2025, so the homepage link is uncompared at 6 months and out of the 12-month view. Split the pairs in review-pull.mjs next edition." },
   { title: "Short.io All clicks stay provisional", body: "Short.io re-counted earlier weeks between November 3 and 9. Every month here was read in one run on November 9, so the months compare with each other." },
-  { title: "Self-check passed", body: "The pull rebuilt the October 19 week and matched every ledger figure: Search 52 clicks and 466 impressions at 5.25, GA4 294 new visitors and 83 from Google, Instagram 2,951 views, 136 reach per day, 3,267 followers and 31 interactions, Short.io 112 named clicks, no /* row in any month." },
+  { title: "Self-check passed", body: "The pull rebuilt the October 19 week and matched every ledger figure (the ledgers are all-country): Search 52 clicks and 466 impressions at US position 5.25, GA4 294 new visitors and 83 from Google, Instagram 2,951 views, 136 reach per day, 3,267 followers and 31 interactions, Short.io 112 named clicks, no /* row in any month. US Search and GA4 figures sit within the all-country figures in every month." },
 ];
 
 /* ---------------------------------------------------------------- DETAIL */
@@ -374,14 +397,14 @@ const DETAIL_PANELS: Panel[] = [
       ["Homepage short link", "December 2025 onward"],
       ["Email", "October 31, 2025 onward, the first email sent under the practice’s name"],
       ["Confirmed email opens", "Every email from June 23, 2026; none went out between March 20 and June 23"],
-      ["Search and website", "Counted from June 2026; charted in full"],
+      ["Search and website", "US only; counted from June 2026, charted in full"],
     ],
     note: "From the November 9 pull. A measure appears in a view only when its source covers every month of it, and is compared only when the earlier window is covered as well. Instagram has no reading for March 29, 2026; the 6-month views comparison keeps it with the gap named. Search Console has data from June 28, 2025 and GA4 from January 22, 2026, but both are counted from June 2026 because of the late-May change (see the Search section); the charts show the full history.",
     noteClient: "A measure appears in a view only when its record covers every month, and is compared only when the earlier period is covered too. Instagram has no reading for March 29, 2026." },
   { id: "method", title: "How the figures are measured",
     rows: [],
-    note: "Instagram: Metricool account timelines summed by day in New York time; responses are interactions (likes, comments, saves, shares) on feed posts and reels on their publish date; engagement rate is interactions ÷ summed daily reach. Short links: Short.io path view, All clicks, /* filtered, links.edgardelchaar.com plus DDS-PC-Midtown and DDS-PC-UES on nycdentalsmileteam.short.gy. Email: Constant Contact per-campaign results, rates on delivered. Podcast: Buzzsprout custom date range per calendar month. Search: Search Console daily rows, US position impression-weighted. Website: GA4 property 521198918, our own traffic left out.",
-    noteClient: "Instagram figures are summed by day. Responses are likes, comments, saves and shares on pieces published in the period; engagement rate is responses divided by each day’s reach, summed. Short links count clicks on the booking links and the homepage short address. Email clicks count each person once per email; email rates use delivered emails. Podcast downloads come from the podcast host, by month. Search figures come from Google; average position covers US searches.",
+    note: "Instagram: Metricool account timelines summed by day in New York time; responses are interactions (likes, comments, saves, shares) on feed posts and reels on their publish date; engagement rate is interactions ÷ summed daily reach. Short links: Short.io path view, All clicks, /* filtered, links.edgardelchaar.com plus DDS-PC-Midtown and DDS-PC-UES on nycdentalsmileteam.short.gy. Email: Constant Contact per-campaign results, rates on delivered. Podcast: Buzzsprout custom date range per calendar month. Search: Search Console daily rows filtered to the US, position impression-weighted; US page lists cover only part of US clicks (see Search), so no US page figures are given. Website: GA4 property 521198918, US only, our own traffic left out.",
+    noteClient: "Instagram figures are summed by day. Responses are likes, comments, saves and shares on pieces published in the period; engagement rate is responses divided by each day’s reach, summed. Short links count clicks on the booking links and the homepage short address. Email clicks count each person once per email; email rates use delivered emails. Podcast downloads come from the podcast host, by month. Search and website figures come from Google and count the US only.",
     faq: [
       { q: "Why do some figures have no comparison?", a: "A figure is compared only when its source fully covers the earlier period. Otherwise it shows the date its record starts." },
       { q: "Why do the 6 and 12-month views not count Search and the website?", a: "The older blog posts came down in late May 2026, and they drew most of the search traffic. Figures count from June so they describe the current site. The charts still show the full history." },
@@ -416,11 +439,11 @@ export const RV = {
     footnote: "Read November 9, 2026. Pieces keep gathering responses.",
   },
   search: {
-    lede: "What changed in late May 2026, and how Search has done since.",
+    lede: "What changed in late May 2026, and how US search has done since.",
     paras: SEARCH_CLIENT,
     parasInternal: IS_INTERNAL ? SEARCH_INTERNAL : [],
     table: SEARCH_TABLE,
-    tableNote: "Google’s search reporting and the site’s visit records. Click rate covers all searches; position covers US searches. The visit records have no data for May 23, 25 and 27, 2026.",
+    tableNote: "Google’s search reporting and the site’s visit records, US only. The visit records have no data for May 23, 25 and 27, 2026.",
   },
   notes: { lede: "Gaps, oddities and open questions. Internal only.", items: IS_INTERNAL ? NOTES : [] },
   detail: { lede: "How the review is built and what each source covers.", panels: DETAIL_PANELS.map((p) => ({ ...p, note: pick(p.note, p.noteClient ?? p.note) })) },

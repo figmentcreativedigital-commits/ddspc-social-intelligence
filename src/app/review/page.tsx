@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { RV, IS_INTERNAL, NAV, has, WINDOWS, DEFAULT_WIN, type WinId, type Row, type Chart } from "./review-data";
+import { RV, IS_INTERNAL, NAV, has, WINDOWS, DEFAULT_WIN, short, type WinId, type Row, type Chart } from "./review-data";
 import { MONOGRAM } from "./monogram";
 
 /* ==========================================================================
@@ -442,6 +442,7 @@ function switchCss() {
 const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const monthLong = (m: string) => `${MONTH_NAMES[Number(m.slice(5, 7)) - 1]} ${m.slice(0, 4)}`;
 const monthShort = (m: string) => `${MONTH_NAMES[Number(m.slice(5, 7)) - 1].slice(0, 3)} ${m.slice(0, 4)}`;
+// Exact counts, for chart tooltips and the tables under each chart.
 const fmtInt = (v: number) => v.toLocaleString("en-US");
 const fmtTick = (v: number) => (v >= 10000 ? `${v / 1000}k` : v.toLocaleString("en-US"));
 
@@ -686,9 +687,9 @@ export default function ReviewPage() {
               <p className="hero-meta">{RV.worked.hero.format}, {RV.worked.hero.date}</p>
               <h3 className="hero-t">{RV.worked.hero.title}</h3>
               <div className="stats">
-                <div><b>{fmtInt(RV.worked.hero.views)}</b><span>Views</span></div>
-                <div><b>{fmtInt(RV.worked.hero.reach)}</b><span>Accounts reached</span></div>
-                <div><b>{fmtInt(RV.worked.hero.responses)}</b><span>Responses</span></div>
+                <div><b>{short(RV.worked.hero.views)}</b><span>Views</span></div>
+                <div><b>{short(RV.worked.hero.reach)}</b><span>Accounts reached</span></div>
+                <div><b>{short(RV.worked.hero.responses)}</b><span>Responses</span></div>
               </div>
               <p className="why">{RV.worked.hero.why}</p>
             </div>
@@ -701,7 +702,7 @@ export default function ReviewPage() {
                     <IgFrame url={g.url} title={g.title} />
                     <p className="gal-d">{g.format}, {g.date}</p>
                     <p className="gal-t">{g.title}</p>
-                    <p className="gal-s">{fmtInt(g.views)} views, {fmtInt(g.reach)} reach, {fmtInt(g.responses)} responses</p>
+                    <p className="gal-s">{short(g.views)} views, {short(g.reach)} reach, {short(g.responses)} responses</p>
                   </div>
                 ))}
               </div>
