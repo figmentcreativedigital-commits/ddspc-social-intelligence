@@ -307,21 +307,75 @@ a { color: inherit; }
    :has() show the default window, which the rules below build from
    DEFAULT_WIN. */
 const REVIEW_CSS = `
-.seg { display: inline-flex; flex: none; align-items: center; gap: 2px; padding: 3px; border: 1px solid var(--rule); border-radius: 30px; margin: 0 6px 0 0; }
+/* ---------- top bar: brand, sections, period switch ---------- */
+.top { position: sticky; top: 0; z-index: 40; background: var(--plum); color: #fff; border-bottom: 1px solid rgba(255,255,255,.16); }
+.top-in { display: flex; align-items: center; gap: 20px; min-height: 68px; }
+.top .wrap { max-width: 1440px; padding-left: clamp(16px, 3vw, 40px); padding-right: clamp(16px, 3vw, 40px); }
+.brand { display: grid; grid-template-columns: auto auto; grid-template-rows: auto auto; column-gap: 12px; align-items: center; flex: none; color: #fff; }
+.brand-a { display: contents; color: #fff; text-decoration: none; }
+.brand-a img { grid-row: 1 / 3; width: 46px; height: auto; display: block; }
+.brand-a b { font-size: 11px; font-weight: 400; letter-spacing: .16em; text-transform: uppercase; white-space: nowrap; align-self: end; }
+.brand-s { font-size: 13px; color: rgba(255,255,255,.9); white-space: nowrap; align-self: start; margin-top: 2px; }
+.brand-s a { color: #fff; text-decoration: underline; text-decoration-color: rgba(255,255,255,.5); text-underline-offset: 3px; }
+.brand-s a:hover { text-decoration-color: #fff; }
+.badge { font-style: normal; margin-left: 8px; padding: 0 8px; border: 1px solid rgba(255,255,255,.6); border-radius: 20px; font-size: 11px; }
+.links { display: flex; align-items: center; gap: 2px; flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.links::-webkit-scrollbar { display: none; }
+.links a { color: rgba(255,255,255,.92); text-decoration: none; font-size: 15px; white-space: nowrap; padding: 8px 11px; border-radius: 6px; }
+.links a:hover, .links a:focus-visible { background: rgba(255,255,255,.12); color: #fff; }
+.links a:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
+.seg { display: inline-flex; flex: none; align-items: center; gap: 2px; padding: 3px; border: 1px solid rgba(255,255,255,.4); border-radius: 30px; margin: 0; }
 .seg legend { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .seg label { position: relative; cursor: pointer; }
 .seg input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
-.seg span { display: block; font-size: 14px; line-height: 1.2; padding: 7px 14px; border-radius: 30px; color: var(--muted); white-space: nowrap; }
-.seg input:checked + span { background: var(--plum); color: #fff; }
-.seg input:focus-visible + span { outline: 2px solid var(--plum); outline-offset: 2px; }
-.seg label:hover span { color: var(--plum); }
-.seg input:checked + span, .seg label:hover input:checked + span { color: #fff; }
-.rail-in { align-items: center; }
-.rail-sep { width: 1px; align-self: stretch; background: var(--rule); flex: none; }
+.seg span { display: block; font-size: 14px; line-height: 1.2; padding: 7px 14px; border-radius: 30px; color: rgba(255,255,255,.92); white-space: nowrap; }
+.seg label:hover span { background: rgba(255,255,255,.12); }
+.seg input:checked + span, .seg label:hover input:checked + span { background: #fff; color: var(--plum); font-weight: 700; }
+.seg input:focus-visible + span { outline: 2px solid #fff; outline-offset: 2px; }
+.sec { scroll-margin-top: 84px; }
+@media (max-width: 1220px) {
+  .top-in { flex-wrap: wrap; gap: 0 16px; padding-top: 10px; }
+  .brand { order: 1; }
+  .seg { order: 2; margin-left: auto; }
+  .links { order: 3; flex-basis: 100%; margin: 6px 0 4px; padding-bottom: 4px; }
+  .links a:first-child { padding-left: 0; }
+  .links { mask-image: linear-gradient(90deg, #000 88%, transparent); -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent); }
+  .sec { scroll-margin-top: 124px; }
+}
+@media (max-width: 560px) {
+  .brand-a b, .brand-s { display: none; }
+  .seg span { padding: 7px 11px; font-size: 13px; }
+}
+
+/* ---------- intro: one compact band (not .intro, which "What worked" uses) ---------- */
+.intro { background: var(--plum); color: #fff; padding: 40px 0 44px; }
+.intro-in.wv { display: none; }
+.intro-in { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 48px; align-items: center; }
+.intro-k { font-family: var(--display); font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.9); margin-bottom: 14px; }
+.intro .mast-head { font-family: var(--text); font-weight: 400; font-size: clamp(26px, 2.8vw, 38px); line-height: 1.2; letter-spacing: -.005em; color: #fff; max-width: 24ch; }
+.intro-deck { font-size: 17px; line-height: 1.6; color: rgba(255,255,255,.92); max-width: 52ch; margin-top: 16px; }
+.intro-meta { font-size: 13px; color: rgba(255,255,255,.9); margin-top: 14px; }
+.intro-note { font-size: 14px; line-height: 1.6; color: rgba(255,255,255,.92); margin-top: 16px; padding: 12px 14px; border-left: 2px solid rgba(255,255,255,.5); background: rgba(0,0,0,.12); max-width: 64ch; }
+.tiles { list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.tile { background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.2); border-radius: 12px; padding: 18px 16px 16px; }
+.tile b { display: block; font-family: var(--display); font-weight: 700; font-size: clamp(26px, 2.5vw, 36px); line-height: 1.05; color: #fff; font-variant-numeric: lining-nums; }
+.tile span { display: block; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.92); margin-top: 10px; line-height: 1.35; }
+.tile small { display: block; font-size: 13px; color: rgba(255,255,255,.9); margin-top: 6px; line-height: 1.4; }
+@media (max-width: 900px) {
+  .intro { padding: 28px 0 32px; }
+  .intro-in { grid-template-columns: 1fr; gap: 24px; }
+}
+@media (max-width: 480px) { .tiles { grid-template-columns: 1fr 1fr; } .tile:last-child { grid-column: 1 / -1; } }
+
+/* ---------- how to read: a slim strip under the hero ---------- */
+.how { border-bottom: 1px solid var(--rule-soft); }
+.how-in { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; padding-top: 22px; padding-bottom: 22px; }
+.how-t { font-family: var(--display); font-weight: 700; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--plum); margin-bottom: 6px; }
+.how-i p { font-size: 14.5px; line-height: 1.6; color: var(--body); }
+@media (max-width: 860px) { .how-in { grid-template-columns: 1fr; gap: 14px; } }
 
 .wv { display: none; }
 
-.mast-when small { display: block; font-size: 14px; color: rgba(255,255,255,.9); }
 
 .lg-na { font-size: 14px; color: var(--muted); text-align: right; }
 .lg-ni { font-size: 14px; color: var(--plum); margin-top: 6px; max-width: 60ch; line-height: 1.5; }
@@ -352,7 +406,7 @@ const REVIEW_CSS = `
 .st-wrap { overflow-x: auto; }
 .st-note { font-size: 14px; color: var(--muted); margin-top: 12px; max-width: 70ch; }
 
-@media print { .seg { display: none; } }
+@media print { .top { position: static; } .links, .seg { display: none; } .intro { background: #fff; color: var(--ink); } .intro .mast-head, .tile b { color: var(--plum); } .intro-k, .intro-deck, .intro-meta, .tile span, .tile small { color: var(--muted); } .tile { border-color: var(--rule); } }
 `;
 
 const WIN_IDS = WINDOWS.map((w) => w.id);
@@ -366,12 +420,12 @@ function switchCss() {
   const others = WIN_IDS.filter((w) => w !== DEFAULT_WIN);
   const d = num(DEFAULT_WIN);
   const lines: string[] = [];
-  lines.push(`.wv-${DEFAULT_WIN} { display: block; }`);
+  lines.push(`.wv-${DEFAULT_WIN} { display: block; }`, `.intro-in.wv-${DEFAULT_WIN} { display: grid; }`);
   lines.push(`.mc rect.i${d} { fill: var(--now); }`, `.mc rect.p${d} { fill: var(--past); }`);
   lines.push(`.hide-${DEFAULT_WIN} { display: none; }`);
   for (const w of others) {
     lines.push(`${on(w)} .wv-${DEFAULT_WIN} { display: none; }`);
-    lines.push(`${on(w)} .wv-${w} { display: block; }`);
+    lines.push(`${on(w)} .wv-${w} { display: block; }`, `${on(w)} .intro-in.wv-${w} { display: grid; }`);
     lines.push(`${on(w)} .mc rect.i${d}, ${on(w)} .mc rect.p${d} { fill: var(--rule); }`);
     lines.push(`${on(w)} .hide-${DEFAULT_WIN} { display: block; }`);
   }
@@ -550,47 +604,20 @@ export default function ReviewPage() {
     <div className="rv">
       <style dangerouslySetInnerHTML={{ __html: CSS + REVIEW_CSS + switchCss() }} />
 
-      <header className="mast">
-        <img className="mast-wm" src={MONOGRAM} alt="" aria-hidden="true" />
-        <div className="wrap">
-          <div className="mast-top">
-            <div>
-              <h1 className="mast-logo"><img src={MONOGRAM} alt="" width={128} height={80} /><span>{RV.client}</span></h1>
-              <p className="mast-kind">3, 6 and 12-month review{IS_INTERNAL ? <span className="mast-badge">Internal</span> : null}</p>
-            </div>
-            <PerWin render={(w) => <p className="mast-when"><b>{w.period}</b>Against {w.prior}<small>Read {RV.readOn}</small></p>} />
+      <h1 className="sr">{RV.client}: 3, 6 and 12-month review</h1>
+
+      <header className="top">
+        <div className="wrap top-in">
+          <div className="brand">
+            <a className="brand-a" href="#top" aria-label={`${RV.client}, back to the top`}>
+              <img src={MONOGRAM} alt="" width={56} height={35} />
+              <b>{RV.client}</b>
+            </a>
+            <small className="brand-s">3, 6 and 12-month review{IS_INTERNAL ? <i className="badge">Internal</i> : null} · <a href="/">Weekly report</a></small>
           </div>
-          <PerWin render={(w) => {
-            const l = RV.lead[w.id];
-            return (
-              <>
-                <p className="mast-kicker">{w.label} · {l.kicker}</p>
-                <h2 className="mast-head">{l.headline}</h2>
-                <p className="mast-deck">{l.deck}</p>
-                {IS_INTERNAL ? <p className="mast-note">{l.internalNote}</p> : null}
-                <div className="mast-figs">
-                  {l.figures.map((f) => <div className="mast-fig" key={f.l}><b>{f.v}</b><span>{f.l}</span></div>)}
-                  <p className="mast-fignote">{l.figureNote}</p>
-                </div>
-              </>
-            );
-          }} />
-        </div>
-      </header>
-
-      <div className="wrap" id="brief">
-        <div className="brief">
-          {RV.brief.map((b) => (
-            <div className="brief-i" key={b.role}>
-              <h2 className="brief-role">{b.role}</h2>
-              <p className="brief-text">{b.text}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <nav className="rail" aria-label="Review period and sections">
-        <div className="wrap rail-in">
+          <nav className="links" aria-label="Review sections">
+            {NAV.map((n) => <a key={n.id} href={`#${n.id}`}>{n.label}</a>)}
+          </nav>
           <fieldset className="seg">
             <legend>Period</legend>
             {WINDOWS.map((w) => (
@@ -600,10 +627,41 @@ export default function ReviewPage() {
               </label>
             ))}
           </fieldset>
-          <span className="rail-sep" aria-hidden="true" />
-          {NAV.map((n) => <a key={n.id} href={`#${n.id}`}>{n.label}</a>)}
         </div>
-      </nav>
+      </header>
+
+      <section className="intro" id="top" aria-label="Summary">
+        <div className="wrap">
+          <PerWin className="intro-in" render={(w) => {
+            const l = RV.lead[w.id];
+            return (
+              <>
+                <div className="intro-copy">
+                  <p className="intro-k">{w.label} · {w.period}</p>
+                  <h2 className="mast-head">{l.headline}</h2>
+                  <p className="intro-deck">{l.deck}</p>
+                  <p className="intro-meta">Against {w.prior} · Read {RV.readOn}</p>
+                  {IS_INTERNAL ? <p className="intro-note">{l.internalNote}</p> : null}
+                </div>
+                <ul className="tiles">
+                  {l.figures.map((f) => <li className="tile" key={f.l}><b>{f.v}</b><span>{f.l}</span><small>{f.sub}</small></li>)}
+                </ul>
+              </>
+            );
+          }} />
+        </div>
+      </section>
+
+      <div className="how">
+        <div className="wrap how-in">
+          {RV.brief.map((b) => (
+            <div className="how-i" key={b.role}>
+              <h2 className="how-t">{b.role}</h2>
+              <p>{b.text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
 
       <main>
         <Section id="numbers" title="The numbers" lede={RV.numbers.lede}>
