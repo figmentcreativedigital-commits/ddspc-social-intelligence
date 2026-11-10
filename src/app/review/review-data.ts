@@ -28,7 +28,9 @@
    US ONLY (Walter, Nov 9) — Search and website figures count the US only;
      the pull keeps all-country totals for its self-check and the internal
      notes. Google lists only 32 to 41% of US clicks by page, so the
-     client text gives no US page figures.
+     client text gives no US page figures. Walter, Nov 10: the client text
+     does not mention the US scope ("We don't need to emphasize that"); the
+     internal notes do.
 
    SEARCH AND WEBSITE — the old blog posts dropped out of Google between
      May 28 and mid-June 2026 (daily US impressions about 1,500 to about 80) and
@@ -148,7 +150,7 @@ const LEAD: Record<WinId, Lead> = {
 const BRIEF = [
   { role: "The windows", text: "Each view ends October 31, 2026. 3 months is August to October, 6 months is May to October, and 12 months is November 2025 to October 2026. The review moves forward each month." },
   { role: "The comparison", text: "Each figure is compared with the equal period before it. Where that period has no full record, the figure stands alone with its start date." },
-  { role: "What is left out", text: "A measure shows only in views its source fully covers. Search and website figures cover the US only, and count from June 2026, after the old blog posts came down." },
+  { role: "What is left out", text: "A measure shows only in views its source fully covers. Search and website figures count from June 2026, after the old blog posts came down." },
 ];
 
 /* -------------------------------------------------------------- THE NUMBERS */
@@ -201,20 +203,20 @@ const NUMBERS: Record<WinId, Row[]> = {
       note: `Downloads across all listening apps and the web. ${POD_OCT}`,
       noteInternal: "Buzzsprout, custom date range per month: August 148, September 162, October 478. 164 of the October 5 week’s 177 came through Web Browser (EEC October 5 – 11 report), still unexplained; without them the 3 months read 624, +58.4%. Buzzsprout’s app view works by episode, not by date, so the browser share by month is not known." },
     { group: "Search", k: "Search clicks", v: "678", na: "Counted from June 2026",
-      note: "Clicks from US Google searches to the site. Most went to the homepage.",
+      note: "Clicks from Google searches to the site. Most went to the homepage.",
       noteInternal: "The earlier 3 months hold May, the last month of the old blog posts (562 US clicks), so no comparison is shown. From the next edition (September to November against June to August) Search compares. All countries: 715. Google lists only 281 of the 678 US clicks by page, so no homepage count is given: the all-country list has 503 of 715 to the homepage, and with 37 clicks from outside the US, at least 466 US clicks (69%) went there." },
     { group: "Search", k: "Search appearances", v: "5,844", na: "Counted from June 2026",
-      note: "Times the site appeared in US Google results." },
+      note: "Times the site appeared in Google results." },
     { group: "Search", k: "Search click rate", v: "11.60%", na: "Counted from June 2026",
       note: "Clicks as a share of appearances." },
     { group: "Search", k: "Average search position", v: "5.22", na: "Counted from June 2026",
       note: "Lower is better.",
       noteInternal: "Impression-weighted over the US daily rows." },
     { group: "Website", k: "Visits from Google search", v: "1,092", na: "Counted from June 2026",
-      note: "Visits from a US Google search. 726 engaged with the site.",
+      note: "Visits from a Google search. 726 engaged with the site.",
       noteInternal: "66.5% engaged. GA4, US only, our own traffic left out (eec-prototype.vercel.app, figmentcreative.com). All countries: 1,154." },
     { group: "Website", k: "New visitors", v: "1,631", na: "Counted from June 2026",
-      note: "First-time visitors from the US.",
+      note: "First-time visitors to the site.",
       noteInternal: "99 of them reached the 404 page (6%). All countries: 3,670 new visitors, 1,123 to the 404 page (31%), so most of the 404 traffic and more than half of new visitors are outside the US." },
   ],
   "6m": [
@@ -307,11 +309,11 @@ const CHARTS_ALL: (Chart & { internalOnly?: boolean; clientOnly?: boolean })[] =
     caption: { "3m": "193 against 97", "6m": "290 against 300", "12m": "590 · first email October 31, 2025" } },
   { id: "c-search", title: "Search clicks", unit: "clicks", priorIn: [],
     points: months("2025-07", [1819, 1649, 1271, 1188, 1075, 981, 919, 653, 734, 688, 562, 208, 214, 225, 230, 223]),
-    note: "US searches, from July 2025. The old blog posts came down in late May 2026.",
+    note: "From July 2025. The old blog posts came down in late May 2026.",
     caption: { "3m": "678 · counted from June 2026", "6m": "Shown for context; counted from June 2026", "12m": "Shown for context; counted from June 2026" } },
   { id: "c-google", title: "Visits from Google search", unit: "visits", priorIn: [],
     points: months("2026-02", [902, 1061, 980, 714, 367, 386, 377, 361, 354]),
-    note: "US visits, from February 2026. No data for May 23, 25 and 27.",
+    note: "From February 2026. No data for May 23, 25 and 27.",
     caption: { "3m": "1,092 · counted from June 2026", "6m": "Shown for context; counted from June 2026", "12m": "Shown for context; counted from June 2026" } },
 ];
 
@@ -355,10 +357,10 @@ const SEARCH_TABLE = {
 };
 
 const SEARCH_CLIENT = [
-  "Google search traffic dropped sharply in late May 2026, when the site’s older blog posts came down. US clicks had already eased from 1,819 in July 2025 to 688 in April 2026; since June they have held between 208 and 230 a month. February to April averaged 692 clicks and 981 Google visits a month; June to October, 220 and 369.",
+  "Google search traffic dropped sharply in late May 2026, when the site’s older blog posts came down. Clicks had already eased from 1,819 in July 2025 to 688 in April 2026; since June they have held between 208 and 230 a month. February to April averaged 692 clicks and 981 Google visits a month; June to October, 220 and 369.",
   "Most of the earlier search traffic went to older blog posts, among them dry socket after a bone graft, signs a gum graft has not taken, blowing your nose after a sinus lift, and sinus lift pain. They appeared often in results, but low on the page and with few clicks.",
   "Since July, more than 1 appearance in 10 has led to a click, the average position has stayed between 4.3 and 6.0, and Google visits have run between 354 and 386 a month.",
-  "All figures here are US only. They count from June, so comparisons use the current site. The first comparison comes next month: September to November against June to August.",
+  "Search and website figures count from June, so comparisons use the current site. The first comparison comes next month: September to November against June to August.",
 ];
 
 const SEARCH_INTERNAL = [
@@ -397,14 +399,14 @@ const DETAIL_PANELS: Panel[] = [
       ["Homepage short link", "December 2025 onward"],
       ["Email", "October 31, 2025 onward, the first email sent under the practice’s name"],
       ["Confirmed email opens", "Every email from June 23, 2026; none went out between March 20 and June 23"],
-      ["Search and website", "US only; counted from June 2026, charted in full"],
+      ["Search and website", "Counted from June 2026; charted in full"],
     ],
-    note: "From the November 9 pull. A measure appears in a view only when its source covers every month of it, and is compared only when the earlier window is covered as well. Instagram has no reading for March 29, 2026; the 6-month views comparison keeps it with the gap named. Search Console has data from June 28, 2025 and GA4 from January 22, 2026, but both are counted from June 2026 because of the late-May change (see the Search section); the charts show the full history.",
+    note: "From the November 9 pull. A measure appears in a view only when its source covers every month of it, and is compared only when the earlier window is covered as well. Instagram has no reading for March 29, 2026; the 6-month views comparison keeps it with the gap named. Search Console has data from June 28, 2025 and GA4 from January 22, 2026, but both are counted from June 2026 because of the late-May change (see the Search section); the charts show the full history. Both count the US only; the client text does not say so (Walter, November 10).",
     noteClient: "A measure appears in a view only when its record covers every month, and is compared only when the earlier period is covered too. Instagram has no reading for March 29, 2026." },
   { id: "method", title: "How the figures are measured",
     rows: [],
     note: "Instagram: Metricool account timelines summed by day in New York time; responses are interactions (likes, comments, saves, shares) on feed posts and reels on their publish date; engagement rate is interactions ÷ summed daily reach. Short links: Short.io path view, All clicks, /* filtered, links.edgardelchaar.com plus DDS-PC-Midtown and DDS-PC-UES on nycdentalsmileteam.short.gy. Email: Constant Contact per-campaign results, rates on delivered. Podcast: Buzzsprout custom date range per calendar month. Search: Search Console daily rows filtered to the US, position impression-weighted; US page lists cover only part of US clicks (see Search), so no US page figures are given. Website: GA4 property 521198918, US only, our own traffic left out.",
-    noteClient: "Instagram figures are summed by day. Responses are likes, comments, saves and shares on pieces published in the period; engagement rate is responses divided by each day’s reach, summed. Short links count clicks on the booking links and the homepage short address. Email clicks count each person once per email; email rates use delivered emails. Podcast downloads come from the podcast host, by month. Search and website figures come from Google and count the US only.",
+    noteClient: "Instagram figures are summed by day. Responses are likes, comments, saves and shares on pieces published in the period; engagement rate is responses divided by each day’s reach, summed. Short links count clicks on the booking links and the homepage short address. Email clicks count each person once per email; email rates use delivered emails. Podcast downloads come from the podcast host, by month. Search and website figures come from Google.",
     faq: [
       { q: "Why do some figures have no comparison?", a: "A figure is compared only when its source fully covers the earlier period. Otherwise it shows the date its record starts." },
       { q: "Why do the 6 and 12-month views not count Search and the website?", a: "The older blog posts came down in late May 2026, and they drew most of the search traffic. Figures count from June so they describe the current site. The charts still show the full history." },
@@ -439,11 +441,11 @@ export const RV = {
     footnote: "Read November 9, 2026. Pieces keep gathering responses.",
   },
   search: {
-    lede: "What changed in late May 2026, and how US search has done since.",
+    lede: "What changed in late May 2026, and how search has done since.",
     paras: SEARCH_CLIENT,
     parasInternal: IS_INTERNAL ? SEARCH_INTERNAL : [],
     table: SEARCH_TABLE,
-    tableNote: "Google’s search reporting and the site’s visit records, US only. The visit records have no data for May 23, 25 and 27, 2026.",
+    tableNote: "Google’s search reporting and the site’s visit records. The visit records have no data for May 23, 25 and 27, 2026.",
   },
   notes: { lede: "Gaps, oddities and open questions. Internal only.", items: IS_INTERNAL ? NOTES : [] },
   detail: { lede: "How the review is built and what each source covers.", panels: DETAIL_PANELS.map((p) => ({ ...p, note: pick(p.note, p.noteClient ?? p.note) })) },
