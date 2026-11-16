@@ -392,9 +392,19 @@ export const R = {
         title: "Root canals don’t have to feel intimidating.",
         date: "November 13", format: "Feed post", views: 592, reach: 303, interactions: 11,
       },
+      {
+        url: "https://www.instagram.com/p/DfusU7amaje/",
+        title: "Did you know that diabetes and periodontal disease can influence one another?",
+        date: "November 14", format: "Feed post", views: 427, reach: 192, interactions: 4,
+      },
+      {
+        url: "https://www.instagram.com/p/DfxqvlThOCJ/",
+        title: "Recently, I had the opportunity to lecture at a Straumann Group educational event",
+        date: "November 15", format: "Feed post", views: 236, reach: 119, interactions: 1,
+      },
     ],
     galleryNote:
-      "A post thanking a patient, Yulia, for trusting Dr. Sobol, Ruth and the team with her root canal treatment. It was shared 5 times, more than any other piece this week. Engagement is interactions divided by reach.",
+      "The November 13 post thanks a patient, Yulia, for trusting Dr. Sobol, Ruth and the team with her root canal treatment, and was shared 5 times, more than any other piece this week. The November 14 post marked World Diabetes Day by explaining how diabetes and gum disease affect each other. On November 15, Dr. El Chaar wrote about his lecture at a Straumann Group educational event on the financial side of running a dental practice. Engagement is interactions divided by reach.",
   },
 
   /* ---------------------------------------------------------------- SOCIAL */

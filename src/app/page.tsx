@@ -514,7 +514,7 @@ export default function Page() {
                   <IgFrame url={g.url} title={g.title} />
                   <p className="gal-d">{g.format}, {g.date}</p>
                   <p className="gal-t">{g.title}</p>
-                  <p className="gal-s">{g.views.toLocaleString("en-US")} views, {g.reach.toLocaleString("en-US")} reach, {g.interactions} interactions</p>
+                  <p className="gal-s">{g.views.toLocaleString("en-US")} views, {g.reach.toLocaleString("en-US")} reach, {g.interactions} {g.interactions === 1 ? "interaction" : "interactions"}</p>
                 </div>
               ))}
             </div>
